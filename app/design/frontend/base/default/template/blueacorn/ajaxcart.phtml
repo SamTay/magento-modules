@@ -1,0 +1,107 @@
+<?php /* @var $this BlueAcorn_AjaxCart_Block_Js */ ?>
+<?php /* @var $this BlueAcorn_AjaxCart_Block_Js */ ?>
+<?php
+/**
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Open Software License (OSL 3.0)
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/osl-3.0.php
+*
+* @copyright  Copyright (c) 2013 Blue Acorn (http://www.blueacorn.com)
+* @author: Thomas Slade
+* @namespace: BlueAcorn
+* @module: AjaxCart
+*
+* @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
+
+/** @var $this BlueAcorn_AjaxCart_Block_Js */
+?>
+
+<?php if($this->useAjax()) : ?>
+    <script type="text/javascript">
+        var ajaxCart;
+
+        if(typeof productAddToCartForm != undefined){
+            productAddToCartForm.submit = function(button){
+
+                if (this.validator.validate()) {
+                    var e = null;
+                    try {
+                        ajaxCart = new AjaxCart(this.form);
+                    } catch (e) {
+                        console.log(e);
+                    }
+
+                    if (e) {
+                        throw e;
+                    }
+
+                    if (button && button != 'undefined') {
+                        button.disabled = true;
+                        setTimeout(function(){
+                            button.disabled = false;
+                        }, 5000);
+                    }
+                }
+            }
+        }
+
+        var AjaxCart = Class.create({
+            initialize : function(form){
+                this.form = form;
+                this.scrollToElement = $$('.header').first();
+
+                this.doRequest();
+            },
+
+            /**
+             * Response will be in the form
+             *      Response.[success|error]
+             *      Response.cart_qty
+             *      Response.minicart_html
+             *      Response.freeshipping_html
+             */
+
+            doRequest : function(){
+                var parent = this;
+                this.form.request({
+                    parameters : {'qty' : $F('qty')},
+                    onSuccess : function(response){
+                        parent.doSuccess(response.responseText.evalJSON(true));
+                        document.fire('minicart:updated');
+                    },
+                    onFailure : function(response){
+                        responseObj = response.responseText.evalJSON(true);
+                    }
+                });
+            },
+
+            doSuccess : function(responseObj){
+                Effect.ScrollTo(this.scrollToElement);
+                $$('.top-cart').first().replace(responseObj.minicart_html);
+                this.initializeCart();
+            },
+
+            initializeCart : function(){
+                //Reinitialize Cart
+                Enterprise.TopCart.initialize('topCartContent');
+                Enterprise.TopCart.handleMouseClick();
+
+                var removeButtons = $$('.mini-products-list .btn-remove');
+                removeButtons.invoke('writeAttribute', 'onClick', '');
+                removeButtons.invoke('observe', 'click', function(evt){
+                    Event.stop(evt);
+                    confirm('Are you sure you would like to remove this item from the shopping cart?');
+                    new Ajax.Request(this.readAttribute('href'), {
+                        parameters : {'no-redirect' : 1},
+                        onSuccess : function(){
+                            location.reload();
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+<?php endif ?>

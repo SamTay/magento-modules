@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <checkout>
+            <tab>sales</tab>
+            <groups>
+                <cart translate="label">
+                    <fields>
+                        <redirect_to_cart translate="label">
+                            <comment>Setting to 'No' will enable ajax mini cart</comment>
+                        </redirect_to_cart>
+                    </fields>
+                </cart>
+            </groups>
+        </checkout>
+    </sections>
+</config>

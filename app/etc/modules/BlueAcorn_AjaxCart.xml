@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <BlueAcorn_AjaxCart>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <Mage_Checkout/>
+
+            </depends>
+        </BlueAcorn_AjaxCart>
+    </modules>
+</config>
