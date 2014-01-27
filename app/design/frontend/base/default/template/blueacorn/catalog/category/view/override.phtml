@@ -1,0 +1,88 @@
+<?php /* @var $this BlueAcorn_AjaxCart_Block_Js */ ?>
+<?php /* @var $this BlueAcorn_AjaxCart_Block_Js */ ?>
+<?php
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @copyright  Copyright (c) 2013 Blue Acorn (http://www.blueacorn.com)
+ * @author: Thomas Slade
+ * @namespace: BlueAcorn
+ * @module: AjaxCart
+ *
+ * @license http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/** @var $this BlueAcorn_AjaxCart_Block_Js */
+?>
+
+<?php if($this->useAjax()) : ?>
+    <script type="text/javascript">
+
+        var ajaxCart, ajaxCartCategory;
+
+        var AjaxCartCategory = Class.create({
+            initialize : function(){
+                this.addToCartButtons = $$('.btn-cart');
+                this.prepareDom();
+            },
+
+            prepareDom : function(){
+                this.addToCartButtons.each(function(btn){
+
+                    //Get url from button on category page
+                    var addUrl = this.getAddToCartUrl(btn);
+                    var form = this.buildForm(addUrl);
+
+                    btn.observe('click', function(){
+                        try {
+                            ajaxCart = new AjaxCart(form);
+                        } catch (e) {
+                            console.log(e);
+                        }
+
+                    });
+                }.bind(this));
+            },
+
+            /**
+             * Get value from setLocation in button onClick and clear onClick
+             * @param btn
+             * @returns {XML|string}
+             */
+            getAddToCartUrl : function(btn){
+                var addUrl = btn.readAttribute('onClick').replace('setLocation(\'', '').replace('\')', '');
+                btn.writeAttribute('onClick', '');
+                return addUrl;
+            },
+
+            /**
+             * Create dynamic form per add to cart button
+             * @param addUrl
+             * @returns {Node|*}
+             */
+            buildForm : function(addUrl){
+                var qty = new Element('input', {
+                    'name' : 'qty',
+                    'id' : 'qty',
+                    'value' : 1
+                });
+                var form = new Element('form', {
+                    'method' : 'POST',
+                    'action' : addUrl
+                }).insert(qty);
+                return form;
+
+            }
+
+        });
+
+        Event.observe(window, 'load', function(){
+            ajaxCartCategory = new AjaxCartCategory();
+        });
+
+    </script>
+<?php endif ?>

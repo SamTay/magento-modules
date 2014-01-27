@@ -21,35 +21,14 @@
 
 <?php if($this->useAjax()) : ?>
     <script type="text/javascript">
-        var ajaxCart;
-
-        if(typeof productAddToCartForm != undefined){
-            productAddToCartForm.submit = function(button){
-
-                if (this.validator.validate()) {
-                    var e = null;
-                    try {
-                        ajaxCart = new AjaxCart(this.form);
-                    } catch (e) {
-                        console.log(e);
-                    }
-
-                    if (e) {
-                        throw e;
-                    }
-
-                    if (button && button != 'undefined') {
-                        button.disabled = true;
-                        setTimeout(function(){
-                            button.disabled = false;
-                        }, 5000);
-                    }
-                }
-            }
-        }
 
         var AjaxCart = Class.create({
-            initialize : function(form){
+            initialize : function(form, options){
+                this.options = Object.extend({
+                    showCart : true,
+                    scrollToTop : true
+                }, options || {});
+
                 this.form = form;
                 this.scrollToElement = $$('.header').first();
 
@@ -67,10 +46,10 @@
             doRequest : function(){
                 var parent = this;
                 this.form.request({
-                    parameters : {'qty' : $F('qty')},
+                    parameters : {'qty' : (parent.form.qty ? parent.form.qty : $F('qty'))},
                     onSuccess : function(response){
                         parent.doSuccess(response.responseText.evalJSON(true));
-                        document.fire('minicart:updated');
+                        document.fire('minicart:updated', {response : response.responseText.evalJSON(true)});
                     },
                     onFailure : function(response){
                         responseObj = response.responseText.evalJSON(true);
@@ -79,7 +58,9 @@
             },
 
             doSuccess : function(responseObj){
-                Effect.ScrollTo(this.scrollToElement);
+                if(this.options.scrollToTop){
+                    Effect.ScrollTo(this.scrollToElement);
+                }
                 $$('.top-cart').first().replace(responseObj.minicart_html);
                 this.initializeCart();
             },
@@ -87,7 +68,9 @@
             initializeCart : function(){
                 //Reinitialize Cart
                 Enterprise.TopCart.initialize('topCartContent');
-                Enterprise.TopCart.handleMouseClick();
+                if(this.options.showCart){
+                    Enterprise.TopCart.handleMouseClick();
+                }
 
                 var removeButtons = $$('.mini-products-list .btn-remove');
                 removeButtons.invoke('writeAttribute', 'onClick', '');
@@ -103,5 +86,6 @@
                 });
             }
         });
+
     </script>
 <?php endif ?>

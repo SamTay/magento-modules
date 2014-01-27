@@ -16,9 +16,39 @@
  */
 -->
 <layout version="0.1.0">
-    <catalog_product_view>
+    <blueacorn_ajaxcart_product>
         <reference name="before_body_end">
-            <block type="blueacorn_ajaxcart/js" name="ajaxcart" template="blueacorn/ajaxcart.phtml" />
+            <block type="blueacorn_ajaxcart/js" name="product_override" template="blueacorn/catalog/product/view/override.phtml" before="-" />
         </reference>
+    </blueacorn_ajaxcart_product>
+    <blueacorn_ajaxcart_category>
+        <reference name="before_body_end">
+            <block type="blueacorn_ajaxcart/js" name="category_override" template="blueacorn/catalog/category/view/override.phtml" before="-" />
+        </reference>
+    </blueacorn_ajaxcart_category>
+    <blueacorn_ajaxcart_standard>
+        <reference name="before_body_end">
+            <block type="blueacorn_ajaxcart/js" name="ajaxcart" template="blueacorn/ajaxcart.phtml"/>
+        </reference>
+    </blueacorn_ajaxcart_standard>
+    <catalog_product_view>
+        <update handle="blueacorn_ajaxcart_standard" />
+        <update handle="blueacorn_ajaxcart_product" />
     </catalog_product_view>
+    <catalogsearch_result_index>
+        <update handle="blueacorn_ajaxcart_standard" />
+        <update handle="blueacorn_ajaxcart_category" />
+    </catalogsearch_result_index>
+    <catalogsearch_advanced_result>
+        <update handle="blueacorn_ajaxcart_standard" />
+        <update handle="blueacorn_ajaxcart_category" />
+    </catalogsearch_advanced_result>
+    <catalog_category_default>
+        <update handle="blueacorn_ajaxcart_standard" />
+        <update handle="blueacorn_ajaxcart_category" />
+    </catalog_category_default>
+    <catalog_category_layered>
+        <update handle="blueacorn_ajaxcart_standard" />
+        <update handle="blueacorn_ajaxcart_category" />
+    </catalog_category_layered>
 </layout>
