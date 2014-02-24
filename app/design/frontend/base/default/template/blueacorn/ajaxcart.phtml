@@ -46,7 +46,7 @@
             doRequest : function(){
                 var parent = this;
                 this.form.request({
-                    parameters : {'qty' : (parent.form.qty ? parent.form.qty : $F('qty'))},
+                    parameters : {'qty' : (parent.form.qty ? parent.form.qty.getValue() : $F('qty'))},
                     onSuccess : function(response){
                         parent.doSuccess(response.responseText.evalJSON(true));
                         document.fire('minicart:updated', {response : response.responseText.evalJSON(true)});
