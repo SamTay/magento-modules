@@ -38,10 +38,14 @@
                     var form = this.buildForm(addUrl);
 
                     btn.observe('click', function(){
-                        try {
-                            ajaxCart = new AjaxCart(form);
-                        } catch (e) {
-                            console.log(e);
+                        if(addUrl.indexOf('options=cart') > 0 || addUrl.indexOf('checkout/cart/add') < 0){
+                            window.location.href = addUrl
+                        } else {
+                            try {
+                                ajaxCart = new AjaxCart(form);
+                            } catch (e) {
+                                console.log(e);
+                            }
                         }
 
                     });

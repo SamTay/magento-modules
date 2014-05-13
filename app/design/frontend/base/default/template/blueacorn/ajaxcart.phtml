@@ -46,13 +46,16 @@
             doRequest : function(){
                 var parent = this;
                 this.form.request({
-                    parameters : {'qty' : (parent.form.qty ? parent.form.qty.getValue() : $F('qty'))},
+                    parameters : {'qty' : (parent.form.qty ? parent.form.qty.getValue() : ($('qty') ? $F('qty') : false))},
                     onSuccess : function(response){
                         parent.doSuccess(response.responseText.evalJSON(true));
                         document.fire('minicart:updated', {response : response.responseText.evalJSON(true)});
                     },
                     onFailure : function(response){
                         responseObj = response.responseText.evalJSON(true);
+                        if(responseObj.redirect){
+                            window.location = responseObj.redirect;
+                        }
                     }
                 });
             },

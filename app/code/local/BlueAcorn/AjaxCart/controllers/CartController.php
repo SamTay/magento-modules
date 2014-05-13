@@ -76,11 +76,16 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
             } catch (Mage_Core_Exception $e) {
                 if ($this->_getSession()->getUseNotice(true)) {
                     $this->addError(Mage::helper('core')->escapeHtml($e->getMessage()));
+                    $this->_getSession()->addNotice(Mage::helper('core')->escapeHtml($e->getMessage()));
                 } else {
                     $messages = array_unique(explode("\n", $e->getMessage()));
                     foreach ($messages as $message) {
                         $this->addError($this->_getSession()->addError(Mage::helper('core')->escapeHtml($message)));
                     }
+                }
+                $url = $this->_getSession()->getRedirectUrl(true);
+                if($url){
+                    $this->addMessage('redirect', $url);
                 }
             } catch (Exception $e) {
                 $this->addError($this->__('Cannot add the item to shopping cart.'));
