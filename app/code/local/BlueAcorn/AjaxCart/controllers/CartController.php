@@ -136,7 +136,14 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
     }
 
     protected function getCartHtml(){
-        $html = Mage::app()->getLayout()->createBlock('checkout/cart_sidebar')->setTemplate('checkout/cart/cartheader.phtml')->toHtml();
+        $html = Mage::app()->getLayout()
+                    ->createBlock('checkout/cart_sidebar')
+                    ->setTemplate('checkout/cart/cartheader.phtml')
+                    ->addItemRender('simple', 'checkout/cart_item_renderer', 'checkout/cart/sidebar/default.phtml')
+                    ->addItemRender('grouped', 'checkout/cart_item_renderer_grouped', 'checkout/cart/sidebar/default.phtml')
+                    ->addItemRender('configurable', 'checkout/cart_item_renderer_configurable', 'checkout/cart/sidebar/default.phtml')
+                    ->toHtml();
+        
         $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
         return $html;
     }
