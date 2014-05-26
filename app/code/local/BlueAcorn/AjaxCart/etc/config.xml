@@ -1,11 +1,16 @@
-<?xml version="1.0"?>
 <config>
     <modules>
         <BlueAcorn_AjaxCart>
-            <version>0.1.0</version>
+            <version>0.1</version>
         </BlueAcorn_AjaxCart>
     </modules>
+
     <global>
+        <models>
+            <blueacorn_ajaxcart>
+                <class>BlueAcorn_AjaxCart_Model</class>
+            </blueacorn_ajaxcart>
+        </models>
         <blocks>
             <blueacorn_ajaxcart>
                 <class>BlueAcorn_AjaxCart_Block</class>
@@ -17,6 +22,7 @@
             </blueacorn_ajaxcart>
         </helpers>
     </global>
+
     <frontend>
         <layout>
             <updates>
@@ -29,17 +35,43 @@
             <checkout>
                 <args>
                     <modules>
-                        <blueacorn_ajaxcart before="Mage_Checkout">BlueAcorn_AjaxCart</blueacorn_ajaxcart>
+                        <BlueAcorn_AjaxCart before="Mage_Checkout">BlueAcorn_AjaxCart</BlueAcorn_AjaxCart>
                     </modules>
                 </args>
             </checkout>
         </routers>
     </frontend>
+
+    <adminhtml>
+        <acl>
+            <resources>
+                <all>
+                    <title>Allow Everything</title>
+                </all>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <blueacorn_ajaxcart>
+                                            <title>AJAX Cart</title>
+                                        </blueacorn_ajaxcart>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+
     <default>
-        <checkout>
-            <cart>
-                <redirect_to_cart>0</redirect_to_cart>
-            </cart>
-        </checkout>
+        <blueacorn_ajaxcart>
+            <general>
+                <enabled>1</enabled>
+            </general>
+        </blueacorn_ajaxcart>
     </default>
 </config>
