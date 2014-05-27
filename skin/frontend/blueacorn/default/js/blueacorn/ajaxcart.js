@@ -105,6 +105,21 @@ $j(document).ready(function() {
 
             e.preventDefault();
         });
+
+        // Rebind tooltip events
+        $j('.truncated').each(function(){
+            $j(this).bind('mouseover', function(){
+                if ($j(this).children('div.truncated_full_value')) {
+                    $j(this).children('div.truncated_full_value').addClass('show')
+                }
+            });
+            $j(this).bind('mouseout', function(){
+                if ($j(this).children('div.truncated_full_value')) {
+                    $j(this).children('div.truncated_full_value').removeClass('show')
+                }
+            });
+
+        });
     });
 });
 
