@@ -1,9 +1,15 @@
 <?php
 require_once "Mage/Checkout/controllers/CartController.php";
 class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
+    /**
+     * Hold messages to be returned as JSON object
+     * @var array
+     */
     protected $_messages = array();
 
     /**
+     * Extend core addAction to ajaxify the process
+     *
      * Add product to shopping cart action
      *
      * @return Mage_Core_Controller_Varien_Action
@@ -92,9 +98,19 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
         $response->setBody(Zend_Json::encode($this->_messages));
     }
 
+    /**
+     * Add message to JSON response
+     * @param $msgType
+     * @param $msg
+     */
     protected function addMessage($msgType, $msg) {
         $this->_messages[$msgType] = $msg;
     }
+
+    /**
+     * Generate minicart block HTML to update frontend
+     * @return mixed|string
+     */
     protected function getMinicartHtml() {
         $this->loadLayout();
         $html = $this->getLayout()->getBlock('minicart_head')->toHtml();
