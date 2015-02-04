@@ -1,6 +1,8 @@
 <?php
 require_once "Mage/Checkout/controllers/CartController.php";
-class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
+
+class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
+{
     /**
      * Hold messages to be returned as JSON object
      * @var array
@@ -17,13 +19,15 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
      */
     public function addAction()
     {
-        if (!Mage::getStoreConfig('blueacorn_ajaxcart/general/enabled')) parent::addAction();
-        
+        if (!Mage::getStoreConfig('blueacorn_ajaxcart/general/enabled')) {
+            parent::addAction();
+        }
+
         if (!$this->_validateFormKey()) {
             $this->_goBack();
             return;
         }
-        $cart   = $this->_getCart();
+        $cart = $this->_getCart();
         $params = $this->getRequest()->getParams();
         try {
             if (isset($params['qty'])) {
@@ -65,7 +69,7 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
             if (!$this->_getSession()->getNoCartRedirect(true)) {
                 if (!$cart->getQuote()->getHasError()) {
                     $message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->escapeHtml($product->getName()));
-                    $this->addMessage('success',$message);
+                    $this->addMessage('success', $message);
                 }
             }
         } catch (Mage_Core_Exception $e) {
@@ -75,7 +79,7 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
             } else {
                 $messages = array_unique(explode("\n", $e->getMessage()));
                 foreach ($messages as $message) {
-                    $this->addMessage('error',Mage::helper('core')->escapeHtml($message));
+                    $this->addMessage('error', Mage::helper('core')->escapeHtml($message));
                 }
             }
 
@@ -91,7 +95,7 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
         }
 
         $response = $this->getResponse()->setHeader('Content-Type', 'text/javascript');
-        if(array_key_exists('error', $this->_messages)){
+        if (array_key_exists('error', $this->_messages)) {
             $response->setHttpResponseCode(500);
         }
 
@@ -103,7 +107,8 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
      * @param $msgType
      * @param $msg
      */
-    protected function addMessage($msgType, $msg) {
+    protected function addMessage($msgType, $msg)
+    {
         $this->_messages[$msgType] = $msg;
     }
 
@@ -111,7 +116,8 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
      * Generate minicart block HTML to update frontend
      * @return mixed|string
      */
-    protected function getMinicartHtml() {
+    protected function getMinicartHtml()
+    {
         $this->loadLayout();
         $html = $this->getLayout()->getBlock('minicart_head')->toHtml();
         $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
@@ -122,7 +128,8 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
      * Add message of type error to JSON response
      * @param bool $url
      */
-    protected function addError($url = false) {
+    protected function addError($url = false)
+    {
         $url = ($url) ?: true;
         $this->addMessage('error', $url);
     }
