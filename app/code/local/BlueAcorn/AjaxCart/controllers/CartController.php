@@ -24,7 +24,8 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
         }
 
         if (!$this->_validateFormKey()) {
-            $this->_goBack();
+            $this->addError('Invalid form key. Try reloading the page.');
+            $this->sendJsonResponse();
             return;
         }
         $cart = $this->_getCart();
@@ -93,7 +94,11 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
             $this->addMessage('error', $this->__('Cannot add the item to shopping cart.'));
             Mage::logException($e);
         }
+        $this->sendJsonResponse();
+    }
 
+    protected function sendJsonResponse()
+    {
         $response = $this->getResponse()->setHeader('Content-Type', 'text/javascript');
         if (array_key_exists('error', $this->_messages)) {
             $response->setHttpResponseCode(500);
