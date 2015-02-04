@@ -5,7 +5,6 @@
             <codePool>local</codePool>
             <depends>
                 <Mage_Checkout />
-                <Enterprise_Wishlist />
             </depends>
         </BlueAcorn_AjaxCart>
     </modules>

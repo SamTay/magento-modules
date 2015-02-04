@@ -39,13 +39,6 @@
                     </modules>
                 </args>
             </checkout>
-            <wishlist>
-                <args>
-                    <modules>
-                        <BlueAcorn_AjaxCart before="Enterprise_Wishlist">BlueAcorn_AjaxCart_Wishlist</BlueAcorn_AjaxCart>
-                    </modules>
-                </args>
-            </wishlist>
         </routers>
     </frontend>
 
