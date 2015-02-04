@@ -42,10 +42,11 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
             $related = $this->getRequest()->getParam('related_product');
 
             /**
-             * Check product availability
+             * Check product availability (i.e., can be loaded for current store)
              */
             if (!$product) {
-                $this->_goBack();
+                $this->addError('Sorry, this product is not available.');
+                $this->sendJsonResponse();
                 return;
             }
 
@@ -55,12 +56,8 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
             }
 
             $cart->save();
-
             $this->_getSession()->setCartWasUpdated(true);
 
-            /**
-             * @todo remove wishlist observer processAddToCart
-             */
             Mage::dispatchEvent('checkout_cart_add_product_complete',
                 array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
             );
@@ -75,12 +72,12 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
             }
         } catch (Mage_Core_Exception $e) {
             if ($this->_getSession()->getUseNotice(true)) {
-                $this->addMessage('error', Mage::helper('core')->escapeHtml($e->getMessage()));
+                $this->addError(Mage::helper('core')->escapeHtml($e->getMessage()));
                 $this->_getSession()->addNotice(Mage::helper('core')->escapeHtml($e->getMessage()));
             } else {
                 $messages = array_unique(explode("\n", $e->getMessage()));
                 foreach ($messages as $message) {
-                    $this->addMessage('error', Mage::helper('core')->escapeHtml($message));
+                    $this->addError(Mage::helper('core')->escapeHtml($message));
                 }
             }
 
@@ -91,16 +88,20 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
                 $this->_redirectReferer(Mage::helper('checkout/cart')->getCartUrl());
             }
         } catch (Exception $e) {
-            $this->addMessage('error', $this->__('Cannot add the item to shopping cart.'));
+            $this->addError($this->__('Cannot add the item to shopping cart.'));
             Mage::logException($e);
         }
         $this->sendJsonResponse();
     }
 
+    /**
+     * Set response body to json encoded messages
+     * @throws Zend_Controller_Response_Exception
+     */
     protected function sendJsonResponse()
     {
         $response = $this->getResponse()->setHeader('Content-Type', 'application/json');
-        if (array_key_exists('error', $this->_messages)) {
+        if ($this->hasError()) {
             $response->setHttpResponseCode(500);
         }
 
