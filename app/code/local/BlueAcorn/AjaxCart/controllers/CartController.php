@@ -126,11 +126,15 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
 
     /**
      * Add message of type error to JSON response
-     * @param bool $url
+     * Add message to session for the next page load
+     *
+     * @param bool|string $url
+     * @param $msg
      */
-    protected function addError($url = false)
+    protected function addError($msg, $url = false)
     {
         $url = ($url) ?: true;
+        $this->_getSession()->addError($msg);
         $this->addMessage('error', $url);
     }
 
