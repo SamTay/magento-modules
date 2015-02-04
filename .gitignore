@@ -1,3 +1,4 @@
+.gitignore
 LICENSE.html
 LICENSE.txt
 LICENSE_AFL.txt
@@ -115,3 +116,6 @@ skin/install/
 test.php
 var/
 .htaccess
+.idea/
+app/design/frontend/blueacorn/default/etc/
+
