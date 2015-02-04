@@ -66,7 +66,9 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
             );
 
             $this->addMessage('minicart_html', $this->getMinicartHtml());
-            $this->addMessage('success', true);
+            $this->addMessage('success',
+                $this->__('%s was added to your shopping cart.', Mage::helper('core')->escapeHtml($product->getName()))
+            );
 
         } catch (Mage_Core_Exception $e) {
             // Add Mage Exception messages as session notices or session errors
