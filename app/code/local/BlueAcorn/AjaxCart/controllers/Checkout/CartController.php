@@ -1,5 +1,17 @@
 <?php
+/**
+ * @package     BlueAcorn\AjaxCart
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
 require_once Mage::getModuleDir('controllers', 'Mage_Checkout') . DS . 'CartController.php';
+
+/**
+ * Class BlueAcorn_AjaxCart_Checkout_CartController
+ *
+ * Extends Mage_CartController to ajaxify the addAction
+ */
 class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartController
 {
     /**

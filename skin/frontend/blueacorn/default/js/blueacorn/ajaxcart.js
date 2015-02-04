@@ -1,3 +1,9 @@
+/**
+ * @package     BlueAcorn\AjaxCart
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
 $j(document).ready(function() {
     if (!$j('body').attr('class').match(/.+catalog-product-view.+/)) {
         $j('.btn-cart').each(function() {

@@ -1,3 +1,12 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package     BlueAcorn\AjaxCart
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
+ -->
 <config>
     <tabs>
         <blueacorn translate="label" module="blueacorn_ajaxcart">
