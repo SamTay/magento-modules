@@ -101,4 +101,25 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController {
         $html = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $html);
         return $html;
     }
+
+    /**
+     * Add message of type error to JSON response
+     * @param bool $url
+     */
+    protected function addError($url = false) {
+        $url = ($url) ?: true;
+        $this->addMessage('error', $url);
+    }
+
+    /**
+     * Check if error exists already
+     * @return bool
+     */
+    protected function hasError()
+    {
+        if (array_key_exists('error', $this->_messages)) {
+            return true;
+        }
+        return false;
+    }
 }
