@@ -99,7 +99,7 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
 
     protected function sendJsonResponse()
     {
-        $response = $this->getResponse()->setHeader('Content-Type', 'text/javascript');
+        $response = $this->getResponse()->setHeader('Content-Type', 'application/json');
         if (array_key_exists('error', $this->_messages)) {
             $response->setHttpResponseCode(500);
         }
