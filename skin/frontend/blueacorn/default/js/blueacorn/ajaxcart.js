@@ -162,9 +162,16 @@ Ajaxcart.prototype = {
 
             // Reinit Minicart
             this.Mini.init();
-        }).error(function(e) {
-            console.log('AJAX Cart Error');
+        }).error(function(jqXHR, textStatus, errorThrown) {
+            console.log('AJAX Cart Error: ' + errorThrown);
+            if (jqXHR.responseJSON.redirect_url) {
+                // Use replace so that checkout/cart/add is not in browser history
+                location.replace(jqXHR.responseJSON.redirect_url);
+            } else {
+                location.reload();
+            }
         });
+
     },
 
     // Shows minicart with loading overlay
