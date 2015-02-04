@@ -1,7 +1,7 @@
 <?php
 require_once "Mage/Checkout/controllers/CartController.php";
 
-class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
+class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartController
 {
     /**
      * Hold messages to be returned as JSON object

@@ -35,7 +35,7 @@
             <checkout>
                 <args>
                     <modules>
-                        <BlueAcorn_AjaxCart before="Mage_Checkout">BlueAcorn_AjaxCart</BlueAcorn_AjaxCart>
+                        <BlueAcorn_AjaxCart before="Mage_Checkout">BlueAcorn_AjaxCart_Checkout</BlueAcorn_AjaxCart>
                     </modules>
                 </args>
             </checkout>
