@@ -3,6 +3,10 @@
         <BlueAcorn_AjaxCart>
             <active>true</active>
             <codePool>local</codePool>
+            <depends>
+                <Mage_Checkout />
+                <Mage_Wishlist />
+            </depends>
         </BlueAcorn_AjaxCart>
     </modules>
 </config>
