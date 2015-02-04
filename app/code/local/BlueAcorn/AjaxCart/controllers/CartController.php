@@ -19,12 +19,14 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
      */
     public function addAction()
     {
+        // If the ajax cart is not enabled, default to parent addAction (non ajax)
         if (!Mage::getStoreConfig('blueacorn_ajaxcart/general/enabled')) {
             parent::addAction();
         }
 
+        // If form key is invalid, tell the customer to try again (because we are reloading the page for them).
         if (!$this->_validateFormKey()) {
-            $this->addError('Invalid form key. Try reloading the page.');
+            $this->addError('Your session expired. Please try again.');
             $this->sendJsonResponse();
             return;
         }
@@ -43,6 +45,7 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
 
             /**
              * Check product availability (i.e., can be loaded for current store)
+             * If unavailable, reload page with session error
              */
             if (!$product) {
                 $this->addError('Sorry, this product is not available.');
@@ -63,17 +66,12 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
             );
 
             $this->addMessage('minicart_html', $this->getMinicartHtml());
+            $this->addMessage('success', true);
 
-            if (!$this->_getSession()->getNoCartRedirect(true)) {
-                if (!$cart->getQuote()->getHasError()) {
-                    $message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->escapeHtml($product->getName()));
-                    $this->addMessage('success', $message);
-                }
-            }
         } catch (Mage_Core_Exception $e) {
+            // Add Mage Exception messages as session notices or session errors
             if ($this->_getSession()->getUseNotice(true)) {
-                $this->addError(Mage::helper('core')->escapeHtml($e->getMessage()));
-                $this->_getSession()->addNotice(Mage::helper('core')->escapeHtml($e->getMessage()));
+                $this->addError(Mage::helper('core')->escapeHtml($e->getMessage()), 'Notice');
             } else {
                 $messages = array_unique(explode("\n", $e->getMessage()));
                 foreach ($messages as $message) {
@@ -81,16 +79,20 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
                 }
             }
 
+            // If session has redirect_url, use this on the frontend. Otherwise redirect to cart.
             $url = $this->_getSession()->getRedirectUrl(true);
             if ($url) {
-                $this->getResponse()->setRedirect($url);
+                $this->addMessage('redirect_url', $url);
             } else {
-                $this->_redirectReferer(Mage::helper('checkout/cart')->getCartUrl());
+                $this->addMessage('redirect_url', Mage::helper('checkout/cart')->getCartUrl());
             }
         } catch (Exception $e) {
-            $this->addError($this->__('Cannot add the item to shopping cart.'));
+            // For hardcore exceptions, log and add exception to session.
+            // By default, this will cause a page reload (not explicitly setting redirect_url)
+            $this->addError($this->__('Cannot add the item to shopping cart.'), 'Exception');
             Mage::logException($e);
         }
+
         $this->sendJsonResponse();
     }
 
@@ -137,11 +139,11 @@ class BlueAcorn_AjaxCart_CartController extends Mage_Checkout_CartController
      * @param bool|string $url
      * @param $msg
      */
-    protected function addError($msg, $url = false)
+    protected function addError($msg, $type = 'Error')
     {
-        $url = ($url) ?: true;
-        $this->_getSession()->addError($msg);
-        $this->addMessage('error', $url);
+        $addMethod = 'add' . $type;
+        $this->_getSession()->$addMethod($msg);
+        $this->addMessage('error', true);
     }
 
     /**
