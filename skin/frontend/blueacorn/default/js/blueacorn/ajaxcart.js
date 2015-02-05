@@ -154,8 +154,15 @@ Ajaxcart.prototype = {
             context: this,
             data: data
         }).done(function(result) {
-            // Replace Minicart HTML
-            $j('.header-minicart').html(result.minicart_html);
+            // Replace HTML for all result properties with keys ending in '_html'
+            for (var key in result) {
+                if (result.hasOwnProperty(key) && key.indexOf('_html') > -1) {
+                    var identifier = key.replace('_html', '');
+                    if ($j(identifier).length) {
+                        $j(identifier).html(result[key]);
+                    }
+                }
+            }
 
             // Persist minicart visibility
             this.showMinicart(false);

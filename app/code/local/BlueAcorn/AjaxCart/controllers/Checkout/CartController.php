@@ -26,6 +26,7 @@ class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartContr
      * Add product to shopping cart action
      *
      * @return Mage_Core_Controller_Varien_Action
+     * @dispatches ba_ajax_addtocart_send_response_before
      * @throws Exception
      */
     public function addAction()
@@ -76,7 +77,7 @@ class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartContr
                 array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
             );
 
-            $this->addMessage('minicart_html', $this->getMinicartHtml());
+            $this->addMessage('.header-minicart_html', $this->getMinicartHtml());
             $this->addMessage('success',
                 $this->__('%s was added to your shopping cart.', Mage::helper('core')->escapeHtml($product->getName()))
             );
@@ -106,6 +107,15 @@ class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartContr
             Mage::logException($e);
         }
 
+        /**
+         * Dispatch event for further customization; for example to update free shipping notifier block
+         * just observe this event and addMessage('#free-shipping-container_html', $block->toHtml()).
+         * This will call $j('#free-shipping-container').html($block->toHtml()) on the front end.
+         *
+         * Note that from $this you can get product, quantity, cart, etc. using parent methods.
+         */
+        Mage::dispatchEvent('ba_ajax_addtocart_send_response_before', array('controller' => $this));
+
         $this->sendJsonResponse();
     }
 
@@ -128,7 +138,7 @@ class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartContr
      * @param $msgType
      * @param $msg
      */
-    protected function addMessage($msgType, $msg)
+    public function addMessage($msgType, $msg)
     {
         $this->_messages[$msgType] = $msg;
     }
@@ -152,7 +162,7 @@ class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartContr
      * @param bool|string $url
      * @param $msg
      */
-    protected function addError($msg, $type = 'Error')
+    public function addError($msg, $type = 'Error')
     {
         $addMethod = 'add' . $type;
         $this->_getSession()->$addMethod($msg);
@@ -163,7 +173,7 @@ class BlueAcorn_AjaxCart_Checkout_CartController extends Mage_Checkout_CartContr
      * Check if error exists already
      * @return bool
      */
-    protected function hasError()
+    public function hasError()
     {
         if (array_key_exists('error', $this->_messages)) {
             return true;
