@@ -1,3 +1,9 @@
+/**
+ * @package     BlueAcorn\AjaxCart
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
 $j(document).ready(function() {
     if (!$j('body').attr('class').match(/.+catalog-product-view.+/)) {
         $j('.btn-cart').each(function() {
@@ -148,8 +154,15 @@ Ajaxcart.prototype = {
             context: this,
             data: data
         }).done(function(result) {
-            // Replace Minicart HTML
-            $j('.header-minicart').html(result.minicart_html);
+            // Replace HTML for all result properties with keys ending in '_html'
+            for (var key in result) {
+                if (result.hasOwnProperty(key) && key.indexOf('_html') > -1) {
+                    var identifier = key.replace('_html', '');
+                    if ($j(identifier).length) {
+                        $j(identifier).html(result[key]);
+                    }
+                }
+            }
 
             // Persist minicart visibility
             this.showMinicart(false);
@@ -162,9 +175,16 @@ Ajaxcart.prototype = {
 
             // Reinit Minicart
             this.Mini.init();
-        }).error(function(e) {
-            console.log('AJAX Cart Error');
+        }).error(function(jqXHR, textStatus, errorThrown) {
+            console.log('AJAX Cart Error: ' + errorThrown);
+            if (jqXHR.responseJSON.redirect_url) {
+                // Use replace so that checkout/cart/add is not in browser history
+                location.replace(jqXHR.responseJSON.redirect_url);
+            } else {
+                location.reload();
+            }
         });
+
     },
 
     // Shows minicart with loading overlay

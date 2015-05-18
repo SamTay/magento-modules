@@ -1,7 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package     BlueAcorn\AjaxCart
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
+ -->
 <config>
     <modules>
         <BlueAcorn_AjaxCart>
-            <version>0.1</version>
+            <version>0.2.1</version>
         </BlueAcorn_AjaxCart>
     </modules>
 
@@ -35,7 +44,7 @@
             <checkout>
                 <args>
                     <modules>
-                        <BlueAcorn_AjaxCart before="Mage_Checkout">BlueAcorn_AjaxCart</BlueAcorn_AjaxCart>
+                        <BlueAcorn_AjaxCart before="Mage_Checkout">BlueAcorn_AjaxCart_Checkout</BlueAcorn_AjaxCart>
                     </modules>
                 </args>
             </checkout>

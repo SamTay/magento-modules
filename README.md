@@ -5,6 +5,9 @@ This module adds ajax functionality to the product and category pages so that ad
 
 Assumptions
 ----------
+- (UPDATED) Further customization will be needed on sites that have links with referer actions
+on product/category pages. It will be necessary to extend controllers so that customers are not redirected to the
+add to cart action (see Fabricgeek.com for an example).
 - (UPDATED) This module can only be used for EE 1.14 Sites and has been tested with all product types
 - (UPDATED) Deleting products is done via ajax in mini cart natively for EE 1.14+
 - Customizations will need to be made for custom themes
@@ -16,7 +19,7 @@ Assumptions
 
 Version
 ----
-0.2.0
+0.2.1
 
 Changelog
 ----
@@ -27,7 +30,7 @@ Sample Sites
 - Scoutbags.com (< EE 1.14)
 - Vietri.com (EE 1.14.0.1)
 
-Author
+Authors
 ----
 (< EE 1.14) Thomas Slade <thomas@blueacorn.com>
-(EE 1.14+) Jim Simon <jim@blueacorn.com>
+(EE 1.14+) Jim Simon <jim@blueacorn.com>, Sam Tay <sam.tay@blueacorn.com>
