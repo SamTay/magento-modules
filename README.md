@@ -1,6 +1,3 @@
-Requirements
-------------
-
 # API Support
 - USPS for address validation
 - Gmaps for visualization
