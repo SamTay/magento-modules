@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <BlueAcorn_AddressValidation>
+            <version>0.1.0</version>
+        </BlueAcorn_AddressValidation>
+    </modules>
+    <global>
+        <models>
+            <blueacorn_addressvalidation>
+                <class>BlueAcorn_AddressValidation_Model</class>
+                <resourceModel>blueacorn_addressvalidation_resource</resourceModel>
+            </blueacorn_addressvalidation>
+            <blueacorn_addressvalidation_resource>
+                <class>BlueAcorn_AddressValidation_Model_Resource</class>
+            </blueacorn_addressvalidation_resource>
+        </models>
+        <blocks>
+            <blueacorn_addressvalidation>
+                <class>BlueAcorn_AddressValidation_Block</class>
+            </blueacorn_addressvalidation>
+        </blocks>
+        <helpers>
+            <blueacorn_addressvalidation>
+                <class>BlueAcorn_AddressValidation_Helper</class>
+            </blueacorn_addressvalidation>
+        </helpers>
+    </global>
+</config>
