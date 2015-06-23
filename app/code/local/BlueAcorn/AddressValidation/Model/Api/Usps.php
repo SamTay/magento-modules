@@ -46,7 +46,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
      *
      * @param Varien_Object $address
      * @return BlueAcorn_AddressValidation_Model_Result
-     * @throws Exception
+     * @throws Mage_Api_Exception
      */
     public function validateAddress(Varien_Object $address)
     {
@@ -60,6 +60,11 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         return $this->getResult();
     }
 
+    /**
+     * Set address to validate
+     *
+     * @param Varien_Object $address
+     */
     public function setAddress(Varien_Object $address)
     {
         $this->_address = $address;
@@ -75,6 +80,12 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         return $this->_result;
     }
 
+    /**
+     * Makes the API call to validate $this->_address
+     *
+     * @throws Mage_Api_Exception
+     * @throws Zend_Http_Client_Exception
+     */
     protected function _getUspsValidation()
     {
         $requestXml = $this->_parseAddressDataToXml();
