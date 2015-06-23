@@ -8,5 +8,8 @@
 
 interface BlueAcorn_AddressValidation_Model_ApiInterface
 {
+    const RESPONSE_ERROR = 'RESPONSE_ERROR';
+    const REQUEST_ERROR = 'REQUEST_ERROR';
+
     public function validateAddress(Varien_Object $address);
 }
