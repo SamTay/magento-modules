@@ -6,7 +6,7 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
-class BlueAcorn_AddressValidation_Model_Usps implements BlueAcorn_AddressValidation_Model_ValidationInterface
+class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressValidation_Model_ApiInterface
 {
 
 

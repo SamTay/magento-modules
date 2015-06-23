@@ -6,7 +6,7 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
-interface BlueAcorn_AddressValidation_Model_ValidationInterface
+class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
 {
-    public function validateAddress(Varien_Object $address);
+
 }
