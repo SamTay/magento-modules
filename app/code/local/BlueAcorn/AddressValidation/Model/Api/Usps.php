@@ -148,6 +148,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
 
     /**
      * @param string $response
+     * @return BlueAcorn_AddressValidation_Model_Result
      * @throws Mage_Api_Exception
      */
     protected function _parseXmlResponse($response)
@@ -155,17 +156,57 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         if (is_string($response) && strpos(ltrim($response), '<?xml') === 0) {
             $xml = simplexml_load_string($response);
             if (is_object($xml)) {
-                if (is_object($xml->Error)) {
+                $validatedAddresses = array();
+                $returnText = null;
+                if (is_object($xml->AddressValidateResponse)) {
+                    $validatedAddresses = array();
+                    foreach($xml->AddressValidateResponse->Address as $address) {
+                        $validatedAddress = array();
+                        $validatedAddress['city'] = (string)$address->City;
+                        $validatedAddress['state'] = (string)$address->State;
+                        $validatedAddress['postcode'] = (string)$address->Zip5;
+                        $validatedAddress['zip4'] = (string)$address->Zip4;
+                        $validatedAddress['street'] = array(
+                            (string)$address->Address2,
+                            (string)$address->Address1
+                        );
+                        $validatedAddresses[] = $validatedAddress;
+                    }
+                    if (is_object($xml->ReturnText)) {
+                        $returnText = (string)$xml->ReturnText;
+                    }
+                } elseif (is_object($xml->Error)) {
+                    //TODO: Only throw exceptions for unrecoverable errors. If USPS can't verify, there is likely
+                    // a typo and we need to return something appropriate to the customer.
                     throw new Mage_Api_Exception(self::RESPONSE_ERROR,
                         'Number: ' . (string)$xml->Error->Number . PHP_EOL
                         . 'Description: ' . (string)$xml->Description
                     );
                 }
-
-                //TODO: Parse the expected XML and return valid result object
+                return $this->_convertToResult($validatedAddresses, $returnText);
             }
         }
-        //TODO: Throw exception that response was not generated
+        throw new Mage_Api_Exception(self::RESPONSE_ERROR,
+            'XML response object not received. This could be due to an uncaught error in request.'
+        );
+    }
+
+    /**
+     * Converts address arrays and return text to the proper Result object
+     *
+     * @param array $validatedAddresses
+     * @param null $returnText
+     * @return BlueAcorn_AddressValidation_Model_Result
+     */
+    protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
+    {
+        $result = Mage::getModel('blueacorn_addressvalidation/result');
+        foreach($validatedAddresses as $address) {
+            $result->addValidatedAddress($address);
+        }
+        $result->addMessage($returnText);
+
+        return $result;
     }
 
     /**
