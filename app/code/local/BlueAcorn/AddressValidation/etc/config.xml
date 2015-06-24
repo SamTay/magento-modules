@@ -26,4 +26,16 @@
             </blueacorn_addressvalidation>
         </helpers>
     </global>
+    <default>
+        <blueacorn_addressvalidation>
+            <general>
+                <enabled>0</enabled>
+            </general>
+            <checkout>
+                <presentation>1</presentation>
+                <city_state>0</city_state>
+                <allowance>0</allowance>
+            </checkout>
+        </blueacorn_addressvalidation>
+    </default>
 </config>

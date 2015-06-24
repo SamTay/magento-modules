@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<config>
+    <tabs>
+        <blueacorn translate="label" module="blueacorn_addressvalidation">
+            <label>Blue Acorn</label>
+            <sort_order>0</sort_order>
+        </blueacorn>
+    </tabs>
+    <sections>
+        <blueacorn_addressvalidation translate="label" module="blueacorn_addressvalidation">
+            <label>Address Validation</label>
+            <tab>blueacorn</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>50</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <general translate="label">
+                    <label>General Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enable Module</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                    </fields>
+                </general>
+                <checkout translate="label">
+                    <label>Checkout</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>5</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <presentation translate="label">
+                            <label>Presentation Format</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>blueacorn_addressvalidation/system_config_source_presentation</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </presentation>
+                        <city_state translate="label">
+                            <label>Remove City/State Fields</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </city_state>
+                        <allowance translate="label">
+                            <label>Allow checkout with addresses that are</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>blueacorn_addressvalidation/system_config_source_allowance</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>
+                                <![CDATA[<strong style="color:red">Warning!</strong> The stricter options that require validation against APIs
+                                will prevent a customer from checking out with an unverified shipping address.]]>
+                            </comment>
+                        </allowance>
+                    </fields>
+                </checkout>
+            </groups>
+        </blueacorn_addressvalidation>
+    </sections>
+</config>
