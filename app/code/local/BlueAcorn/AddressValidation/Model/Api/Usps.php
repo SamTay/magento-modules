@@ -202,7 +202,14 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
     {
         $result = Mage::getModel('blueacorn_addressvalidation/result');
         foreach($validatedAddresses as $address) {
-            $result->addValidatedAddress($address);
+            if (isset($address['state'])) {
+                $address['region_id'] = Mage::getModel('directory/region')->getCollection()
+                    ->addFieldToSelect(array('code', 'region_id'))
+                    ->addFieldToFilter('main_table.code', $address['state'])
+                    ->getFirstItem()
+                    ->getRegionId();
+            }
+            $result->addAddress($address);
         }
         $result->addMessage($returnText);
 
