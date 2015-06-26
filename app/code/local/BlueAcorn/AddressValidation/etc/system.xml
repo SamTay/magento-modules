@@ -64,19 +64,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </city_state>
-                        <allowance translate="label">
-                            <label>Allow checkout with addresses that are</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>blueacorn_addressvalidation/system_config_source_allowance</source_model>
-                            <sort_order>50</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <comment>
-                                <![CDATA[<strong style="color:red">Warning!</strong> The stricter options that require validation against APIs
-                                will prevent a customer from checking out with an unverified shipping address.]]>
-                            </comment>
-                        </allowance>
                     </fields>
                 </checkout>
             </groups>
