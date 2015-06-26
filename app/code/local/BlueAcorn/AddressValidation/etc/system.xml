@@ -6,6 +6,7 @@
             <sort_order>0</sort_order>
         </blueacorn>
     </tabs>
+    <!-- TODO: comment that user id is necessary in the carriers usps section -->
     <sections>
         <blueacorn_addressvalidation translate="label" module="blueacorn_addressvalidation">
             <label>Address Validation</label>

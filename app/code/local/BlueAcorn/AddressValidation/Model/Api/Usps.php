@@ -41,9 +41,6 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
      * Accepts object with address data, sets request in XML format and calls
      * the API to retrieve validation and suggested addresses.
      *
-     * TODO: See if it makes sense for multishipping to allow multiple address validations at once,
-     * because this is possible with the API and obviously more efficient.
-     *
      * @param Varien_Object $address
      * @return BlueAcorn_AddressValidation_Model_Result
      * @throws Mage_Api_Exception
