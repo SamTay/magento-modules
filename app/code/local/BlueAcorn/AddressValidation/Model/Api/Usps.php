@@ -161,9 +161,9 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
                         . 'Source: ' . (string)$xml->Source . PHP_EOL
                         . 'Description: ' . (string)$xml->Description
                     );
-                } else if (is_object($xml->getName() == 'AddressValidateResponse')) {
+                } else if ($xml->getName() == 'AddressValidateResponse') {
                     $validatedAddresses = array();
-                    $returnText = null;
+                    $returnText = array();
                     foreach ($xml->Address as $address) {
                         $validatedAddress = array();
                         $validatedAddress['city'] = (string)$address->City;
@@ -177,8 +177,11 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
                         $validatedAddresses[] = $validatedAddress;
                     }
                     //TODO: Test the return text feature
-                    if (is_object($xml->ReturnText)) {
-                        $returnText = (string)$xml->ReturnText;
+                    if (!empty($xml->ReturnText)) {
+                        $returnText[] = (string)$xml->ReturnText;
+                    }
+                    if (!empty($address->Error)) {
+                        $returnText[] = (string)$address->Error->Description;
                     }
                     return $this->_convertToResult($validatedAddresses, $returnText);
                 }
