@@ -124,6 +124,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
 
         // Address nodes (all required nodes, some optional values)
         $addressNode = $xml->addChild('Address');
+        $addressNode->addChild('FirmName');
         $addressNode->addChild('Address1', $this->_address['street'][1]);
         $addressNode->addChild('Address2', $this->_address['street'][0]);
         $addressNode->addChild('City', $this->_address['city']);
@@ -139,6 +140,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         }
         $addressNode->addChild('State', $state);
         $addressNode->addChild('Zip5', $this->_address['postcode']);
+        $addressNode->addChild('Zip4');
 
         return $xml->asXML();
     }
