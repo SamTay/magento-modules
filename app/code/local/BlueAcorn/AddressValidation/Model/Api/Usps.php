@@ -118,7 +118,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
                 'User ID must be specified in system configuration carriers/usps/userid'
             );
         }
-        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><AddressValidationRequest/>');
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><AddressValidateRequest/>');
         $xml->addAttribute('USERID', $userId);
 
         // Optional nodes
