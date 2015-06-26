@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package     BlueAcorn\AddressValidation
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
+ -->
+<layout>
+    <checkout_addressvalidation>
+        <reference name="head">
+            <action method="addItem" ifconfig="blueacorn_addressvalidation/general/enabled">
+                <type>skin_js</type>
+                <script>js/addressvalidation.js</script>
+            </action>
+        </reference>
+    </checkout_addressvalidation>
+    <checkout_multishipping>
+        <update handle="checkout_addressvalidation"/>
+    </checkout_multishipping>
+    <checkout_onepage_index>
+        <update handle="checkout_addressvalidation"/>
+    </checkout_onepage_index>
+</layout>

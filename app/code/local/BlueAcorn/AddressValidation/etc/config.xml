@@ -26,6 +26,31 @@
             </blueacorn_addressvalidation>
         </helpers>
     </global>
+    <frontend>
+        <layout>
+            <updates>
+                <blueacorn_addressvalidation>
+                    <file>blueacorn/addressvalidation.xml</file>
+                </blueacorn_addressvalidation>
+            </updates>
+        </layout>
+        <routers>
+            <blueacorn_addressvalidation>
+                <use>standard</use>
+                <args>
+                    <module>BlueAcorn_AddressValidation</module>
+                    <frontName>ba_validation</frontName>
+                </args>
+            </blueacorn_addressvalidation>
+            <checkout>
+                <args>
+                    <modules>
+                        <BlueAcorn_AddressValidation before="Mage_Checkout">BlueAcorn_AddressValidation_Checkout</BlueAcorn_AddressValidation>
+                    </modules>
+                </args>
+            </checkout>
+        </routers>
+    </frontend>
     <default>
         <blueacorn_addressvalidation>
             <general>
