@@ -156,11 +156,16 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         if (is_string($response) && strpos(ltrim($response), '<?xml') === 0) {
             $xml = simplexml_load_string($response);
             if (is_object($xml)) {
-                $validatedAddresses = array();
-                $returnText = null;
-                if (is_object($xml->AddressValidateResponse)) {
+                if ($xml->getName() == 'Error') {
+                    throw new Mage_Api_Exception(self::RESPONSE_ERROR,
+                        'Number: ' . (string)$xml->Number . PHP_EOL
+                        . 'Source: ' . (string)$xml->Source . PHP_EOL
+                        . 'Description: ' . (string)$xml->Description
+                    );
+                } else if (is_object($xml->getName() == 'AddressValidateResponse')) {
                     $validatedAddresses = array();
-                    foreach($xml->AddressValidateResponse->Address as $address) {
+                    $returnText = null;
+                    foreach ($xml->Address as $address) {
                         $validatedAddress = array();
                         $validatedAddress['city'] = (string)$address->City;
                         $validatedAddress['state'] = (string)$address->State;
@@ -172,18 +177,12 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
                         );
                         $validatedAddresses[] = $validatedAddress;
                     }
+                    //TODO: Test the return text feature
                     if (is_object($xml->ReturnText)) {
                         $returnText = (string)$xml->ReturnText;
                     }
-                } elseif (is_object($xml->Error)) {
-                    //TODO: Only throw exceptions for unrecoverable errors. If USPS can't verify, there is likely
-                    // a typo and we need to return something appropriate to the customer.
-                    throw new Mage_Api_Exception(self::RESPONSE_ERROR,
-                        'Number: ' . (string)$xml->Error->Number . PHP_EOL
-                        . 'Description: ' . (string)$xml->Description
-                    );
+                    return $this->_convertToResult($validatedAddresses, $returnText);
                 }
-                return $this->_convertToResult($validatedAddresses, $returnText);
             }
         }
         throw new Mage_Api_Exception(self::RESPONSE_ERROR,
@@ -211,7 +210,9 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
             }
             $result->addAddress($address);
         }
-        $result->addMessage($returnText);
+        if (!is_null($returnText)) {
+            $result->addMessage($returnText);
+        }
 
         return $result;
     }
