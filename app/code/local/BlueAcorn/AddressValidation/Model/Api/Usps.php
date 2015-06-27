@@ -11,7 +11,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
 
     /**
      * Address data from form submission
-     * @var Varien_Object
+     * @var array
      */
     protected $_address;
 
@@ -38,14 +38,14 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
     }
 
     /**
-     * Accepts object with address data, sets request in XML format and calls
+     * Accepts array with address data, sets request in XML format and calls
      * the API to retrieve validation and suggested addresses.
      *
-     * @param Varien_Object $address
+     * @param array $address
      * @return BlueAcorn_AddressValidation_Model_Result
      * @throws Mage_Api_Exception
      */
-    public function validateAddress(Varien_Object $address)
+    public function validateAddress(array $address)
     {
         if (!$this->_validateAddressFields($address)) {
             throw new Mage_Api_Exception(self::REQUEST_ERROR,
@@ -60,9 +60,9 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
     /**
      * Set address to validate
      *
-     * @param Varien_Object $address
+     * @param array $address
      */
-    public function setAddress(Varien_Object $address)
+    public function setAddress(array $address)
     {
         $this->_address = $address;
     }
@@ -222,10 +222,10 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
     /**
      * Checks if $address has the required tags for the API request
      *
-     * @param Varien_Object $address
+     * @param array $address
      * @return bool
      */
-    protected function _validateAddressFields(Varien_Object $address)
+    protected function _validateAddressFields(array $address)
     {
         $cityAndState = (!empty($address['city']) && !empty($address['region_id']));
         $zip = !empty($address['postcode']);
