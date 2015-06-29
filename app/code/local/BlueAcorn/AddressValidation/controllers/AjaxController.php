@@ -37,8 +37,11 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             try {
                 $apiResult = Mage::getModel($shortname)->validateAddress($address);
             } catch (Mage_Api_Exception $e) {
-                // Log and handle exception
-
+                Mage::helper('blueacorn_addressvalidation')->log(
+                    $e->getCustomMessage(),
+                    $e->getCode(),
+                    $api
+                );
                 if ($e->getCode() == BlueAcorn_AddressValidation_Model_ApiInterface::RESPONSE_ERROR) {
                     // TODO: This text needs to be configurable!
                     $this->_errors[] = ucfirst($api) . ' was unable to verify this address.';

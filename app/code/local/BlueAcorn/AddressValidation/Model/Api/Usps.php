@@ -21,6 +21,12 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
     protected $_result;
 
     /**
+     * Hold instance of module helper
+     * @var
+     */
+    protected $_helper;
+
+    /**
      * Default cgi gateway URL
      * @var string
      */
@@ -32,9 +38,16 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
      */
     protected $_api = 'Verify';
 
+    /**
+     * Debug mode on/off
+     * @var bool
+     */
+    protected $_debug = false;
 
     public function __construct()
     {
+        $this->_helper = Mage::helper('blueacorn_addressvalidation');
+        $this->_debug = $this->_helper->isDebugMode();
     }
 
     /**
@@ -85,6 +98,9 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
      */
     protected function _getUspsValidation()
     {
+        if ($this->_debug) {
+            $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Usps');
+        }
         $requestXml = $this->_parseAddressDataToXml();
         $url = Mage::getStoreConfig('carriers/usps/gateway_url') ?: $this->_defaultGatewayUrl;
         $client = new Zend_Http_Client();
@@ -182,6 +198,13 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
                     }
                     if (!empty($address->Error)) {
                         $returnText[] = (string)$address->Error->Description;
+                    }
+
+                    if ($this->_debug) {
+                        $info = 'Parsed XML response arrays: ' . PHP_EOL
+                            . 'Validated addresses: ' . print_r($validatedAddresses, true) . PHP_EOL
+                            . 'Return text: ' . print_r($returnText, true);
+                        $this->_helper->log($info, null, 'Usps');
                     }
                     return $this->_convertToResult($validatedAddresses, $returnText);
                 }

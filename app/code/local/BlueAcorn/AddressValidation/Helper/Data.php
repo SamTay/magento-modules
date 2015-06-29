@@ -60,4 +60,14 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
         }
         Mage::log($message, null, self::LOG, true);
     }
+
+    /**
+     * Check if in debug mode
+     *
+     * @return array|mixed
+     */
+    public function isDebugMode()
+    {
+        return $this->getConfig('debug');
+    }
 }
