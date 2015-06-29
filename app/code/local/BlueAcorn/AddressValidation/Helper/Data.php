@@ -7,6 +7,15 @@
  */ 
 class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    const CONFIG_PATH = 'blueacorn_addressvalidation';
+    const LOG = 'address_validation.log';
+
+    /**
+     * Default system config group
+     * @var string
+     */
+    protected $_defaultGroup = 'general';
+
     /**
      * My signature getConfig helper method
      *
@@ -32,5 +41,23 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
         if (!$field && $group && array_key_exists($group, $this->_config)) {
             return $this->_config[$group];
         }
+    }
+
+    /**
+     * Logging method for exceptions or debug mode
+     *
+     * @param $message
+     * @param null $code
+     * @param null $api
+     */
+    public function log($message, $code = null, $api = null)
+    {
+        if ($code) {
+            $message = "$code: $message";
+        }
+        if ($api) {
+            $message = strtoupper($api) . ": $message";
+        }
+        Mage::log($message, null, self::LOG, true);
     }
 }

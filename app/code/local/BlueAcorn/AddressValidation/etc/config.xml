@@ -55,6 +55,7 @@
         <blueacorn_addressvalidation>
             <general>
                 <enabled>0</enabled>
+                <debug>0</debug>
             </general>
             <checkout>
                 <presentation>1</presentation>

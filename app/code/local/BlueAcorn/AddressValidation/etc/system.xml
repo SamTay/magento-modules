@@ -35,6 +35,17 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </enabled>
+                        <debug translate="label">
+                            <label>Debug Mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[This mode will cause verbose logging and for performance reasons should
+                            remain off in a production environment.]]></comment>
+                        </debug>
                     </fields>
                 </general>
                 <checkout translate="label">
