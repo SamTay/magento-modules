@@ -79,6 +79,26 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
         return $this;
     }
 
+    /**
+     * Check if there are any messages
+     *
+     * @return bool
+     */
+    public function hasMessage()
+    {
+        return !empty($this->_messages);
+    }
+
+    /**
+     * Check if there are any addresses
+     *
+     * @return bool
+     */
+    public function hasAddress()
+    {
+        return !empty($this->_addresses);
+    }
+
 
     /**
      * Merges this Result with another Result argument. This object
