@@ -118,7 +118,12 @@ pkginfo/
 privatesales/
 shell/
 skin/adminhtml/
-skin/frontend/base/
+skin/frontend/base/*
+!skin/frontend/base/default/
+skin/frontend/base/default/*
+!skin/frontend/base/default/js/
+skin/frontend/base/default/js/*
+!skin/frontend/base/default/js/addressvalidation.js
 skin/frontend/enterprise/
 skin/frontend/rwd/
 skin/install/
