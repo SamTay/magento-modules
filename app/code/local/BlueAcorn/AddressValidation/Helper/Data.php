@@ -70,4 +70,13 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return $this->getConfig('debug');
     }
+
+    /**
+     * Return array of enabled APIs (these are the VALUES, i.e., constants of the source model class), but
+     * converted to lower case for convenience.
+     */
+    public function getEnabledApis()
+    {
+        return explode(',', strtolower($this->getConfig('enabled_apis')));
+    }
 }
