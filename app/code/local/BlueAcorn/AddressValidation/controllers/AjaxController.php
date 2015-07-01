@@ -46,6 +46,18 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
                     // TODO: This text needs to be configurable!
                     $this->_errors[] = ucfirst($api) . ' was unable to verify this address.';
                 }
+            } catch (Exception $e) {
+                Mage::helper('blueacorn_addressvalidation')->log(
+                    $e->getMessage(),
+                    null,
+                    $api
+                );
+                /**
+                 * If this is not an API exception, this is not simply an issue with verifying an address,
+                 * but rather an internal error/bug, hence the error will not help the customer.
+                 * Instead, continue checkout by default.
+                 */
+                $this->_errors['abort'] = true;
             }
 
             if ($apiResult) {
@@ -69,6 +81,9 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         if ($result->hasAddress() || $result->hasMessage()) {
             $response['addresses'] = $result->getAddresses();
             $response['messages'] = $result->getMessages();
+        } elseif ($this->_getAbort()) {
+            $this->getResponse()->setHttpResponseCode(500);
+            return;
         }
         if ($this->_hasError()) {
             $response['errors'] = $this->_errors;
@@ -117,6 +132,16 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected function _hasError()
     {
         return !empty($this->_errors);
+    }
+
+    /**
+     * Check if we should abort this request (try to not interfere with checkout in case of error)
+     *
+     * @return bool
+     */
+    protected function _getAbort()
+    {
+        return array_key_exists('abort', $this->_errors) && $this->_errors['abort'];
     }
 
 
