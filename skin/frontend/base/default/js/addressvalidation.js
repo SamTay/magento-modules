@@ -15,7 +15,7 @@ var AddressValidator = Class.create({
 
     getValidatedAddress: function(success, failure) {
         new Ajax.Request(this.url, {
-            parameters: this.parentForm,
+            parameters: Form.serialize(this.parentForm),
             onSuccess: success,
             onFailure: failure
         });

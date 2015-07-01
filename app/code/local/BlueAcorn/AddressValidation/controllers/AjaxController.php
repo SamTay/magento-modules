@@ -33,7 +33,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         $result = Mage::getModel('blueacorn_addressvalidation/result');
         foreach(Mage::helper('blueacorn_addressvalidation')->getEnabledApis() as $api) {
             $apiResult = null;
-            $shortname = 'blueacorn_addressvalidation/api/' . $api;
+            $shortname = 'blueacorn_addressvalidation/api_' . $api;
             try {
                 $apiResult = Mage::getModel($shortname)->validateAddress($address);
             } catch (Mage_Api_Exception $e) {
@@ -56,6 +56,12 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         $this->_sendResponse($result);
     }
 
+    /**
+     * Send response to browser, but dispatch event first for further customization of response
+     *
+     * @param BlueAcorn_AddressValidation_Model_Result $result
+     * @throws Zend_Controller_Response_Exception
+     */
     protected function _sendResponse(BlueAcorn_AddressValidation_Model_Result $result)
     {
         $response = array();
@@ -81,13 +87,15 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
 
     /**
      * Return a well formulated address array from the request
+     *
      * @return array
      */
     protected function _initAddress()
     {
         $address = array();
+        $request = $this->getRequest()->getParam('shipping');
         foreach($this->_addressFields as $field) {
-            $address[$field] = $this->getRequest()->getParam($field);
+            $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
         if (is_null($address['street'])) {
             $address['street'] = array();
