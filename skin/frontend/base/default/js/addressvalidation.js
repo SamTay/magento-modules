@@ -82,21 +82,25 @@ var OPAddressValidator = Class.create(AddressValidator, {
 
 });
 
-Shipping.prototype.save = Shipping.prototype.save.wrap(function($super) {
-    // Only validate US addresses
-    if (!($F('shipping:country_id') == 'US')) {
-        return $super();
-    }
+Event.observe(window, 'load', function () {
+    if (typeof Shipping !== "undefined") {
+        Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
+            // Only validate US addresses
+            if (!($F('shipping:country_id') == 'US')) {
+                return $super();
+            }
 
-    var formValidator = new Validation(this.form);
-    if (!formValidator.validate()) {
-        return;
-    }
+            var formValidator = new Validation(this.form);
+            if (!formValidator.validate()) {
+                return;
+            }
 
-    if (!this.addressValidator) {
-        this.addressValidator = new OPAddressValidator(this);
-    }
+            if (!this.addressValidator) {
+                this.addressValidator = new OPAddressValidator(this);
+            }
 
-    this.addressValidator.validate($super.bind(this));
+            this.addressValidator.validate($super.bind(this));
+        });
+    }
 });
 
