@@ -1,3 +1,19 @@
+# Development Progress
+- Backend
+  - Add a ``verified`` attribute to shipping addresses so that if a customer picks a saved address that has already been validated, they automatically skip validation and proceed to shipping method step.
+  - Create a block to render the form for selecting an address (same for modal or checkout step) and include the html in the ajax response.
+  - Cherry-pick the previous ``allowance`` system configuration field and source model, but adapt it to be a setting for strictness level in terms of when to display errors/warnings to the customer about unverified addresses, instead of the original, bad idea of restricting checkout.
+- Frontend
+	- Wrap the ``Billing.save`` method to check for ``'use_for_shipping'`` flag. Most likely, the easiest way to handle this is to uncheck this flag here and
+		- If it was flagged: save billing normally, and manually match the shipping fields and submit the shipping address form, triggering the address validation
+		- If it was not flagged: return parent billing save with normal execution.
+	- Finish building base ``AddressValidation`` class with modal methods
+	- Conditionally modify checkout depending on the ``presentation`` config value
+		- This will likely mean declaring dependency on *MageJsConfig* and using modman
+	- Extend ``AddressValidation`` to ``MSAddressValidation`` (for multishipping)
+	- Unobtrusively display the Zipcode 5 + 4 without modifying shipping form
+	
+
 # API Support
 - USPS for address validation
 - Gmaps for visualization
