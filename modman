@@ -1,0 +1,4 @@
+app/code/local/BlueAcorn/AddressValidation/			app/code/local/BlueAcorn/AddressValidation/
+app/design/frontend/base/default/layout/blueacorn/		app/design/frontend/base/default/layout/blueacorn/
+app/etc/modules/BlueAcorn_AddressValidation.xml			app/etc/modules/BlueAcorn_AddressValidation.xml
+skin/frontend/base/default/js/blueacorn/addressvalidation/	skin/frontend/base/default/js/blueacorn/addressvalidation/
