@@ -5,7 +5,7 @@ var AddressValidator = Class.create({
         this.parentForm = form;
         this.url = '/ba_validation/ajax'
         this.form = 'validated-address-form'
-        this.fields = ['street', 'postcode', 'city', 'region_id'];
+        this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
     },
 
     validate: function(callback) {

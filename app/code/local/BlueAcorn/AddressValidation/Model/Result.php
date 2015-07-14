@@ -50,10 +50,7 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
      */
     public function addAddress(array $address = array())
     {
-        if (array_key_exists('postcode', $address) && array_key_exists('street', $address)
-            && is_array($address['street'])
-            && array_key_exists(0, $address['street'])
-            && array_key_exists(1, $address['street'])
+        if (array_key_exists('postcode', $address) && array_key_exists('street1', $address)
         ) {
             $this->_addresses[] = $address;
             return $this;
@@ -115,8 +112,8 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
         $keysToIgnore = array();
         foreach($this->getAddresses() as $thisAddress) {
             foreach($otherAddresses as $key => $otherAddress) {
-                if (strtoupper($otherAddress['street'][0]) == strtoupper($thisAddress['street'][0])
-                    && strtoupper($otherAddress['street'][1]) == strtoupper($thisAddress['street'][1])
+                if (strtoupper($otherAddress['street1']) == strtoupper($thisAddress['street1'])
+                    && strtoupper($otherAddress['street2']) == strtoupper($thisAddress['street2'])
                     && strtoupper($otherAddress['postcode']) == strtoupper($thisAddress['postcode'])
                 ) {
                     $keysToIgnore[] = $key;

@@ -117,7 +117,9 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         }
         for ($i=0; $i<2; $i++) {
             if (!isset($address['street'][$i])) {
-                $address['street'][$i] = null;
+                $address['street' . ($i + 1)] = null;
+            } else {
+                $address['street' . ($i + 1)] = $address['street'][$i];
             }
         }
 
