@@ -50,6 +50,16 @@
                 </args>
             </checkout>
         </routers>
+        <events>
+            <ba_addressvalidation_send_response_before>
+                <observers>
+                    <ba_addressvalidation_form>
+                        <class>blueacorn_addressvalidation/observer</class>
+                        <method>addFormHtml</method>
+                    </ba_addressvalidation_form>
+                </observers>
+            </ba_addressvalidation_send_response_before>
+        </events>
     </frontend>
     <default>
         <blueacorn_addressvalidation>

@@ -76,7 +76,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
      */
     protected function _sendResponse(BlueAcorn_AddressValidation_Model_Result $result)
     {
-        $response = array();
+        $response = new Varien_Object();
 
         if ($result->hasAddress() || $result->hasMessage()) {
             $response['addresses'] = $result->getAddresses();

@@ -10,7 +10,7 @@ var AddressValidator = Class.create({
 
     validate: function(callback) {
         this.callback = callback;
-        this.getValidatedAddress(this.showAjaxResult, this.callback);
+        this.getValidatedAddress(this.showAjaxResult.bind(this), this.callback.bind(this));
     },
 
     getValidatedAddress: function(success, failure) {
@@ -54,15 +54,15 @@ var OPAddressValidator = Class.create(AddressValidator, {
             element.observe('click', function(event) {
                 Event.stop(event);
                 $(this.form).remove();
-                Effect.slideDown(this.parentForm);
+                new Effect.SlideDown(this.parentForm);
             }.bind(this));
         }.bind(this));
 
         // Handle submitting validated address
         $(this.form).observe('submit', function(event) {
             Event.stop(event);
-            var addressId = $F('validated_address');
-            this.unpackToParentForm(response.responseJSON.address[addressId]);
+            var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
+            this.unpackToParentForm(response.responseJSON.addresses[addressId]);
             this.callback();
         }.bind(this));
     },
@@ -71,12 +71,12 @@ var OPAddressValidator = Class.create(AddressValidator, {
         $(this.parentForm).insert({
             after: content
         });
-        Effect.slideUp(this.parentForm);
+        new Effect.SlideUp(this.parentForm);
     },
 
     unpackToParentForm: function(addressJSON) {
         this.fields.each(function(field, index) {
-            Form.Element.setValue('shipping:' + field, addressJSON[field])
+            Form.Element.setValue('shipping:' + field, addressJSON[field]);
         });
     }
 
