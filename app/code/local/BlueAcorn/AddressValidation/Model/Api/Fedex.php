@@ -156,7 +156,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         );
     }
 
-    private function _getSoapUrl()
+    protected function _getSoapUrl()
     {
         $isSandboxMode = Mage::getStoreConfigFlag(self::FEDEX_SANDBOX_MODE, Mage::app()->getStore());
         $soapUrl = $isSandboxMode ? self::FEDEX_SANDBOX_URL : self::FEDEX_LIVE_URL;
@@ -168,7 +168,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         return $soapUrl;
     }
 
-    private function _getWsdlUrl()
+    protected function _getWsdlUrl()
     {
         $wsdlBasePath = Mage::getModuleDir('etc', 'BlueAcorn_AddressValidation')  . DS . 'wsdl' . DS . 'FedEx' . DS;
         $wsdlUrl = $wsdlBasePath . 'AddressValidationService_v3.wsdl';
