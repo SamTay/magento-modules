@@ -131,6 +131,11 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
             }
         }
 
+        $otherMessages = $otherResult->getMessages();
+        foreach($otherMessages as $message) {
+            $this->addMessage($message);
+        }
+
         return $this;
     }
 }
