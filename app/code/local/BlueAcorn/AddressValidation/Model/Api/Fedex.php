@@ -238,14 +238,14 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
 
         $request['WebAuthenticationDetail'] = array(
             'UserCredential' => array(
-                'Key' => Mage::getStoreConfig('carriers/fedex/key'),
-                'Password' => Mage::getStoreConfig('carriers/fedex/password'),
+                'Key' => $fedexCreds['Key'],
+                'Password' => $fedexCreds['Password'],
             )
         );
 
         $request['ClientDetail'] = array(
-            'AccountNumber' => Mage::getStoreConfig('carriers/fedex/account'),
-            'MeterNumber' => Mage::getStoreConfig('carriers/fedex/meter_number'),
+            'AccountNumber' => $fedexCreds['AccountNumber'],
+            'MeterNumber' => $fedexCreds['MeterNumber'],
         );
 
         $request['TransactionDetail'] = array('CustomerTransactionId' => ' *** Address Validation Request using PHP ***');
