@@ -156,6 +156,11 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         );
     }
 
+    /**
+     * Get SOAP URL endpoint
+     *
+     * @return string
+     */
     protected function _getSoapUrl()
     {
         $isSandboxMode = Mage::getStoreConfigFlag(self::FEDEX_SANDBOX_MODE, Mage::app()->getStore());
@@ -168,6 +173,11 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         return $soapUrl;
     }
 
+    /**
+     * Build WSDL URL from local file
+     *
+     * @return string
+     */
     protected function _getWsdlUrl()
     {
         $wsdlBasePath = Mage::getModuleDir('etc', 'BlueAcorn_AddressValidation')  . DS . 'wsdl' . DS . 'FedEx' . DS;
@@ -180,6 +190,12 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         return $wsdlUrl;
     }
 
+    /**
+     * Creates validation request to send to FedEx API
+     *
+     * @param array $address
+     * @return array
+     */
     protected function _createValidationRequest(array $address)
     {
         $fedexCreds = array(
@@ -254,6 +270,13 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         return $request;
     }
 
+    /**
+     * Converts address arrays and return text to the proper Result object
+     *
+     * @param array $validatedAddresses
+     * @param null $returnText
+     * @return BlueAcorn_AddressValidation_Model_Result
+     */
     protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
     {
         $result = Mage::getModel('blueacorn_addressvalidation/result');
@@ -274,6 +297,12 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         return $result;
     }
 
+    /**
+     * Convert SOAP response object into validated address object
+     *
+     * @param stdClass $response
+     * @return BlueAcorn_AddressValidation_Model_Result
+     */
     protected function _parseSoapResponse($response)
     {
         $data = $response->AddressResults->EffectiveAddress;
