@@ -30,7 +30,28 @@ var AddressValidator = Class.create({
     },
 
     showForm: function(response) {
-        //TODO: Make default AddressValidator.showForm the modal pop up
+        var self = this;
+        var modal = Dialog.confirm(response.responseJSON.form, {
+            title: "Verify Your Address",
+            okLabel: "Update Address",
+            cancelLabel: "Back",
+            className: "validated-addresses-modal",
+            buttonClass: "button btn",
+            width: 350,
+            ok: function() {
+                var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
+                self.unpackToParentForm(response.responseJSON.addresses[addressId]);
+                self.callback();
+                return true;
+            }
+        });
+    },
+
+    unpackToParentForm: function(addressJSON, fieldPrefix) {
+        fieldPrefix = fieldPrefix ? fieldPrefix : "";
+        this.fields.each(function(field, index) {
+            Form.Element.setValue(fieldPrefix + field, addressJSON[field]);
+        });
     },
 
     showError: function(response) {

@@ -5,7 +5,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
     },
 
     showForm: function($super, response) {
-        if (response.responseJSON.modal) {
+        if (response.responseJSON.is_modal) {
             return $super(response);
         }
         this.slideStepContent(response.responseJSON.form);

@@ -14,10 +14,19 @@ class BlueAcorn_AddressValidation_Model_Observer
             return;
         }
 
-        $html = Mage::app()->getLayout()->createBlock('core/template')->setData('addresses', $response->getAddresses())
+        // Determine whether this is a modal or checkout step
+        $presentation = Mage::helper('blueacorn_addressvalidation')->getConfig('presentation', 'checkout');
+        $isModal = ($presentation == BlueAcorn_AddressValidation_Model_System_Config_Source_Presentation::MODAL);
+        $response->setIsModal($isModal);
+
+        // Add form HTML
+        $html = Mage::app()->getLayout()->createBlock('core/template')
+            ->setData('addresses', $response->getAddresses())
+            ->setData('is_modal', $isModal)
             ->setTemplate('blueacorn/addressvalidation/form.phtml')
             ->toHtml();
 
         $response->setForm($html);
+
     }
 }
