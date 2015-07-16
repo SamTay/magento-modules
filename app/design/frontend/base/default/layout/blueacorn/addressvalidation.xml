@@ -21,5 +21,11 @@
     </checkout_multishipping>
     <checkout_onepage_index>
         <update handle="checkout_addressvalidation"/>
+        <reference name="head">
+            <action method="addItem" ifconfig="blueacorn_addressvalidation/general/enabled">
+                <type>skin_js</type>
+                <script>js/blueacorn/addressvalidation/opcheckout.js</script>
+            </action>
+        </reference>
     </checkout_onepage_index>
 </layout>
