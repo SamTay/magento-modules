@@ -93,7 +93,12 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
      */
     public function hasAddress()
     {
-        return !empty($this->_addresses);
+        foreach ($this->_addresses as $_address) {
+            if (!empty($_address['street1']) && !empty($_address['postcode'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
