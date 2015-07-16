@@ -42,12 +42,6 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
     protected $_addressValidationWsdl;
 
     /**
-     * Api parameter value; i.e., ?API=Verify
-     * @var string
-     */
-    protected $_api = 'Verify';
-
-    /**
      * Debug mode on/off
      * @var bool
      */
@@ -127,7 +121,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
 
             if ($response->HighestSeverity == 'ERROR' &&
                 $response->Notifications->Code == 1000) {
-                throw new Exception('Authentication Failure with FedEx API');
+                throw new Mage_Api_Exception(self::REQUEST_ERROR, 'Authentication Failure with FedEx API');
             }
 
         } catch (Exception $e) {
@@ -211,10 +205,6 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
             'AccountNumber' => Mage::getStoreConfig('carriers/fedex/account'),
             'MeterNumber' => Mage::getStoreConfig('carriers/fedex/meter_number'),
         );
-
-        if ($this->_debug) {
-            $this->_helper->log("Credentials: \n" . print_r($fedexCreds, true), null, 'FedEx');
-        }
 
         $request = array();
 
