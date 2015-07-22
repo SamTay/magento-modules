@@ -17,6 +17,12 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     protected $_defaultGroup = 'general';
 
     /**
+     * Holds system config values
+     * @var array
+     */
+    protected $_config = array();
+
+    /**
      * My signature getConfig helper method
      *
      * @param bool $field

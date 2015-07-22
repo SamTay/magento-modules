@@ -30,77 +30,31 @@ var AddressValidator = Class.create({
     },
 
     showForm: function(response) {
-        //TODO: Make default AddressValidator.showForm the modal pop up
+        var self = this;
+        var modal = Dialog.confirm(response.responseJSON.form, {
+            title: "Verify Your Address",
+            okLabel: "Update Address",
+            cancelLabel: "Back",
+            className: "validated-addresses-modal",
+            buttonClass: "button btn",
+            width: 350,
+            ok: function() {
+                var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
+                self.unpackToParentForm(response.responseJSON.addresses[addressId]);
+                self.callback();
+                return true;
+            }
+        });
+    },
+
+    unpackToParentForm: function(addressJSON, fieldPrefix) {
+        fieldPrefix = fieldPrefix ? fieldPrefix : "";
+        this.fields.each(function(field, index) {
+            Form.Element.setValue(fieldPrefix + field, addressJSON[field]);
+        });
     },
 
     showError: function(response) {
         // Default modal
     }
 });
-
-//TODO: Put the rest of this file in its own file, only to be included in checkout_onepage handle
-var OPAddressValidator = Class.create(AddressValidator, {
-    initialize: function($super, parent) {
-        this.parent = parent;
-        $super(parent.form);
-    },
-
-    showForm: function($super, response) {
-        //TODO: Only override if set in system config; otherwise just call $super
-        this.slideStepContent(response.responseJSON.form);
-
-        // Handle go back action
-        $(this.form).select('.go-back').each(function(element, index) {
-            element.observe('click', function(event) {
-                Event.stop(event);
-                $(this.form).remove();
-                new Effect.SlideDown(this.parentForm);
-            }.bind(this));
-        }.bind(this));
-
-        // Handle submitting validated address
-        $(this.form).observe('submit', function(event) {
-            Event.stop(event);
-            var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
-            this.unpackToParentForm(response.responseJSON.addresses[addressId]);
-            this.callback();
-        }.bind(this));
-    },
-
-    slideStepContent: function(content) {
-        $(this.parentForm).insert({
-            after: content
-        });
-        new Effect.SlideUp(this.parentForm);
-    },
-
-    unpackToParentForm: function(addressJSON) {
-        this.fields.each(function(field, index) {
-            Form.Element.setValue('shipping:' + field, addressJSON[field]);
-        });
-    }
-
-});
-
-Event.observe(window, 'load', function () {
-    if (typeof Shipping !== "undefined") {
-        Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
-            // Only validate US addresses
-            if (!($F('shipping:country_id') == 'US')) {
-                return $super();
-            }
-
-            var formValidator = new Validation(this.form);
-            if (!formValidator.validate()) {
-                return;
-            }
-
-            if (!this.addressValidator) {
-                this.addressValidator = new OPAddressValidator(this);
-            }
-
-            this.addressValidator.validate($super.bind(this));
-        });
-    }
-});
-
