@@ -50,8 +50,7 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
      */
     public function addAddress(array $address = array())
     {
-        if (array_key_exists('postcode', $address) && array_key_exists('street1', $address)
-        ) {
+        if (!empty($address['postcode']) && !empty($address['street1'])) {
             $this->_addresses[] = $address;
             return $this;
         }
@@ -93,7 +92,12 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
      */
     public function hasAddress()
     {
-        return !empty($this->_addresses);
+        foreach ($this->_addresses as $_address) {
+            if (!empty($_address['street1']) && !empty($_address['postcode'])) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
