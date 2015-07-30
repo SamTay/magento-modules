@@ -70,6 +70,7 @@
             <checkout>
                 <presentation>1</presentation>
                 <city_state>0</city_state>
+                <display_errors>0</display_errors>
             </checkout>
         </blueacorn_addressvalidation>
     </default>
