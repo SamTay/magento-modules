@@ -1,12 +1,13 @@
 <form id="validated-address-form" method="post" action="#">
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
-        <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio" />
-        <label for="address_<?php echo $index ?>">
-            <?php echo $address['street1'] ?>
-            <?php echo $address['street2'] ?>
-            <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
-        </label>
+            <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio" />
+            <label for="address_<?php echo $index ?>">
+                <?php echo $address['street1'] ?>
+                <?php echo $address['street2'] ?>
+                <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
+            </label>
+            <br>
         <?php endforeach ?>
         <?php if ($originalAddress = $this->getOriginalAddress()): ?>
             <emph>Original Address: </emph><br>
