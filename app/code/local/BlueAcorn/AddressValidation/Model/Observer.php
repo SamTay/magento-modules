@@ -28,6 +28,7 @@ class BlueAcorn_AddressValidation_Model_Observer
         // Add form HTML
         $html = Mage::app()->getLayout()->createBlock('core/template')
             ->setData('addresses', $response->getAddresses())
+            ->setData('original_address', $observer->getController()->getRequestAddress())
             ->setData('is_modal', $isModal)
             ->setTemplate('blueacorn/addressvalidation/form.phtml')
             ->toHtml();

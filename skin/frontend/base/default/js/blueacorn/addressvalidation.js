@@ -40,7 +40,9 @@ var AddressValidator = Class.create({
         });
         $$('#validated-address-form button.btn-submit').first().observe('click', function(ev) {
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
-            self.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            if (addressId != 'original') {
+                self.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            }
             self.callback();
             modal.close();
         });

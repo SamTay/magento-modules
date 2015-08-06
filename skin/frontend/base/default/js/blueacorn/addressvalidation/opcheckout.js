@@ -23,7 +23,9 @@ var OPAddressValidator = Class.create(AddressValidator, {
         $(this.form).observe('submit', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
-            this.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            if (addressId != 'original') {
+                this.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            }
             this.callback();
         }.bind(this));
     },

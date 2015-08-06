@@ -15,6 +15,12 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected $_abort = false;
 
     /**
+     * Holds original address request (with street1 and street2 keys converted)
+     * @var array
+     */
+    protected $_requestAddress = array();
+
+    /**
      * The fields that make up the request address
      * @var array
      */
@@ -118,7 +124,18 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             }
         }
 
-        return $address;
+        $this->_requestAddress = $address;
+        return $this->_requestAddress;
+    }
+
+    /**
+     * Get requested address (must be called after _initAddress)
+     *
+     * @return array
+     */
+    public function getRequestAddress()
+    {
+        return $this->_requestAddress;
     }
 
     /**
