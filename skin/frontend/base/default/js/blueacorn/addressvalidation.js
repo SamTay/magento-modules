@@ -24,8 +24,10 @@ var AddressValidator = Class.create({
     showAjaxResult: function(response) {
         if (response.responseJSON.form) {
             this.showForm(response);
-        } else if (response.responseJSON.errors) {
+        } else if (response.responseJSON.error) {
             this.showError(response);
+        } else {
+            this.callback();
         }
     },
 
@@ -55,6 +57,17 @@ var AddressValidator = Class.create({
     },
 
     showError: function(response) {
-        // Default modal
+        var self = this;
+        var modal = Dialog.info(response.responseJSON.error, {
+            className: "error-modal",
+            width: 350,
+        });
+        $$('.error-container button.btn-continue').first().observe('click', function(ev) {
+            self.callback();
+            modal.close();
+        });
+        $$('.error-container button.btn-cancel').first().observe('click', function(ev) {
+            modal.close();
+        });
     }
 });
