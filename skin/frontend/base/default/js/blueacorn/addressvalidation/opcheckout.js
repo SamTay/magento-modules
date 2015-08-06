@@ -27,6 +27,35 @@ var OPAddressValidator = Class.create(AddressValidator, {
                 this.unpackToParentForm(response.responseJSON.addresses[addressId]);
             }
             this.callback();
+            setTimeout(function() {
+                $(this.form).remove();
+                $(this.parentForm).show();
+            }.bind(this), 2000);
+        }.bind(this));
+    },
+
+    showError: function($super, response) {
+        if (response.responseJSON.is_modal) {
+            return $super(response);
+        }
+        this.slideStepContent(response.responseJSON.error);
+
+        //Handle go back action
+        $$('.go-back').each(function(element) {
+           element.observe('click', function(ev) {
+               Event.stop(event);
+               $$('div.error-container').first().remove();
+               new Effect.SlideDown(this.parentForm);
+           }.bind(this));
+        }.bind(this));
+
+        //Handle continue action
+        $$('.error-container button.btn-continue').first().observe('click', function(ev) {
+            this.callback();
+            setTimeout(function() {
+                $$('div.error-container').first().remove();
+                $(this.parentForm).show();
+            }.bind(this), 2000);
         }.bind(this));
     },
 
