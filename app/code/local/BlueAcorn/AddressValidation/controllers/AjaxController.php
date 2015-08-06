@@ -8,6 +8,10 @@
 class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Front_Action
 {
 
+    /**
+     * Holds whether or not to abort this validation request (response with http code 500)
+     * @var bool
+     */
     protected $_abort = false;
 
     /**

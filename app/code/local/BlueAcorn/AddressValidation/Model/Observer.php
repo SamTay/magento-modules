@@ -7,6 +7,12 @@
  */
 class BlueAcorn_AddressValidation_Model_Observer
 {
+    /**
+     * Observes ba_addressvalidation_send_response_before to add form html
+     * to select validated addresses
+     *
+     * @param Varien_Event_Observer $observer
+     */
     public function addFormHtml(Varien_Event_Observer $observer)
     {
         $response = $observer->getResponse();
@@ -25,8 +31,8 @@ class BlueAcorn_AddressValidation_Model_Observer
             ->setData('is_modal', $isModal)
             ->setTemplate('blueacorn/addressvalidation/form.phtml')
             ->toHtml();
-
         $response->setForm($html);
+    }
 
     /**
      * Observes ba_addressvalidation_send_response_before to add possible error message
