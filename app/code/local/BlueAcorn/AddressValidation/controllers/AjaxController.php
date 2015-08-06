@@ -104,6 +104,9 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         foreach($this->_addressFields as $field) {
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
+        if (!is_null($address['region_id'])) {
+            $address['state'] = Mage::helper('blueacorn_addressvalidation')->getState($address['region_id']);
+        }
         if (is_null($address['street'])) {
             $address['street'] = array();
         }
