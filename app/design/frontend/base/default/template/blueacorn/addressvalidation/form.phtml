@@ -1,7 +1,9 @@
+<?php $first = true; ?>
 <form id="validated-address-form" method="post" action="#">
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
-            <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio" />
+            <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio"
+                <?php if ($first): echo ' checked="checked"'; $first = false; endif; ?>/>
             <label for="address_<?php echo $index ?>">
                 <?php echo $address['street1'] ?>
                 <?php echo $address['street2'] ?>
