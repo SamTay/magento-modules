@@ -33,19 +33,19 @@ var AddressValidator = Class.create({
 
     showForm: function(response) {
         var self = this;
-        var modal = Dialog.confirm(response.responseJSON.form, {
+        var modal = Dialog.info(response.responseJSON.form, {
             title: "Verify Your Address",
-            okLabel: "Update Address",
-            cancelLabel: "Back",
             className: "validated-addresses-modal",
-            buttonClass: "button btn",
             width: 350,
-            ok: function() {
-                var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
-                self.unpackToParentForm(response.responseJSON.addresses[addressId]);
-                self.callback();
-                return true;
-            }
+        });
+        $$('#validated-address-form button.btn-submit').first().observe('click', function(ev) {
+            var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
+            self.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            self.callback();
+            modal.close();
+        });
+        $$('#validated-address-form button.btn-cancel').first().observe('click', function(ev) {
+            modal.close();
         });
     },
 
