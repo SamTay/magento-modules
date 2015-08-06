@@ -93,6 +93,13 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             'response' => $response
         ));
 
+        // Determine whether this is a modal or checkout step
+        if ($response->getForm() || $response->getError()) {
+            $presentation = Mage::helper('blueacorn_addressvalidation')->getConfig('presentation', 'checkout');
+            $isModal = ($presentation == BlueAcorn_AddressValidation_Model_System_Config_Source_Presentation::MODAL);
+            $response->setIsModal($isModal);
+        }
+
         $this->getResponse()->setHttpResponseCode(200)
             ->setHeader('Content-Type', 'application/json')
             ->setBody(Zend_Json::encode($response));
