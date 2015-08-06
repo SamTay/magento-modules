@@ -64,16 +64,22 @@ Event.observe(window, 'load', function () {
 
     if (typeof Billing !== "undefined") {
         Billing.prototype.save = Billing.prototype.save.wrap(function($super) {
-            var useForShipping = $('billing:use_for_shipping_yes').checked;
-            if (useForShipping) {
-                this.setUseForShipping(true);
-                $('billing:use_for_shipping_yes').checked = false;
-            }
+            if (checkout.loadWaiting) return;
+            var validator = new Validation(this.form);
+            if (validator.validate()) {
 
-            $super();
+                var useForShipping = $('billing:use_for_shipping_yes').checked;
+                if (useForShipping) {
+                    $('billing:use_for_shipping_yes').checked = false;
+                }
 
-            if (useForShipping) {
-                shipping.save();
+                $super();
+
+                if (useForShipping) {
+                    this.setUseForShipping(true);
+                    shipping.syncWithBilling();
+                    shipping.save();
+                }
             }
         });
     }
