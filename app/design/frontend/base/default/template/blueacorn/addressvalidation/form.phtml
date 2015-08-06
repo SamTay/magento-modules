@@ -29,3 +29,15 @@
         <button type="submit" class="button btn btn-submit">Update Address</button>
     </div>
 </form>
+
+<?php if ($originalAddress): ?>
+<script type="text/javascript">
+    $('validated-address-form').on('change', '.radio', function(event) {
+        if ($$('input.original-address').first().checked) {
+            $$('#validated-address-form button.btn-submit').first().update('Continue');
+        } else {
+            $$('#validated-address-form button.btn-submit').first().update('Update Address');
+        }
+    });
+</script>
+<?php endif ?>
