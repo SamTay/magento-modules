@@ -42,7 +42,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
 
         //Handle go back action
         $$('.go-back').each(function(element) {
-           element.observe('click', function(ev) {
+           element.observe('click', function(event) {
                Event.stop(event);
                $$('div.error-container').first().remove();
                new Effect.SlideDown(this.parentForm);
@@ -50,7 +50,8 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }.bind(this));
 
         //Handle continue action
-        $$('.error-container button.btn-continue').first().observe('click', function(ev) {
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
+            Event.stop(event);
             this.callback();
             setTimeout(function() {
                 $$('div.error-container').first().remove();

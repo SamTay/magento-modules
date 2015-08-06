@@ -38,15 +38,17 @@ var AddressValidator = Class.create({
             className: "validated-addresses-modal",
             width: 350,
         });
-        $$('#validated-address-form button.btn-submit').first().observe('click', function(ev) {
+        $$('#validated-address-form button.btn-submit').first().observe('click', function(event) {
+            Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
                 self.unpackToParentForm(response.responseJSON.addresses[addressId]);
             }
-            self.callback();
             modal.close();
+            self.callback();
         });
-        $$('#validated-address-form button.btn-cancel').first().observe('click', function(ev) {
+        $$('#validated-address-form button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
             modal.close();
         });
     },
@@ -64,11 +66,13 @@ var AddressValidator = Class.create({
             className: "error-modal",
             width: 350,
         });
-        $$('.error-container button.btn-continue').first().observe('click', function(ev) {
-            self.callback();
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
+            Event.stop(event);
             modal.close();
+            self.callback();
         });
-        $$('.error-container button.btn-cancel').first().observe('click', function(ev) {
+        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
             modal.close();
         });
     }
