@@ -24,26 +24,32 @@ var AddressValidator = Class.create({
     showAjaxResult: function(response) {
         if (response.responseJSON.form) {
             this.showForm(response);
-        } else if (response.responseJSON.errors) {
+        } else if (response.responseJSON.error) {
             this.showError(response);
+        } else {
+            this.callback();
         }
     },
 
     showForm: function(response) {
         var self = this;
-        var modal = Dialog.confirm(response.responseJSON.form, {
+        var modal = Dialog.info(response.responseJSON.form, {
             title: "Verify Your Address",
-            okLabel: "Update Address",
-            cancelLabel: "Back",
             className: "validated-addresses-modal",
-            buttonClass: "button btn",
             width: 350,
-            ok: function() {
-                var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
+        });
+        $$('#validated-address-form button.btn-submit').first().observe('click', function(event) {
+            Event.stop(event);
+            var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
+            if (addressId != 'original') {
                 self.unpackToParentForm(response.responseJSON.addresses[addressId]);
-                self.callback();
-                return true;
             }
+            modal.close();
+            self.callback();
+        });
+        $$('#validated-address-form button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
+            modal.close();
         });
     },
 
@@ -55,6 +61,19 @@ var AddressValidator = Class.create({
     },
 
     showError: function(response) {
-        // Default modal
+        var self = this;
+        var modal = Dialog.info(response.responseJSON.error, {
+            className: "error-modal",
+            width: 350,
+        });
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
+            Event.stop(event);
+            modal.close();
+            self.callback();
+        });
+        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
+            modal.close();
+        });
     }
 });

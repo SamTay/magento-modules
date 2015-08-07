@@ -1,12 +1,9 @@
 # Development Progress
 - Backend
+  - If the only difference between original address and validated address is capitalization, move on to shipping method step automatically. Derp.
   - Add a ``verified`` attribute to shipping addresses so that if a customer picks a saved address that has already been validated, they automatically skip validation and proceed to shipping method step.
-  - Cherry-pick the previous ``allowance`` system configuration field and source model, but adapt it to be a setting for strictness level in terms of when to display errors/warnings to the customer about unverified addresses, instead of the original, bad idea of restricting checkout.
   - Modify the city/state system configuration to also allow auto ajax population (requires new usps api wrapper for Zipcode Lookup Tool)
 - Frontend
-	- Finish building base ``AddressValidation`` class with modal methods
-	- Conditionally modify checkout depending on the ``presentation`` config value
-		- This will likely mean declaring dependency on *MageJsConfig* and using modman
 	- Extend ``AddressValidation`` to ``MSAddressValidation`` (for multishipping)
 - Bugs to squash
   - Navigating OP Checkout after the validated addresses form is presented, without hitting the "go back" button, will cause duplicated validated addresses forms because they are not deleted on any action other than "go back" clicks.

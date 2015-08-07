@@ -1,18 +1,43 @@
+<?php $first = true; ?>
 <form id="validated-address-form" method="post" action="#">
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
-        <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio" />
-        <label for="address_<?php echo $index ?>">
-            <?php echo $address['street1'] ?>
-            <?php echo $address['street2'] ?>
-            <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
-        </label>
+            <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio"
+                <?php if ($first): echo ' checked="checked"'; $first = false; endif; ?>/>
+            <label for="address_<?php echo $index ?>">
+                <?php echo $address['street1'] ?>
+                <?php echo $address['street2'] ?>
+                <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
+            </label>
+            <br>
         <?php endforeach ?>
+        <?php if ($originalAddress = $this->getOriginalAddress()): ?>
+            <emph>Original Address: </emph><br>
+            <input id="address_original" value="original" type="radio" name="validated_address" class="radio original-address" />
+            <label for="address_original" class="original-address">
+                <?php echo $originalAddress['street1'] ?>
+                <?php echo $originalAddress['street2'] ?>
+                <?php if (array_key_exists('city', $originalAddress) && array_key_exists('state', $originalAddress)): ?>
+                    <?php echo $originalAddress['city'] . ', ' . $originalAddress['state'] . ' ' ?>
+                <?php endif ?>
+                <?php echo $originalAddress['postcode'] ?>
+            </label>
+        <?php endif ?>
     </div>
-    <?php if (!$this->getIsModal()): ?>
     <div class="container buttons">
-        <button class="btn btn-cancel go-back">Go Back</button>
-        <button type="submit" class="btn btn-submit">Update Address</button>
+        <button class="button btn btn-cancel go-back">Go Back</button>
+        <button type="submit" class="button btn btn-submit">Update Address</button>
     </div>
-    <?php endif ?>
 </form>
+
+<?php if ($originalAddress): ?>
+<script type="text/javascript">
+    $('validated-address-form').on('change', '.radio', function(event) {
+        if ($$('input.original-address').first().checked) {
+            $$('#validated-address-form button.btn-submit').first().update('Continue');
+        } else {
+            $$('#validated-address-form button.btn-submit').first().update('Update Address');
+        }
+    });
+</script>
+<?php endif ?>

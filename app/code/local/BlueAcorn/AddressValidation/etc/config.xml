@@ -57,6 +57,10 @@
                         <class>blueacorn_addressvalidation/observer</class>
                         <method>addFormHtml</method>
                     </ba_addressvalidation_form>
+                    <ba_addressvalidation_error>
+                        <class>blueacorn_addressvalidation/observer</class>
+                        <method>addErrorHtml</method>
+                    </ba_addressvalidation_error>
                 </observers>
             </ba_addressvalidation_send_response_before>
         </events>
@@ -70,6 +74,7 @@
             <checkout>
                 <presentation>1</presentation>
                 <city_state>0</city_state>
+                <display_errors>0</display_errors>
             </checkout>
         </blueacorn_addressvalidation>
     </default>

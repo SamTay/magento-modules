@@ -7,11 +7,18 @@
  */
 class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Front_Action
 {
+
     /**
-     * Array to hold possible errors
+     * Holds whether or not to abort this validation request (response with http code 500)
+     * @var bool
+     */
+    protected $_abort = false;
+
+    /**
+     * Holds original address request (with street1 and street2 keys converted)
      * @var array
      */
-    protected $_errors = array();
+    protected $_requestAddress = array();
 
     /**
      * The fields that make up the request address
@@ -42,10 +49,6 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
                     $e->getCode(),
                     $api
                 );
-                if ($e->getCode() == BlueAcorn_AddressValidation_Model_ApiInterface::RESPONSE_ERROR) {
-                    // TODO: This text needs to be configurable!
-                    $this->_errors[] = ucfirst($api) . ' was unable to verify this address.';
-                }
             } catch (Exception $e) {
                 Mage::helper('blueacorn_addressvalidation')->log(
                     $e->getMessage(),
@@ -57,7 +60,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
                  * but rather an internal error/bug, hence the error will not help the customer.
                  * Instead, continue checkout by default.
                  */
-                $this->_errors['abort'] = true;
+                $this->_abort = true;
             }
 
             if ($apiResult) {
@@ -78,22 +81,24 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     {
         $response = new Varien_Object();
 
-        if ($result->hasAddress() || $result->hasMessage()) {
+        if ($result->hasAddress()) {
             $response['addresses'] = $result->getAddresses();
-            $response['messages'] = $result->getMessages();
         } elseif ($this->_getAbort()) {
             $this->getResponse()->setHttpResponseCode(500);
             return;
         }
-        if ($this->_hasError()) {
-            $response['errors'] = $this->_errors;
-        }
-
         // Dispatch event for further customization of response
         Mage::dispatchEvent('ba_addressvalidation_send_response_before', array(
             'controller' => $this,
             'response' => $response
         ));
+
+        // Determine whether this is a modal or checkout step
+        if ($response->getForm() || $response->getError()) {
+            $presentation = Mage::helper('blueacorn_addressvalidation')->getConfig('presentation', 'checkout');
+            $isModal = ($presentation == BlueAcorn_AddressValidation_Model_System_Config_Source_Presentation::MODAL);
+            $response->setIsModal($isModal);
+        }
 
         $this->getResponse()->setHttpResponseCode(200)
             ->setHeader('Content-Type', 'application/json')
@@ -112,6 +117,9 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         foreach($this->_addressFields as $field) {
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
+        if (!is_null($address['region_id'])) {
+            $address['state'] = Mage::helper('blueacorn_addressvalidation')->getState($address['region_id']);
+        }
         if (is_null($address['street'])) {
             $address['street'] = array();
         }
@@ -123,7 +131,18 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             }
         }
 
-        return $address;
+        $this->_requestAddress = $address;
+        return $this->_requestAddress;
+    }
+
+    /**
+     * Get requested address (must be called after _initAddress)
+     *
+     * @return array
+     */
+    public function getRequestAddress()
+    {
+        return $this->_requestAddress;
     }
 
     /**
@@ -143,7 +162,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
      */
     protected function _getAbort()
     {
-        return array_key_exists('abort', $this->_errors) && $this->_errors['abort'];
+        return $this->_abort;
     }
 
 

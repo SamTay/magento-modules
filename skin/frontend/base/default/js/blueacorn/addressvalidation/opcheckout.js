@@ -23,8 +23,40 @@ var OPAddressValidator = Class.create(AddressValidator, {
         $(this.form).observe('submit', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
-            this.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            if (addressId != 'original') {
+                this.unpackToParentForm(response.responseJSON.addresses[addressId]);
+            }
             this.callback();
+            setTimeout(function() {
+                $(this.form).remove();
+                $(this.parentForm).show();
+            }.bind(this), 2000);
+        }.bind(this));
+    },
+
+    showError: function($super, response) {
+        if (response.responseJSON.is_modal) {
+            return $super(response);
+        }
+        this.slideStepContent(response.responseJSON.error);
+
+        //Handle go back action
+        $$('.go-back').each(function(element) {
+           element.observe('click', function(event) {
+               Event.stop(event);
+               $$('div.error-container').first().remove();
+               new Effect.SlideDown(this.parentForm);
+           }.bind(this));
+        }.bind(this));
+
+        //Handle continue action
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
+            Event.stop(event);
+            this.callback();
+            setTimeout(function() {
+                $$('div.error-container').first().remove();
+                $(this.parentForm).show();
+            }.bind(this), 2000);
         }.bind(this));
     },
 
@@ -64,16 +96,22 @@ Event.observe(window, 'load', function () {
 
     if (typeof Billing !== "undefined") {
         Billing.prototype.save = Billing.prototype.save.wrap(function($super) {
-            var useForShipping = $('billing:use_for_shipping_yes').checked;
-            if (useForShipping) {
-                this.setUseForShipping(true);
-                $('billing:use_for_shipping_yes').checked = false;
-            }
+            if (checkout.loadWaiting) return;
+            var validator = new Validation(this.form);
+            if (validator.validate()) {
 
-            $super();
+                var useForShipping = $('billing:use_for_shipping_yes').checked;
+                if (useForShipping) {
+                    $('billing:use_for_shipping_yes').checked = false;
+                }
 
-            if (useForShipping) {
-                shipping.save();
+                $super();
+
+                if (useForShipping) {
+                    this.setUseForShipping(true);
+                    shipping.syncWithBilling();
+                    shipping.save();
+                }
             }
         });
     }

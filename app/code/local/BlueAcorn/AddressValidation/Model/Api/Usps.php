@@ -146,11 +146,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         $addressNode->addChild('City', $this->_address['city']);
         // Get state from region ID (possibly removed from shipping address)
         if ($this->_address['region_id']) {
-            $state = Mage::getModel('directory/region')->getCollection()
-                ->addFieldToSelect('code')
-                ->addFieldToFilter('main_table.region_id', $this->_address['region_id'])
-                ->getFirstItem()
-                ->getCode();
+            $state = Mage::helper('blueacorn_addressvalidation')->getState($this->_address['region_id']);
         } else {
             $state = null;
         }
@@ -225,11 +221,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
         $result = Mage::getModel('blueacorn_addressvalidation/result');
         foreach($validatedAddresses as $address) {
             if (isset($address['state'])) {
-                $address['region_id'] = Mage::getModel('directory/region')->getCollection()
-                    ->addFieldToSelect(array('code', 'region_id'))
-                    ->addFieldToFilter('main_table.code', $address['state'])
-                    ->getFirstItem()
-                    ->getRegionId();
+                $address['region_id'] = Mage::helper('blueacorn_addressvalidation')->getRegionId($address['state']);
             }
             $result->addAddress($address);
         }

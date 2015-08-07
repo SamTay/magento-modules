@@ -68,6 +68,36 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Accepts region ID and returns state as 2 letter code
+     *
+     * @param $regionId
+     * @return mixed
+     */
+    public function getState($regionId)
+    {
+        return Mage::getModel('directory/region')->getCollection()
+            ->addFieldToSelect('code')
+            ->addFieldToFilter('main_table.region_id', $regionId)
+            ->getFirstItem()
+            ->getCode();
+    }
+
+    /**
+     * Accepts state 2 letter code and returns region ID
+     *
+     * @param $state
+     * @return mixed
+     */
+    public function getRegionId($state)
+    {
+        return Mage::getModel('directory/region')->getCollection()
+            ->addFieldToSelect(array('code', 'region_id'))
+            ->addFieldToFilter('main_table.code', $state)
+            ->getFirstItem()
+            ->getRegionId();
+    }
+
+    /**
      * Check if in debug mode
      *
      * @return array|mixed
