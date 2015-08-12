@@ -115,6 +115,7 @@ Event.observe(window, 'load', function () {
                 $super();
 
                 if (useForShipping) {
+                    $('billing:use_for_shipping_yes').checked = true;
                     this.setUseForShipping(true);
                     shipping.syncWithBilling();
                     shipping.save();
