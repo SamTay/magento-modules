@@ -76,8 +76,11 @@ var OPAddressValidator = Class.create(AddressValidator, {
 Event.observe(window, 'load', function () {
     if (typeof Shipping !== "undefined") {
         Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
-            // Only validate US addresses
-            if (!($F('shipping:country_id') == 'US')) {
+
+            var notInUS = !($F('shipping:country_id') == 'US'),
+                alreadyVerified = $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
+
+            if (notInUS || alreadyVerified) {
                 return $super();
             }
 
@@ -102,6 +105,10 @@ Event.observe(window, 'load', function () {
 
                 var useForShipping = $('billing:use_for_shipping_yes').checked;
                 if (useForShipping) {
+                    // Skip if already verified
+                    if ($F('billing-address-select') && verifiedAddressJson[$F('billing-address-select')]) {
+                        return $super();
+                    }
                     $('billing:use_for_shipping_yes').checked = false;
                 }
 
