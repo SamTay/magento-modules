@@ -116,10 +116,7 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
         $keysToIgnore = array();
         foreach($this->getAddresses() as $thisAddress) {
             foreach($otherAddresses as $key => $otherAddress) {
-                if (strtoupper($otherAddress['street1']) == strtoupper($thisAddress['street1'])
-                    && strtoupper($otherAddress['street2']) == strtoupper($thisAddress['street2'])
-                    && strtoupper($otherAddress['postcode']) == strtoupper($thisAddress['postcode'])
-                ) {
+                if (Mage::helper('blueacorn_addressvalidation')->compareAddresses($thisAddress, $otherAddress)) {
                     $keysToIgnore[] = $key;
                 }
             }
