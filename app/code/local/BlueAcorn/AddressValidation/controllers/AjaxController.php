@@ -36,7 +36,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
      */
     public function indexAction()
     {
-        $address = $this->_initAddress();
+        $address = $this->getRequestAddress();
         $result = Mage::getModel('blueacorn_addressvalidation/result');
         foreach(Mage::helper('blueacorn_addressvalidation')->getEnabledApis() as $api) {
             $apiResult = null;
@@ -136,13 +136,13 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     }
 
     /**
-     * Get requested address (must be called after _initAddress)
+     * Get requested address
      *
      * @return array
      */
     public function getRequestAddress()
     {
-        return $this->_requestAddress;
+        return $this->_requestAddress ?: $this->_initAddress();
     }
 
     /**
