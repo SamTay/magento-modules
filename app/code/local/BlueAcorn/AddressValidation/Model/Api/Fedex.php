@@ -65,7 +65,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
      */
     public function validateAddress(array $address)
     {
-        if (!$this->_validateAddressFields($address)) {
+        if (!$this->_helper->validateAddressFields($address)) {
             throw new Mage_Api_Exception(self::REQUEST_ERROR,
                 'Missing required XML tags for FedEx Address Validation.'
             );
@@ -141,23 +141,6 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         }
 
         return $this->_parseSoapResponse($response);
-    }
-
-    /**
-     * Checks if $address has the required tags for the API request
-     *
-     * @param array $address
-     * @return bool
-     */
-    protected function _validateAddressFields(array $address)
-    {
-        $cityAndState = (!empty($address['city']) && !empty($address['region_id']));
-        $zip = !empty($address['postcode']);
-        $street = !empty($address['street1']);
-
-        return ($street
-            && ($zip || $cityAndState)
-        );
     }
 
     /**
