@@ -291,7 +291,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         }
 
         if (preg_match('/-/', $data->PostalCode)) {
-            $postcode = explode(',', $data->PostalCode);
+            $postcode = explode('-', $data->PostalCode);
             $validatedAddress['postcode'] = $postcode[0];
             $validatedAddress['zip4'] = $postcode[1];
         } else {
