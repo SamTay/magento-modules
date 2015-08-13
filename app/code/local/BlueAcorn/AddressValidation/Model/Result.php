@@ -100,6 +100,30 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
         return false;
     }
 
+    /**
+     * Get number of addresses
+     *
+     * @return int
+     */
+    public function getAddressCount()
+    {
+        return count($this->_addresses);
+    }
+
+    /**
+     * Get first address
+     *
+     * @param null $default
+     * @return mixed|null
+     */
+    public function getFirstAddress($default = null)
+    {
+        if (array_key_exists(0, $this->_addresses)) {
+            return $this->_addresses[0];
+        }
+        return $default;
+    }
+
 
     /**
      * Merges this Result with another Result argument. This object

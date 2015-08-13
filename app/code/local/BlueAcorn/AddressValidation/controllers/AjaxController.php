@@ -15,6 +15,12 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected $_abort = false;
 
     /**
+     * Holds whether or not to abort validation request and skip on frontend (response with http code 200)
+     * @var bool
+     */
+    protected $_skipValidation = false;
+
+    /**
      * Holds original address request (with street1 and street2 keys converted)
      * @var array
      */
@@ -68,6 +74,15 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             }
         }
 
+        if (Mage::helper('blueacorn_addressvalidation')->getConfig('skip_on_equivalent', 'checkout')
+            && $result->getAddressCount() == 1
+        ) {
+            $validatedAddress = $result->getFirstAddress();
+            if (Mage::helper('blueacorn_addressvalidation')->compareAddresses($this->_requestAddress, $validatedAddress)) {
+                $this->_skipValidation = true;
+            }
+        }
+
         $this->_sendResponse($result);
     }
 
@@ -81,12 +96,19 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     {
         $response = new Varien_Object();
 
+        if ($this->_getSkipValidation()) {
+            $this->getResponse()->setHttpResponseCode(200)
+                ->setHeader('Content-Type', 'application/json')
+                ->setBody(Zend_Json::encode(array('skip_validation' => true)));
+            return;
+        }
         if ($result->hasAddress()) {
             $response['addresses'] = $result->getAddresses();
         } elseif ($this->_getAbort()) {
             $this->getResponse()->setHttpResponseCode(500);
             return;
         }
+
         // Dispatch event for further customization of response
         Mage::dispatchEvent('ba_addressvalidation_send_response_before', array(
             'controller' => $this,
@@ -179,5 +201,14 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         return $this->_abort;
     }
 
+    /**
+     * Check if we should skip validation
+     *
+     * @return bool
+     */
+    protected function _getSkipValidation()
+    {
+        return $this->_skipValidation;
+    }
 
 }
