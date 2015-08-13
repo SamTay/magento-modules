@@ -113,21 +113,35 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected function _initAddress()
     {
         $address = array();
-        $request = $this->getRequest()->getParam('shipping');
+        // Intentional assignment - check for user selecting saved shipping address
+        if ($id = $this->getRequest()->getPost('shipping_address_id')) {
+            $request = Mage::getModel('customer/address')->load($id)->getData();
+            $address['entity_id'] = $id;
+        // Otherwise, they must have filled out the full shipping form
+        } else {
+            $request = $this->getRequest()->getParam('shipping');
+        }
+
+        // Sanitize request
         foreach($this->_addressFields as $field) {
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
         if (!is_null($address['region_id'])) {
             $address['state'] = Mage::helper('blueacorn_addressvalidation')->getState($address['region_id']);
         }
+        if (is_string($address['street'])) {
+            $address['street'] = explode("\n", $address['street']);
+        }
         if (is_null($address['street'])) {
             $address['street'] = array();
         }
-        for ($i=0; $i<2; $i++) {
-            if (!isset($address['street'][$i])) {
-                $address['street' . ($i + 1)] = null;
-            } else {
-                $address['street' . ($i + 1)] = $address['street'][$i];
+        if (is_array($address['street'])) {
+            for ($i=0; $i<2; $i++) {
+                if (!isset($address['street'][$i])) {
+                    $address['street' . ($i + 1)] = null;
+                } else {
+                    $address['street' . ($i + 1)] = $address['street'][$i];
+                }
             }
         }
 
