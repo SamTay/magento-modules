@@ -88,6 +88,17 @@
                             <comment><![CDATA[Note that if a customer switches the country from United States,
                             the fields will show back up because validation is only available for US addresses.]]> </comment>
                         </city_state>
+                        <skip_on_equivalent translate="label">
+                            <label>Skip Validation for Equivalent Addresses</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[This setting skips the validation step if the only difference in user input and
+                            API output is capitalization.]]></comment>
+                        </skip_on_equivalent>
                         <display_errors translate="label">
                             <label>Display Errors</label>
                             <frontend_type>select</frontend_type>
