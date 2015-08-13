@@ -124,6 +124,8 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
                 throw new Mage_Api_Exception(self::REQUEST_ERROR, 'Authentication Failure with FedEx API');
             }
 
+            return $this->_parseSoapResponse($response);
+
         } catch (Mage_Api_Exception $e) {
             if ($this->_debug) {
                 $this->_helper->log($e->getCustomMessage(), null, 'FedEx');
@@ -145,7 +147,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
             }
         }
 
-        return $this->_parseSoapResponse($response);
+        return false;
     }
 
     /**
