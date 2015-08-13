@@ -196,16 +196,8 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
 
         $street1 = $address['street1'];
         $street2 = $address['street2'];
-
-        if ($address['region_id']) {
-            $state = Mage::getModel('directory/region')->getCollection()
-                ->addFieldToSelect('code')
-                ->addFieldToFilter('main_table.region_id', $address['region_id'])
-                ->getFirstItem()
-                ->getCode();
-        } else {
-            $state = null;
-        }
+        $regionId = $address['region_id'];
+        $state = $regionId ? $this->_helper->getState($regionId) : null;
 
         $formattedAddress = array(
             'ClientReferenceId' => 'ClientReferenceId1',
@@ -265,11 +257,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
         $result = Mage::getModel('blueacorn_addressvalidation/result');
         foreach($validatedAddresses as $address) {
             if (isset($address['state'])) {
-                $address['region_id'] = Mage::getModel('directory/region')->getCollection()
-                    ->addFieldToSelect(array('code', 'region_id'))
-                    ->addFieldToFilter('main_table.code', $address['state'])
-                    ->getFirstItem()
-                    ->getRegionId();
+                $address['region_id'] = $this->_helper->getRegionId($address['state']);
             }
             $result->addAddress($address);
         }
