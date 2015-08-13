@@ -115,4 +115,21 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return explode(',', strtolower($this->getConfig('enabled_apis')));
     }
+
+    /**
+     * Checks if $address has the required tags for the API request
+     *
+     * @param array $address
+     * @return bool
+     */
+    public function validateAddressFields(array $address)
+    {
+        $cityAndState = (!empty($address['city']) && !empty($address['region_id']));
+        $zip = !empty($address['postcode']);
+        $street = !empty($address['street1']);
+
+        return ($street
+            && ($zip || $cityAndState)
+        );
+    }
 }

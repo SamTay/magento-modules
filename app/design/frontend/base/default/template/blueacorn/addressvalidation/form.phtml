@@ -24,9 +24,13 @@
             </label>
         <?php endif ?>
     </div>
-    <div class="container buttons">
-        <button class="button btn btn-cancel go-back">Go Back</button>
-        <button type="submit" class="button btn btn-submit">Update Address</button>
+    <div class="container buttons buttons-set">
+        <p class="back-link"><a href="#" class="go-back"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+        <button type="button" title="<?php echo $this->__("Update Address"); ?>" class="button btn btn-submit">
+            <span>
+                <span><?php echo $this->__("Update Address"); ?></span>
+            </span>
+        </button>
     </div>
 </form>
 
