@@ -34,5 +34,9 @@
                 <script>js/blueacorn/addressvalidation/opcheckout.js</script>
             </action>
         </reference>
+        <reference name="content">
+            <block type="checkout/onepage_shipping" name="address.mark.verified" after="shipping"
+                   template="blueacorn/addressvalidation/checkout/onepage/mark_verified.phtml" />
+        </reference>
     </checkout_onepage_index>
 </layout>

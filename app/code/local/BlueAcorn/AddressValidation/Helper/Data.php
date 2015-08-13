@@ -23,6 +23,17 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     protected $_config = array();
 
     /**
+     * Address fields that uniquely define an address - used in comparing
+     * equivalence of two addresses
+     * @var array
+     */
+    protected $_uniqueAddressFields = array(
+        'street1',
+        'street2',
+        'postcode',
+    );
+
+    /**
      * My signature getConfig helper method
      *
      * @param bool $field
@@ -95,6 +106,40 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
             ->addFieldToFilter('main_table.code', $state)
             ->getFirstItem()
             ->getRegionId();
+    }
+
+    /**
+     * Test if two addresses are equivalent (strtoupper values of $fieldsToCompare)
+     *
+     * @param null|array $address1
+     * @param null|array $address2
+     * @param array $fieldsToCompare
+     * @return bool
+     */
+    public function compareAddresses($address1 = null, $address2 = null, array $fieldsToCompare = array())
+    {
+        if (empty($fieldsToCompare)) {
+            $fieldsToCompare = $this->_uniqueAddressFields;
+        }
+        // Ensure both address arguments are arrays
+        foreach (array('1', '2') as $suffix) {
+            $input = 'address' . $suffix;
+            $$input = (!is_null($$input)) ? $$input : array();
+        }
+
+        // Check that addresses are equivalent based on $fieldsToCompare
+        foreach ($fieldsToCompare as $field) {
+            if (array_key_exists($field, $address1) xor array_key_exists($field, $address2)) {
+                return false;
+            }
+            if (array_key_exists($field, $address1)) {
+                if (strtoupper($address1[$field]) != strtoupper($address2[$field])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

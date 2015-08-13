@@ -1,0 +1,12 @@
+<?php
+if ($this->customerHasAddresses() && $this->isCustomerLoggedIn()):
+    $verified = array();
+    foreach($this->getCustomer()->getAddresses() as $address) {
+        $verified[$address->getId()] = $address->getVerified() ? true : false;
+    }
+?>
+    <script type="text/javascript">
+        var verifiedAddressJson = <?php echo Zend_Json::encode($verified) ?>;
+    </script>
+
+<?php endif;

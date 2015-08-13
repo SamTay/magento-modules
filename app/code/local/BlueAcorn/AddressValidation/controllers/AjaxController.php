@@ -15,6 +15,12 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected $_abort = false;
 
     /**
+     * Holds whether or not to abort validation request and skip on frontend (response with http code 200)
+     * @var bool
+     */
+    protected $_skipValidation = false;
+
+    /**
      * Holds original address request (with street1 and street2 keys converted)
      * @var array
      */
@@ -36,7 +42,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
      */
     public function indexAction()
     {
-        $address = $this->_initAddress();
+        $address = $this->getRequestAddress();
         $result = Mage::getModel('blueacorn_addressvalidation/result');
         foreach(Mage::helper('blueacorn_addressvalidation')->getEnabledApis() as $api) {
             $apiResult = null;
@@ -68,6 +74,15 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             }
         }
 
+        if (Mage::helper('blueacorn_addressvalidation')->getConfig('skip_on_equivalent', 'checkout')
+            && $result->getAddressCount() == 1
+        ) {
+            $validatedAddress = $result->getFirstAddress();
+            if (Mage::helper('blueacorn_addressvalidation')->compareAddresses($this->_requestAddress, $validatedAddress)) {
+                $this->_skipValidation = true;
+            }
+        }
+
         $this->_sendResponse($result);
     }
 
@@ -81,12 +96,19 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     {
         $response = new Varien_Object();
 
+        if ($this->_getSkipValidation()) {
+            $this->getResponse()->setHttpResponseCode(200)
+                ->setHeader('Content-Type', 'application/json')
+                ->setBody(Zend_Json::encode(array('skip_validation' => true)));
+            return;
+        }
         if ($result->hasAddress()) {
             $response['addresses'] = $result->getAddresses();
         } elseif ($this->_getAbort()) {
             $this->getResponse()->setHttpResponseCode(500);
             return;
         }
+
         // Dispatch event for further customization of response
         Mage::dispatchEvent('ba_addressvalidation_send_response_before', array(
             'controller' => $this,
@@ -113,21 +135,35 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected function _initAddress()
     {
         $address = array();
-        $request = $this->getRequest()->getParam('shipping');
+        // Intentional assignment - check for user selecting saved shipping address
+        if ($id = $this->getRequest()->getPost('shipping_address_id')) {
+            $request = Mage::getModel('customer/address')->load($id)->getData();
+            $address['entity_id'] = $id;
+        // Otherwise, they must have filled out the full shipping form
+        } else {
+            $request = $this->getRequest()->getParam('shipping');
+        }
+
+        // Sanitize request
         foreach($this->_addressFields as $field) {
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
         if (!is_null($address['region_id'])) {
             $address['state'] = Mage::helper('blueacorn_addressvalidation')->getState($address['region_id']);
         }
+        if (is_string($address['street'])) {
+            $address['street'] = explode("\n", $address['street']);
+        }
         if (is_null($address['street'])) {
             $address['street'] = array();
         }
-        for ($i=0; $i<2; $i++) {
-            if (!isset($address['street'][$i])) {
-                $address['street' . ($i + 1)] = null;
-            } else {
-                $address['street' . ($i + 1)] = $address['street'][$i];
+        if (is_array($address['street'])) {
+            for ($i=0; $i<2; $i++) {
+                if (!isset($address['street'][$i])) {
+                    $address['street' . ($i + 1)] = null;
+                } else {
+                    $address['street' . ($i + 1)] = $address['street'][$i];
+                }
             }
         }
 
@@ -136,13 +172,13 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     }
 
     /**
-     * Get requested address (must be called after _initAddress)
+     * Get requested address
      *
      * @return array
      */
     public function getRequestAddress()
     {
-        return $this->_requestAddress;
+        return $this->_requestAddress ?: $this->_initAddress();
     }
 
     /**
@@ -165,5 +201,14 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         return $this->_abort;
     }
 
+    /**
+     * Check if we should skip validation
+     *
+     * @return bool
+     */
+    protected function _getSkipValidation()
+    {
+        return $this->_skipValidation;
+    }
 
 }

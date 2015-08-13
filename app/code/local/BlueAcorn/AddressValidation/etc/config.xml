@@ -15,6 +15,13 @@
                 <class>BlueAcorn_AddressValidation_Model_Resource</class>
             </blueacorn_addressvalidation_resource>
         </models>
+        <resources>
+            <blueacorn_addressvalidation_setup>
+                <setup>
+                    <module>BlueAcorn_AddressValidation</module>
+                </setup>
+            </blueacorn_addressvalidation_setup>
+        </resources>
         <blocks>
             <blueacorn_addressvalidation>
                 <class>BlueAcorn_AddressValidation_Block</class>
@@ -74,6 +81,7 @@
             <checkout>
                 <presentation>1</presentation>
                 <city_state>0</city_state>
+                <skip_on_equivalent>0</skip_on_equivalent>
                 <display_errors>0</display_errors>
             </checkout>
         </blueacorn_addressvalidation>
