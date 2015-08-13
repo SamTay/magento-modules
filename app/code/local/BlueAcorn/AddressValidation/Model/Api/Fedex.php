@@ -124,16 +124,21 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
                 throw new Mage_Api_Exception(self::REQUEST_ERROR, 'Authentication Failure with FedEx API');
             }
 
+        } catch (Mage_Api_Exception $e) {
+            if ($this->_debug) {
+                $this->_helper->log($e->getCustomMessage(), null, 'FedEx');
+            }
         } catch (Exception $e) {
             switch ($e->getMessage()) {
                 // assuming more cases to come later
                 case 'Could not connect to host':
-                    $errorMsg = 'Error: Could not connect to FedEx Web Service API.';
+                    $errorMsg = 'Error: Could not connect to host for FedEx Web Service API.';
+                    break;
+
+                default:
+                    $errorMsg = $e->getMessage();
                     break;
             }
-
-            // if Mage_Api_Exception, getCustomMessage instead of getMessage
-            $errorMsg = $errorMsg ?: $e->getCustomMessage();
 
             if ($this->_debug) {
                 $this->_helper->log($errorMsg, null, 'FedEx');
