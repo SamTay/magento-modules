@@ -78,7 +78,7 @@ Event.observe(window, 'load', function () {
         Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
 
             var notInUS = !($F('shipping:country_id') == 'US'),
-                alreadyVerified = $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
+                alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
             if (notInUS || alreadyVerified) {
                 return $super();
