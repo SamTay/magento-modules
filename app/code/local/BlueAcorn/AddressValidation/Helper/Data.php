@@ -49,15 +49,19 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
         if (!$field && !$group) {
             return $this->_config;
         }
-        $group = $group ? $group : $this->_defaultGroup;
+        $group = $group ?: $this->_defaultGroup;
+        if (!array_key_exists($group, $this->_config)) {
+            return null;
+        }
         // If you want a field
         if ($field && array_key_exists($field, $this->_config[$group])) {
             return $this->_config[$group][$field];
         }
         // If you only want group
-        if (!$field && $group && array_key_exists($group, $this->_config)) {
+        if (!$field && $group) {
             return $this->_config[$group];
         }
+        return null;
     }
 
     /**

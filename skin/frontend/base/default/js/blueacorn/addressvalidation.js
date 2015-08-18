@@ -1,9 +1,7 @@
-//TODO: Ensure the "parent" methodology is extendable to multishipping .. if not, refactor this class to be more general
-
 var AddressValidator = Class.create({
     initialize: function(form) {
         this.parentForm = form;
-        this.url = '/ba_validation/ajax'
+        this.url = '/ba_validation/ajax/checkout'
         this.form = 'validated-address-form'
         this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
     },
