@@ -8,7 +8,8 @@
  */
  -->
 <layout>
-    <checkout_addressvalidation>
+    <!-- Abstract layout update handle, to be applied in more specific situations -->
+    <addressvalidation>
         <reference name="head">
             <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
                 <script>blueacorn/addressvalidation/addressvalidation.js</script>
@@ -25,12 +26,14 @@
                 <script>addressvalidation/css/addressvalidation.css</script>
             </action>
         </reference>
-    </checkout_addressvalidation>
+    </addressvalidation>
+
+    <!-- Checkout specific layout handles -->
     <checkout_multishipping>
-        <update handle="checkout_addressvalidation"/>
+        <update handle="addressvalidation"/>
     </checkout_multishipping>
     <checkout_onepage_index>
-        <update handle="checkout_addressvalidation"/>
+        <update handle="addressvalidation"/>
         <reference name="head">
             <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
                 <script>blueacorn/addressvalidation/opcheckout.js</script>
@@ -38,7 +41,7 @@
         </reference>
         <reference name="content">
             <block type="checkout/onepage_shipping" name="address.mark.verified" after="shipping"
-                   template="blueacorn/addressvalidation/checkout/onepage/mark_verified.phtml" />
+                   template="blueacorn/addressvalidation/checkout/onepage/mark_verified.phtml"/>
         </reference>
     </checkout_onepage_index>
 </layout>
