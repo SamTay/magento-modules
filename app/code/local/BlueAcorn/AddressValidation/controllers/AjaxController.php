@@ -161,6 +161,9 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             return;
         }
 
+        // Add errors or not
+        $response->setDisplayErrors($this->getConfigPerAction('display_errors'));
+
         // Dispatch event for further customization of response
         Mage::dispatchEvent('ba_addressvalidation_send_response_before', array(
             'controller' => $this,
