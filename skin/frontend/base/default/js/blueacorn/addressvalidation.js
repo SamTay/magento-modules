@@ -45,7 +45,7 @@ var AddressValidator = Class.create({
             modal.close();
             self.callback();
         });
-        $$('#validated-address-form button.btn-cancel').first().observe('click', function(event) {
+        $$('#validated-address-form .go-back').first().observe('click', function(event) {
             Event.stop(event);
             modal.close();
         });
