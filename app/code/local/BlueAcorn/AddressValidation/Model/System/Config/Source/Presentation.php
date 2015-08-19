@@ -24,7 +24,7 @@ class BlueAcorn_AddressValidation_Model_System_Config_Source_Presentation
                 'value' => self::MODAL
             ),
             array(
-                'label' => Mage::helper('blueacorn_addressvalidation')->__('Onestep Checkout Step'),
+                'label' => Mage::helper('blueacorn_addressvalidation')->__('Inline Slide Action'),
                 'value' => self::ONEPAGE_STEP
             )
         );
