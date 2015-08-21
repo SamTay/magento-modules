@@ -20,7 +20,8 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }.bind(this));
 
         // Handle submitting validated address
-        $(this.form).observe('submit', function(event) {
+        $submit = $(this.form).querySelector('.btn-submit');
+        $submit.observe('click', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
@@ -78,7 +79,7 @@ Event.observe(window, 'load', function () {
         Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
 
             var notInUS = !($F('shipping:country_id') == 'US'),
-                alreadyVerified = $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
+                alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
             if (notInUS || alreadyVerified) {
                 return $super();
