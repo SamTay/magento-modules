@@ -107,7 +107,7 @@ Event.observe(window, 'load', function () {
                 var useForShipping = $('billing:use_for_shipping_yes').checked;
                 if (useForShipping) {
                     // Skip if already verified
-                    if ($F('billing-address-select') && verifiedAddressJson[$F('billing-address-select')]) {
+                    if ($('billing-address-select') && $F('billing-address-select') && verifiedAddressJson[$F('billing-address-select')]) {
                         return $super();
                     }
                     $('billing:use_for_shipping_yes').checked = false;
