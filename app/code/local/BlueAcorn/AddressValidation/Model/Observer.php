@@ -38,7 +38,7 @@ class BlueAcorn_AddressValidation_Model_Observer
     {
         $response = $observer->getResponse();
         $helper = Mage::helper('blueacorn_addressvalidation');
-        if (!empty($response->getAddresses()) || !$helper->getConfig('display_errors', 'checkout')) {
+        if (!empty($response->getAddresses()) || !$response->getDisplayErrors()) {
             return;
         }
         // Get error message from sys config

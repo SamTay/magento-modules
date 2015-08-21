@@ -27,6 +27,12 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected $_requestAddress = array();
 
     /**
+     * Holds result of validation
+     * @var null|BlueAcorn_AddressValidation_Model_Result
+     */
+    protected $_result = null;
+
+    /**
      * The fields that make up the request address
      * @var array
      */
@@ -38,25 +44,68 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     );
 
     /**
-     * Default action validates against enabled APIs and returns validated address and/or message
+     * Index action (method must exist for router)
      */
     public function indexAction()
     {
+        $this->_abstractAction();
+    }
+
+    /**
+     * Checkout action (method must exist for router)
+     */
+    public function checkoutAction()
+    {
+        $this->_abstractAction();
+    }
+
+    /**
+     * Account action (method must exist for router)
+     */
+    public function accountAction()
+    {
+        $this->_abstractAction();
+    }
+
+    /**
+     * Admin action (method must exist for router)
+     */
+    public function adminAction()
+    {
+        $this->_abstractAction();
+    }
+
+    /**
+     * This is the default action for requests
+     * Varies slightly according to $this->getRequest()->getActionName()
+     */
+    protected function _abstractAction()
+    {
+        $this->_validate();
+        $this->_markPossibleSkips();
+        $this->_sendResponse();
+    }
+
+    /**
+     * Validates against enabled APIs and returns validated address and/or message
+     */
+    protected function _validate()
+    {
         $address = $this->getRequestAddress();
         $result = Mage::getModel('blueacorn_addressvalidation/result');
-        foreach(Mage::helper('blueacorn_addressvalidation')->getEnabledApis() as $api) {
+        foreach($this->helper()->getEnabledApis() as $api) {
             $apiResult = null;
             $shortname = 'blueacorn_addressvalidation/api_' . $api;
             try {
                 $apiResult = Mage::getModel($shortname)->validateAddress($address);
             } catch (Mage_Api_Exception $e) {
-                Mage::helper('blueacorn_addressvalidation')->log(
+                $this->helper()->log(
                     $e->getCustomMessage(),
                     $e->getCode(),
                     $api
                 );
             } catch (Exception $e) {
-                Mage::helper('blueacorn_addressvalidation')->log(
+                $this->helper()->log(
                     $e->getMessage(),
                     null,
                     $api
@@ -64,7 +113,6 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
                 /**
                  * If this is not an API exception, this is not simply an issue with verifying an address,
                  * but rather an internal error/bug, hence the error will not help the customer.
-                 * Instead, continue checkout by default.
                  */
                 $this->_abort = true;
             }
@@ -74,40 +122,47 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             }
         }
 
-        if (Mage::helper('blueacorn_addressvalidation')->getConfig('skip_on_equivalent', 'checkout')
-            && $result->getAddressCount() == 1
+        $this->_result = $result;
+        return $this->_result;
+    }
+
+    protected function _markPossibleSkips()
+    {
+        $action = $this->getRequest()->getActionName();
+        if ($this->getConfigPerAction('skip_on_equivalent')
+            && $this->_result->getAddressCount() == 1
         ) {
-            $validatedAddress = $result->getFirstAddress();
-            if (Mage::helper('blueacorn_addressvalidation')->compareAddresses($this->_requestAddress, $validatedAddress)) {
+            $validatedAddress = $this->_result->getFirstAddress();
+            if ($this->helper()->compareAddresses($this->_requestAddress, $validatedAddress)) {
                 $this->_skipValidation = true;
             }
         }
-
-        $this->_sendResponse($result);
     }
 
     /**
      * Send response to browser, but dispatch event first for further customization of response
      *
-     * @param BlueAcorn_AddressValidation_Model_Result $result
      * @throws Zend_Controller_Response_Exception
      */
-    protected function _sendResponse(BlueAcorn_AddressValidation_Model_Result $result)
+    protected function _sendResponse()
     {
         $response = new Varien_Object();
 
-        if ($this->_getSkipValidation()) {
+        if ($this->getSkipValidation()) {
             $this->getResponse()->setHttpResponseCode(200)
                 ->setHeader('Content-Type', 'application/json')
                 ->setBody(Zend_Json::encode(array('skip_validation' => true)));
             return;
         }
-        if ($result->hasAddress()) {
-            $response['addresses'] = $result->getAddresses();
-        } elseif ($this->_getAbort()) {
+        if ($this->_result->hasAddress()) {
+            $response['addresses'] = $this->_result->getAddresses();
+        } elseif ($this->getAbort()) {
             $this->getResponse()->setHttpResponseCode(500);
             return;
         }
+
+        // Add errors or not
+        $response->setDisplayErrors($this->getConfigPerAction('display_errors'));
 
         // Dispatch event for further customization of response
         Mage::dispatchEvent('ba_addressvalidation_send_response_before', array(
@@ -117,8 +172,9 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
 
         // Determine whether this is a modal or checkout step
         if ($response->getForm() || $response->getError()) {
-            $presentation = Mage::helper('blueacorn_addressvalidation')->getConfig('presentation', 'checkout');
-            $isModal = ($presentation == BlueAcorn_AddressValidation_Model_System_Config_Source_Presentation::MODAL);
+            $presentation = $this->getConfigPerAction('presentation');
+            $isModal = (is_null($presentation)
+                || $presentation == BlueAcorn_AddressValidation_Model_System_Config_Source_Presentation::MODAL);
             $response->setIsModal($isModal);
         }
 
@@ -149,7 +205,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
         if (!is_null($address['region_id'])) {
-            $address['state'] = Mage::helper('blueacorn_addressvalidation')->getState($address['region_id']);
+            $address['state'] = $this->helper()->getState($address['region_id']);
         }
         if (is_string($address['street'])) {
             $address['street'] = explode("\n", $address['street']);
@@ -182,11 +238,32 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     }
 
     /**
+     * Get config value where current action is the group section
+     *
+     * @param $configKey
+     * @return array|mixed
+     */
+    public function getConfigPerAction($configKey)
+    {
+        return $this->helper()->getConfig($configKey, $this->getRequest()->getActionName());
+    }
+
+    /**
+     * Get module helper
+     *
+     * @return BlueAcorn_AddressValidation_Helper_Data
+     */
+    public function helper()
+    {
+        return Mage::helper('blueacorn_addressvalidation');
+    }
+
+    /**
      * Checks if error exists
      *
      * @return bool
      */
-    protected function _hasError()
+    public function hasError()
     {
         return !empty($this->_errors);
     }
@@ -196,7 +273,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
      *
      * @return bool
      */
-    protected function _getAbort()
+    public function getAbort()
     {
         return $this->_abort;
     }
@@ -206,9 +283,8 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
      *
      * @return bool
      */
-    protected function _getSkipValidation()
+    public function getSkipValidation()
     {
         return $this->_skipValidation;
     }
-
 }
