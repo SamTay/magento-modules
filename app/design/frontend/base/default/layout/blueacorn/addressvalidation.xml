@@ -10,9 +10,8 @@
 <layout>
     <checkout_addressvalidation>
         <reference name="head">
-            <action method="addItem" ifconfig="blueacorn_addressvalidation/general/enabled">
-                <type>skin_js</type>
-                <script>js/blueacorn/addressvalidation.js</script>
+            <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
+                <script>blueacorn/addressvalidation/addressvalidation.js</script>
             </action>
             <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
                 <script>prototype/window.js</script>
@@ -29,9 +28,8 @@
     <checkout_onepage_index>
         <update handle="checkout_addressvalidation"/>
         <reference name="head">
-            <action method="addItem" ifconfig="blueacorn_addressvalidation/general/enabled">
-                <type>skin_js</type>
-                <script>js/blueacorn/addressvalidation/opcheckout.js</script>
+            <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
+                <script>blueacorn/addressvalidation/opcheckout.js</script>
             </action>
         </reference>
         <reference name="content">
