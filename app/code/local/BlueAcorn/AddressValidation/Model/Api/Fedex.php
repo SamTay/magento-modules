@@ -174,7 +174,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
      */
     protected function _getWsdlUrl()
     {
-        $wsdlBasePath = Mage::getModuleDir('etc', 'BlueAcorn_AddressValidation')  . DS . 'wsdl' . DS . 'FedEx' . DS;
+        $wsdlBasePath = Mage::getModuleDir('etc', 'BlueAcorn_AddressValidation')  . DS . 'wsdl' . DS . 'Fedex' . DS;
         $wsdlUrl = $wsdlBasePath . 'AddressValidationService_v3.wsdl';
 
         if ($this->_debug) {
