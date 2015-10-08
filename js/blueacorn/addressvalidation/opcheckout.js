@@ -62,6 +62,13 @@ var OPAddressValidator = Class.create(AddressValidator, {
     },
 
     slideStepContent: function(content) {
+        var _form = $(this.form);
+
+        // Remove Form if already exists
+        if(_form){
+            _form.remove();
+        }
+
         $(this.parentForm).insert({
             after: content
         });
