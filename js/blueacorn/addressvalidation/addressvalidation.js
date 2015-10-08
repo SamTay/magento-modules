@@ -31,23 +31,32 @@ var AddressValidator = Class.create({
 
     showForm: function(response) {
         var self = this;
-        var modal = Dialog.info(response.responseJSON.form, {
-            title: "Verify Your Address",
-            className: "validated-addresses-modal",
-            width: 350,
+
+        jQuery.fancybox.open({
+            content : response.responseJSON.form,
+            wrapCSS : "validated-addresses-modal",
+            afterShow: function(){
+                self.bindModalObservers();
+            }
         });
+    },
+
+    bindModalObservers: function(){
+        var self = this;
+
         $$('#validated-address-form button.btn-submit').first().observe('click', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
                 self.unpackToParentForm(response.responseJSON.addresses[addressId]);
             }
-            modal.close();
+            jQuery.fancybox.close();
             self.callback();
         });
+
         $$('#validated-address-form .go-back').first().observe('click', function(event) {
             Event.stop(event);
-            modal.close();
+            jQuery.fancybox.close();
         });
     },
 
@@ -62,8 +71,9 @@ var AddressValidator = Class.create({
         var self = this;
         var modal = Dialog.info(response.responseJSON.error, {
             className: "error-modal",
-            width: 350,
+            width: 350
         });
+
         $$('.error-container button.btn-continue').first().observe('click', function(event) {
             Event.stop(event);
             modal.close();

@@ -1,5 +1,8 @@
 <?php $first = true; ?>
 <form id="validated-address-form" method="post" action="#">
+
+    <h1><?php echo $this->__("Verify Your Address") ?></h1>
+
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
             <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio"
