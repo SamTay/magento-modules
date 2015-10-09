@@ -85,7 +85,7 @@ Event.observe(window, 'load', function () {
     if (typeof Shipping !== "undefined") {
         Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
             // HALT if ba object doesn't exit
-            if(typeof ba !== "undefined"){
+            if(typeof ba === "undefined"){
                 console.log('Address Validation module depends on GP...');
                 return $super();
             }
@@ -115,7 +115,7 @@ Event.observe(window, 'load', function () {
             if (checkout.loadWaiting) return;
 
             // HALT if ba object doesn't exit
-            if(typeof ba !== "undefined"){
+            if(typeof ba === "undefined"){
                 console.log('Address Validation module depends on GP...');
                 return $super();
             }
