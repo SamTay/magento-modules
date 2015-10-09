@@ -1,9 +1,10 @@
 var AddressValidator = Class.create({
     initialize: function(form) {
         this.parentForm = form;
-        this.url = '/ba_validation/ajax/checkout'
-        this.form = 'validated-address-form'
+        this.url = '/ba_validation/ajax/checkout';
+        this.form = 'validated-address-form';
         this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
+        this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
     },
 
     validate: function(callback) {
@@ -30,24 +31,57 @@ var AddressValidator = Class.create({
     },
 
     showForm: function(response) {
+        this.openModal(
+            response.responseJSON.form,
+            "validated-addresses-modal",
+            this.bindModalSuccessObservers
+        );
+    },
+
+    openModal: function(content, wrapClass, afterShow){
         var self = this;
-        var modal = Dialog.info(response.responseJSON.form, {
-            title: "Verify Your Address",
-            className: "validated-addresses-modal",
-            width: 350,
+        jQuery.fancybox.open({
+            content  : content,
+            wrapCSS  : wrapClass,
+            minWidth : self.modalWidth,
+            afterShow: function(){
+                if(typeof afterShow === "function"){
+                    afterShow();
+                }
+            }
         });
+    },
+
+    bindModalSuccessObservers: function(){
+        var self = this;
+
         $$('#validated-address-form button.btn-submit').first().observe('click', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
                 self.unpackToParentForm(response.responseJSON.addresses[addressId]);
             }
-            modal.close();
+            jQuery.fancybox.close();
             self.callback();
         });
+
         $$('#validated-address-form .go-back').first().observe('click', function(event) {
             Event.stop(event);
-            modal.close();
+            jQuery.fancybox.close();
+        });
+    },
+
+    bindModalErrorObservers: function(){
+        var self = this;
+
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
+            Event.stop(event);
+            jQuery.fancybox.close();
+            self.callback();
+        });
+        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
+            jQuery.fancybox.close();
         });
     },
 
@@ -59,19 +93,11 @@ var AddressValidator = Class.create({
     },
 
     showError: function(response) {
-        var self = this;
-        var modal = Dialog.info(response.responseJSON.error, {
-            className: "error-modal",
-            width: 350,
-        });
-        $$('.error-container button.btn-continue').first().observe('click', function(event) {
-            Event.stop(event);
-            modal.close();
-            self.callback();
-        });
-        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
-            Event.stop(event);
-            modal.close();
-        });
+        // Open Error Modal
+        this.openModal(
+            response.responseJSON.error,
+            "error-modal",
+            this.bindModalErrorObservers
+        );
     }
 });

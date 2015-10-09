@@ -1,19 +1,26 @@
-<?php $first = true; ?>
+<?php
+$first = true;
+$_helper = Mage::helper('blueacorn_addressvalidation');
+?>
 <form id="validated-address-form" method="post" action="#">
+
+    <h2><?php echo $_helper->getConfig("verify_modaltext", "design") ?></h2>
+
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
-            <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="radio"
+            <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="no-style radio"
                 <?php if ($first): echo ' checked="checked"'; $first = false; endif; ?>/>
             <label for="address_<?php echo $index ?>">
                 <?php echo $address['street1'] ?>
                 <?php echo $address['street2'] ?>
                 <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
             </label>
-            <br>
         <?php endforeach ?>
+
         <?php if ($originalAddress = $this->getOriginalAddress()): ?>
-            <emph>Original Address: </emph><br>
-            <input id="address_original" value="original" type="radio" name="validated_address" class="radio original-address" />
+            <h4><?php echo $this->__("Original Address") ?></h4>
+
+            <input id="address_original" value="original" type="radio" name="validated_address" class="no-style radio original-address" />
             <label for="address_original" class="original-address">
                 <?php echo $originalAddress['street1'] ?>
                 <?php echo $originalAddress['street2'] ?>
@@ -23,6 +30,7 @@
                 <?php echo $originalAddress['postcode'] ?>
             </label>
         <?php endif ?>
+
     </div>
     <div class="container buttons buttons-set">
         <p class="back-link"><a href="#" class="go-back"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>

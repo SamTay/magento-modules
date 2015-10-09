@@ -71,6 +71,14 @@
                 </observers>
             </ba_addressvalidation_send_response_before>
         </events>
+        <jsconfig>
+            <blueacorn_addressvalidation>
+                <design>
+                    <modal_width />
+                    <verify_modaltext />
+                </design>
+            </blueacorn_addressvalidation>
+        </jsconfig>
     </frontend>
     <default>
         <blueacorn_addressvalidation>
@@ -84,6 +92,10 @@
                 <skip_on_equivalent>0</skip_on_equivalent>
                 <display_errors>0</display_errors>
             </checkout>
+            <design>
+                <modal_width>400</modal_width>
+                <verify_modaltext>Verify Your Address</verify_modaltext>
+            </design>
         </blueacorn_addressvalidation>
     </default>
 </config>

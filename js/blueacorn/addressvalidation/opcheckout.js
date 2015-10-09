@@ -62,6 +62,13 @@ var OPAddressValidator = Class.create(AddressValidator, {
     },
 
     slideStepContent: function(content) {
+        var _form = $(this.form);
+
+        // Remove Form if already exists
+        if(_form){
+            _form.remove();
+        }
+
         $(this.parentForm).insert({
             after: content
         });
@@ -77,6 +84,11 @@ var OPAddressValidator = Class.create(AddressValidator, {
 Event.observe(window, 'load', function () {
     if (typeof Shipping !== "undefined") {
         Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
+            // HALT if ba object doesn't exit
+            if(typeof ba === "undefined"){
+                console.log('Address Validation module depends on GP...');
+                return $super();
+            }
 
             var notInUS = !($F('shipping:country_id') == 'US'),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
@@ -101,6 +113,13 @@ Event.observe(window, 'load', function () {
     if (typeof Billing !== "undefined") {
         Billing.prototype.save = Billing.prototype.save.wrap(function($super) {
             if (checkout.loadWaiting) return;
+
+            // HALT if ba object doesn't exit
+            if(typeof ba === "undefined"){
+                console.log('Address Validation module depends on GP...');
+                return $super();
+            }
+
             var validator = new Validation(this.form);
             if (validator.validate()) {
 
