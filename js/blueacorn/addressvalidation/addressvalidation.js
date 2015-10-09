@@ -1,8 +1,8 @@
 var AddressValidator = Class.create({
     initialize: function(form) {
         this.parentForm = form;
-        this.url = '/ba_validation/ajax/checkout'
-        this.form = 'validated-address-form'
+        this.url = '/ba_validation/ajax/checkout';
+        this.form = 'validated-address-form';
         this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
     },
 
@@ -30,18 +30,27 @@ var AddressValidator = Class.create({
     },
 
     showForm: function(response) {
-        var self = this;
+        this.openModal(
+            response.responseJSON.form,
+            "validated-addresses-modal",
+            this.bindModalSuccessObservers
+        );
+    },
 
+    openModal: function(content, wrapClass, afterShow){
         jQuery.fancybox.open({
-            content : response.responseJSON.form,
-            wrapCSS : "validated-addresses-modal",
+            content  : content,
+            wrapCSS  : wrapClass,
+            minWidth : "400",
             afterShow: function(){
-                self.bindModalObservers();
+                if(typeof afterShow === "function"){
+                    afterShow();
+                }
             }
         });
     },
 
-    bindModalObservers: function(){
+    bindModalSuccessObservers: function(){
         var self = this;
 
         $$('#validated-address-form button.btn-submit').first().observe('click', function(event) {
@@ -60,6 +69,20 @@ var AddressValidator = Class.create({
         });
     },
 
+    bindModalErrorObservers: function(){
+        var self = this;
+
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
+            Event.stop(event);
+            jQuery.fancybox.close();
+            self.callback();
+        });
+        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
+            jQuery.fancybox.close();
+        });
+    },
+
     unpackToParentForm: function(addressJSON, fieldPrefix) {
         fieldPrefix = fieldPrefix ? fieldPrefix : "";
         this.fields.each(function(field, index) {
@@ -68,20 +91,11 @@ var AddressValidator = Class.create({
     },
 
     showError: function(response) {
-        var self = this;
-        var modal = Dialog.info(response.responseJSON.error, {
-            className: "error-modal",
-            width: 350
-        });
-
-        $$('.error-container button.btn-continue').first().observe('click', function(event) {
-            Event.stop(event);
-            modal.close();
-            self.callback();
-        });
-        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
-            Event.stop(event);
-            modal.close();
-        });
+        // Open Error Modal
+        this.openModal(
+            response.responseJSON.error,
+            "error-modal",
+            this.bindModalErrorObservers
+        );
     }
 });

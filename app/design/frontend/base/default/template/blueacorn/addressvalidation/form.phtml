@@ -1,7 +1,7 @@
 <?php $first = true; ?>
 <form id="validated-address-form" method="post" action="#">
 
-    <h1><?php echo $this->__("Verify Your Address") ?></h1>
+    <h2><?php echo $this->__("Verify Your Address") ?></h2>
 
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
@@ -12,10 +12,11 @@
                 <?php echo $address['street2'] ?>
                 <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
             </label>
-            <br>
         <?php endforeach ?>
+
         <?php if ($originalAddress = $this->getOriginalAddress()): ?>
-            <emph>Original Address: </emph><br>
+            <h4><?php echo $this->__("Original Address") ?></h4>
+
             <input id="address_original" value="original" type="radio" name="validated_address" class="radio original-address" />
             <label for="address_original" class="original-address">
                 <?php echo $originalAddress['street1'] ?>
@@ -26,6 +27,7 @@
                 <?php echo $originalAddress['postcode'] ?>
             </label>
         <?php endif ?>
+
     </div>
     <div class="container buttons buttons-set">
         <p class="back-link"><a href="#" class="go-back"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
