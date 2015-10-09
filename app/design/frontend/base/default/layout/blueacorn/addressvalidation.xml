@@ -20,6 +20,10 @@
                 <type>js_css</type>
                 <script>prototype/windows/themes/default.css</script>
             </action>
+            <action method="addItem" ifconfig="blueacorn_addressvalidation/general/enabled">
+                <type>skin_css</type>
+                <script>addressvalidation/css/addressvalidation.css</script>
+            </action>
         </reference>
     </checkout_addressvalidation>
     <checkout_multishipping>
