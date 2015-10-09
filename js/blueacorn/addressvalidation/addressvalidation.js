@@ -4,6 +4,7 @@ var AddressValidator = Class.create({
         this.url = '/ba_validation/ajax/checkout';
         this.form = 'validated-address-form';
         this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
+        this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
     },
 
     validate: function(callback) {
@@ -38,10 +39,11 @@ var AddressValidator = Class.create({
     },
 
     openModal: function(content, wrapClass, afterShow){
+        var self = this;
         jQuery.fancybox.open({
             content  : content,
             wrapCSS  : wrapClass,
-            minWidth : "400",
+            minWidth : self.modalWidth,
             afterShow: function(){
                 if(typeof afterShow === "function"){
                     afterShow();
