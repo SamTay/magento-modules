@@ -6,7 +6,6 @@
             <sort_order>0</sort_order>
         </blueacorn>
     </tabs>
-    <!-- TODO: comment that user id is necessary in the carriers usps section -->
     <sections>
         <blueacorn_addressvalidation translate="label" module="blueacorn_addressvalidation">
             <label>Address Validation</label>
@@ -44,7 +43,8 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[For performance reasons, it is recommended to only enable one API in a
-                            production environment.]]></comment>
+                            production environment. Note that to enable USPS, you must enter a User ID in the Shipping
+                            Methods > USPS > User Id field.]]></comment>
                         </enabled_apis>
                         <debug translate="label">
                             <label>Debug Mode</label>
