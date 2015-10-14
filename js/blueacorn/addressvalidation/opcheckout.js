@@ -28,8 +28,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }.bind(this));
 
         // Handle submitting validated address
-        $submit = $(this.form).querySelector('.btn-submit');
-        $submit.observe('click', function(event) {
+        $(this.form).querySelector('.btn-submit').observe('click', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
