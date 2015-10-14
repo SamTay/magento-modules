@@ -75,6 +75,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
                         <city_state translate="label">
                             <label>Remove City/State Fields</label>
@@ -137,6 +138,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
                         <skip_on_equivalent translate="label">
                             <label>Skip Validation for Equivalent Addresses</label>

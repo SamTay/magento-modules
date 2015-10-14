@@ -40,6 +40,10 @@ var AddressValidator = Class.create({
 
     openModal: function(content, wrapClass, afterShow){
         var self = this;
+        if (!jQuery.fancybox) {
+            console.log('Modals require fancybox to be enabled in System Configuration > Javascript Plugins.');
+            return;
+        }
         jQuery.fancybox.open({
             content  : content,
             wrapCSS  : wrapClass,
