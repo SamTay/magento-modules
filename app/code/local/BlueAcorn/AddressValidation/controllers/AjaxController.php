@@ -128,7 +128,6 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
 
     protected function _markPossibleSkips()
     {
-        $action = $this->getRequest()->getActionName();
         if ($this->getConfigPerAction('skip_on_equivalent')
             && $this->_result->getAddressCount() == 1
         ) {
