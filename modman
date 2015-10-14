@@ -3,3 +3,4 @@ app/design/frontend/base/default/layout/blueacorn/addressvalidation.xml         
 app/design/frontend/base/default/template/blueacorn/addressvalidation/          app/design/frontend/base/default/template/blueacorn/addressvalidation/
 app/etc/modules/BlueAcorn_AddressValidation.xml			                app/etc/modules/BlueAcorn_AddressValidation.xml
 js/blueacorn/addressvalidation/			                                js/blueacorn/addressvalidation/
+skin/frontend/base/default/addressvalidation/                                   skin/frontend/base/default/addressvalidation/
