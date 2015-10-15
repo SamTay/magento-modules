@@ -112,66 +112,70 @@ var OPAddressValidator = Class.create(AddressValidator, {
     }
 });
 
-Event.observe(window, 'load', function () {
-    if (typeof Shipping !== "undefined") {
-        Shipping.prototype.save = Shipping.prototype.save.wrap(function ($super) {
+(function(){
+    /**
+     * Generate some wrapper methods for shipping/billing save actions. $super is the prototype wrap
+     * passed down from shipping/billing, while wrapper is the custom wrap
+     */
+    var wrapperGenerator = function (wrapper) {
+        return function ($super) {
             // HALT if ba object doesn't exit
-            if(typeof ba === "undefined"){
+            if (typeof ba === "undefined") {
                 console.log('Address Validation module depends on GP...');
                 return $super();
             }
-
-            var notInUS = !($F('shipping:country_id') == 'US'),
-                alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
-
-            if (notInUS || alreadyVerified) {
-                return $super();
-            }
-
             var formValidator = new Validation(this.form);
             if (!formValidator.validate()) {
                 return;
             }
-
-            if (!this.addressValidator) {
-                this.addressValidator = new OPAddressValidator(this);
-            }
-
-            this.addressValidator.validate($super.bind(this));
-        });
+            wrapper.call(this, $super);
+        }
     }
+    var shippingWrapper = wrapperGenerator(function ($super) {
+        var notInUS = !($F('shipping:country_id') == 'US'),
+            alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
-    if (typeof Billing !== "undefined") {
-        Billing.prototype.save = Billing.prototype.save.wrap(function($super) {
-            if (checkout.loadWaiting) return;
+        // Validation only available for US. Previously verified addresses can skip this step
+        if (notInUS || alreadyVerified) {
+            return $super();
+        }
 
-            // HALT if ba object doesn't exit
-            if(typeof ba === "undefined"){
-                console.log('Address Validation module depends on GP...');
+        if (!this.addressValidator) {
+            this.addressValidator = new OPAddressValidator(this);
+        }
+        this.addressValidator.validate($super.bind(this));
+    });
+    var billingWrapper = wrapperGenerator(function ($super) {
+        if (checkout.loadWaiting != false) return;
+        /**
+         * If we are using billing for shipping, uncheck billing for shipping option so that this doesn't
+         * get saved in the billingSaveAction request. After saving billing address via $super, sync the
+         * billing address to the saving form, and then shipping.save() to hook into the wrapper defined above
+         */
+        var useForShipping = $('billing:use_for_shipping_yes').checked;
+        if (useForShipping) {
+            // Skip if already verified
+            if ($('billing-address-select') && $F('billing-address-select') && verifiedAddressJson[$F('billing-address-select')]) {
                 return $super();
             }
+            $('billing:use_for_shipping_yes').checked = false;
+        }
 
-            var validator = new Validation(this.form);
-            if (validator.validate()) {
+        $super();
 
-                var useForShipping = $('billing:use_for_shipping_yes').checked;
-                if (useForShipping) {
-                    // Skip if already verified
-                    if ($('billing-address-select') && $F('billing-address-select') && verifiedAddressJson[$F('billing-address-select')]) {
-                        return $super();
-                    }
-                    $('billing:use_for_shipping_yes').checked = false;
-                }
-
-                $super();
-
-                if (useForShipping) {
-                    $('billing:use_for_shipping_yes').checked = true;
-                    this.setUseForShipping(true);
-                    shipping.syncWithBilling();
-                    shipping.save();
-                }
-            }
-        });
-    }
-});
+        if (useForShipping) {
+            $('billing:use_for_shipping_yes').checked = true;
+            this.setUseForShipping(true);
+            shipping.syncWithBilling();
+            shipping.save();
+        }
+    });
+    Event.observe(window, 'load', function() {
+        if (typeof Shipping !== "undefined") {
+            Shipping.prototype.save = Shipping.prototype.save.wrap(shippingWrapper);
+        }
+        if (typeof Billing !== "undefined") {
+            Billing.prototype.save = Billing.prototype.save.wrap(billingWrapper);
+        }
+    });
+})();
