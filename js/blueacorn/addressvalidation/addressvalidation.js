@@ -29,18 +29,19 @@ var AddressValidator = Class.create({
     },
 
     showAjaxResult: function(response) {
-        if (response.responseJSON.form) {
-            this.showForm(response);
-        } else if (response.responseJSON.error) {
-            this.showError(response);
+        this.responseJSON = response.responseJSON;
+        if (this.responseJSON.form) {
+            this.showForm();
+        } else if (this.responseJSON.error) {
+            this.showError();
         } else {
             this.callback();
         }
     },
 
-    showForm: function(response) {
+    showForm: function() {
         this.openModal(
-            response.responseJSON.form,
+            this.responseJSON.form,
             "validated-addresses-modal",
             this.bindModalSuccessObservers
         );
@@ -71,7 +72,7 @@ var AddressValidator = Class.create({
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
-                self.unpackToParentForm(response.responseJSON.addresses[addressId]);
+                self.unpackToParentForm(self.responseJSON.addresses[addressId]);
             }
             jQuery.fancybox.close();
             self.callback();
@@ -104,10 +105,10 @@ var AddressValidator = Class.create({
         });
     },
 
-    showError: function(response) {
+    showError: function() {
         // Open Error Modal
         this.openModal(
-            response.responseJSON.error,
+            this.responseJSON.error,
             "error-modal",
             this.bindModalErrorObservers
         );

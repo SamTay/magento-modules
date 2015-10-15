@@ -12,11 +12,11 @@ var OPAddressValidator = Class.create(AddressValidator, {
         $super(parent.form);
     },
 
-    showForm: function($super, response) {
-        if (response.responseJSON.is_modal) {
-            return $super(response);
+    showForm: function($super) {
+        if (this.responseJSON.is_modal) {
+            return $super();
         }
-        this.slideStepContent(response.responseJSON.form);
+        this.slideStepContent(this.responseJSON.form);
 
         // Handle go back action
         $(this.form).select('.go-back').each(function(element, index) {
@@ -32,7 +32,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
-                this.unpackToParentForm(response.responseJSON.addresses[addressId]);
+                this.unpackToParentForm(this.responseJSON.addresses[addressId]);
             }
             this.callback();
             setTimeout(function() {
@@ -42,11 +42,11 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }.bind(this));
     },
 
-    showError: function($super, response) {
-        if (response.responseJSON.is_modal) {
-            return $super(response);
+    showError: function($super) {
+        if (this.responseJSON.is_modal) {
+            return $super();
         }
-        this.slideStepContent(response.responseJSON.error);
+        this.slideStepContent(this.responseJSON.error);
 
         //Handle go back action
         $$('.go-back').each(function(element) {
