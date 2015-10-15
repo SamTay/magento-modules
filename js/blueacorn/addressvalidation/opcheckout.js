@@ -9,6 +9,7 @@
 var OPAddressValidator = Class.create(AddressValidator, {
     initialize: function($super, parent) {
         this.parent = parent;
+        this.url = '/ba_validation/ajax/checkout';
         $super(parent.form);
     },
 

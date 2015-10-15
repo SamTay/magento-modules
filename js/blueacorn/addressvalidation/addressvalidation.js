@@ -9,7 +9,6 @@
 var AddressValidator = Class.create({
     initialize: function(form) {
         this.parentForm = form;
-        this.url = '/ba_validation/ajax/checkout';
         this.form = 'validated-address-form';
         this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
