@@ -7,12 +7,21 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 var OPAddressValidator = Class.create(AddressValidator, {
+    /**
+     * Accepts Onepage Shipping object as parent
+     * @param $super
+     * @param parent
+     */
     initialize: function($super, parent) {
-        this.parent = parent;
-        this.url = '/ba_validation/ajax/checkout';
         $super(parent.form);
+        this.parent = parent;
     },
 
+    /**
+     * Show form content from ajax response. If modal, call parent method,
+     * otherwise use slide effects
+     * @param $super
+     */
     showForm: function($super) {
         if (this.responseJSON.is_modal) {
             return $super();
@@ -43,6 +52,12 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }.bind(this));
     },
 
+    /**
+     * Show error message if it exists on response (this happens when APIs cannot verify)
+     * If modal, use parent method, otherwise use slide effects
+     * @param $super
+     * @returns {*}
+     */
     showError: function($super) {
         if (this.responseJSON.is_modal) {
             return $super();
@@ -69,6 +84,10 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }.bind(this));
     },
 
+    /**
+     * Slide action to show form/error content instead of modal
+     * @param content
+     */
     slideStepContent: function(content) {
         var _form = $(this.form);
 
@@ -83,10 +102,14 @@ var OPAddressValidator = Class.create(AddressValidator, {
         new Effect.SlideUp(this.parentForm);
     },
 
+    /**
+     * Specify field prefix and call parent method to unpack
+     * @param $super
+     * @param addressJSON
+     */
     unpackToParentForm: function($super, addressJSON) {
         $super(addressJSON, 'shipping:');
     }
-
 });
 
 Event.observe(window, 'load', function () {
