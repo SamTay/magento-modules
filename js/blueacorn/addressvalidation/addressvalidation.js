@@ -43,7 +43,7 @@ var AddressValidator = Class.create({
         this.openModal(
             this.responseJSON.form,
             "validated-addresses-modal",
-            this.bindModalSuccessObservers
+            this.bindModalSuccessObservers.bind(this)
         );
     },
 
@@ -110,7 +110,7 @@ var AddressValidator = Class.create({
         this.openModal(
             this.responseJSON.error,
             "error-modal",
-            this.bindModalErrorObservers
+            this.bindModalErrorObservers.bind(this)
         );
     }
 });
