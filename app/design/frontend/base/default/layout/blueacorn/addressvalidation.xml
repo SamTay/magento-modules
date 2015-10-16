@@ -37,4 +37,14 @@
                    template="blueacorn/addressvalidation/checkout/onepage/mark_verified.phtml"/>
         </reference>
     </checkout_onepage_index>
+
+    <!-- Account dashboard specific layout handles -->
+    <customer_address_form>
+        <update handle="addressvalidation"/>
+        <reference name="head">
+            <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
+                <script>blueacorn/addressvalidation/accountdashboard.js</script>
+            </action>
+        </reference>
+    </customer_address_form>
 </layout>
