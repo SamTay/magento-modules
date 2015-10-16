@@ -128,7 +128,6 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
 
     protected function _markPossibleSkips()
     {
-        $action = $this->getRequest()->getActionName();
         if ($this->getConfigPerAction('skip_on_equivalent')
             && $this->_result->getAddressCount() == 1
         ) {
@@ -192,12 +191,16 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     {
         $address = array();
         // Intentional assignment - check for user selecting saved shipping address
-        if ($id = $this->getRequest()->getPost('shipping_address_id')) {
+        if ($id = $this->getRequest()->getParam('shipping_address_id')) {
             $request = Mage::getModel('customer/address')->load($id)->getData();
             $address['entity_id'] = $id;
         // Otherwise, they must have filled out the full shipping form
-        } else {
+        } elseif ($this->getRequest()->getParam('shipping')) {
+            // In checkout, these fields are under shipping param
             $request = $this->getRequest()->getParam('shipping');
+        } else {
+            // By default, assume fields are just in request params singularly
+            $request = $this->getRequest()->getParams();
         }
 
         // Sanitize request

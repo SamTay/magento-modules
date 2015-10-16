@@ -225,7 +225,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
             }
             $result->addAddress($address);
         }
-        if (!is_null($returnText)) {
+        if (!empty($returnText)) {
             $result->addMessage($returnText);
         }
 

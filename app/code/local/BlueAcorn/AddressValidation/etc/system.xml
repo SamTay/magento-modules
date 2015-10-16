@@ -6,7 +6,6 @@
             <sort_order>0</sort_order>
         </blueacorn>
     </tabs>
-    <!-- TODO: comment that user id is necessary in the carriers usps section -->
     <sections>
         <blueacorn_addressvalidation translate="label" module="blueacorn_addressvalidation">
             <label>Address Validation</label>
@@ -44,7 +43,8 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[For performance reasons, it is recommended to only enable one API in a
-                            production environment.]]></comment>
+                            production environment. Note that to enable USPS, you must enter a User ID in the Shipping
+                            Methods > USPS > User Id field.]]></comment>
                         </enabled_apis>
                         <debug translate="label">
                             <label>Debug Mode</label>
@@ -66,7 +66,6 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
                     <fields>
                         <presentation translate="label">
                             <label>Presentation Format</label>
@@ -76,6 +75,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
                         <city_state translate="label">
                             <label>Remove City/State Fields</label>
@@ -122,10 +122,62 @@
                         </error_message>
                     </fields>
                 </checkout>
+                <account translate="label">
+                    <label>Account Dashboard</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>6</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <presentation translate="label">
+                            <label>Presentation Format</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>blueacorn_addressvalidation/system_config_source_presentation</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
+                        </presentation>
+                        <skip_on_equivalent translate="label">
+                            <label>Skip Validation for Equivalent Addresses</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[This setting skips the validation step if the only difference in user input and
+                            API output is capitalization.]]></comment>
+                        </skip_on_equivalent>
+                        <display_errors translate="label">
+                            <label>Display Errors</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[The error message will only be displayed if validation fails across all
+                                enabled APIs.]]></comment>
+                        </display_errors>
+                        <error_message translate="label">
+                            <label>Error Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[This message will be displayed depending on the verbosity setting above.
+                                HTML is accepted here as well.]]></comment>
+                        </error_message>
+                    </fields>
+                </account>
                 <design translate="label">
                     <label>Design</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>6</sort_order>
+                    <sort_order>20</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
