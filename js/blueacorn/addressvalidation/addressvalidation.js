@@ -18,6 +18,7 @@ var AddressValidator = Class.create({
         this.parentForm = form;
         this.form = 'validated-address-form';
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
+        this.slideTimeout = 3800;
         /**
          * Override this.url in specific extended integrations
          * See accountdashboard.js for examples
@@ -155,7 +156,7 @@ var AddressValidator = Class.create({
             if (addressId != 'original') {
                 this.unpackToParentForm(this.responseJSON.addresses[addressId]);
             }
-            continueCb.call(this);
+            if (typeof continueCb === "function") continueCb.call(this);
             this.continueAddressSave();
         }.bind(this));
 
@@ -163,7 +164,7 @@ var AddressValidator = Class.create({
         $(this.form).select('.go-back').each(function(element) {
             element.observe('click', function(event) {
                 Event.stop(event);
-                cancelCb.call(this);
+                if (typeof cancelCb === "function") cancelCb.call(this);
             }.bind(this));
         }.bind(this));
     },
@@ -171,12 +172,12 @@ var AddressValidator = Class.create({
     bindErrorObservers: function(continueCb, cancelCb) {
         $$('.error-container button.btn-continue').first().observe('click', function(event) {
             Event.stop(event);
-            continueCb.call(this);
+            if (typeof continueCb === "function") continueCb.call(this);
             this.continueAddressSave();
         }.bind(this));
         $$('.error-container button.btn-cancel').first().observe('click', function(event) {
             Event.stop(event);
-            cancelCb.call(this);
+            if (typeof cancelCb === "function") cancelCb.call(this);
         }.bind(this));
     },
 
@@ -195,7 +196,7 @@ var AddressValidator = Class.create({
             setTimeout(function() {
                 $(this.form).remove();
                 $(this.parentForm).show();
-            }.bind(this), 3500);
+            }.bind(this), this.slideTimeout);
         }.bind(this), function() {
             $(this.form).remove();
             new Effect.SlideDown(this.parentForm);
@@ -217,7 +218,7 @@ var AddressValidator = Class.create({
             setTimeout(function() {
                 $$('.error-container').first().remove();
                 $(this.parentForm).show();
-            }.bind(this), 2000);
+            }.bind(this), this.slideTimeout);
         }.bind(this), function() {
             $$('.error-container').first().remove();
             new Effect.SlideDown(this.parentForm);

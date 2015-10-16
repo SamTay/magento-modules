@@ -11,7 +11,29 @@ var ADAddressValidator = Class.create(AddressValidator, {
         $super(form);
         this.url = '/ba_validation/ajax/account';
         this.fields = ['street_1', 'street_2', 'zip', 'city', 'region_id'];
+        this.slideTimeout = 10000
     },
+    /**
+     * Override so that "submit" action doesn't try to remove form,
+     * because submitting post takes longer here, and since the action isn't ajax,
+     * there's no reason to change what the page currently looks like.
+     */
+    bindSlideSuccessObservers: function() {
+        this.bindSuccessObservers(null, function() {
+            $(this.form).remove();
+            new Effect.SlideDown(this.parentForm);
+        }.bind(this));
+    },
+    /**
+     * Override so that "continue" action doesn't try to remove form,
+     * for the same reason as above.
+     */
+    bindSlideErrorObservers: function() {
+        this.bindErrorObservers(null, function() {
+            $$('.error-container').first().remove();
+            new Effect.SlideDown(this.parentForm);
+        }.bind(this));
+    }
 });
 
 Event.observe(window, 'load', function () {
