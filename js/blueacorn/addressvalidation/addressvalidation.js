@@ -33,12 +33,12 @@ var AddressValidator = Class.create({
     },
 
     /**
-     * Validate address found in this.parentForm and then callback() when finished
-     * @param callback
+     * Validate address found in this.parentForm and then continueAddressSave() when finished
+     * @param continueAddressSave
      */
-    validate: function(callback) {
-        this.callback = callback;
-        this.getValidatedAddress(this.showAjaxResult.bind(this), this.callback);
+    validate: function(continueAddressSave) {
+        this.continueAddressSave = continueAddressSave;
+        this.getValidatedAddress(this.showAjaxResult.bind(this), this.continueAddressSave);
     },
 
     /**
@@ -65,7 +65,7 @@ var AddressValidator = Class.create({
         } else if (this.responseJSON.error) {
             this.showError();
         } else {
-            this.callback();
+            this.continueAddressSave();
         }
     },
 
@@ -156,7 +156,7 @@ var AddressValidator = Class.create({
                 this.unpackToParentForm(this.responseJSON.addresses[addressId]);
             }
             continueCb.call(this);
-            this.callback();
+            this.continueAddressSave();
         }.bind(this));
 
         // Handle go back action
@@ -172,7 +172,7 @@ var AddressValidator = Class.create({
         $$('.error-container button.btn-continue').first().observe('click', function(event) {
             Event.stop(event);
             continueCb.call(this);
-            this.callback();
+            this.continueAddressSave();
         }.bind(this));
         $$('.error-container button.btn-cancel').first().observe('click', function(event) {
             Event.stop(event);
