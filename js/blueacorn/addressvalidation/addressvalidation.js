@@ -38,7 +38,7 @@ var AddressValidator = Class.create({
      */
     validate: function(callback) {
         this.callback = callback;
-        this.getValidatedAddress(this.showAjaxResult.bind(this), this.callback.bind(this));
+        this.getValidatedAddress(this.showAjaxResult.bind(this), this.callback);
     },
 
     /**
@@ -73,27 +73,35 @@ var AddressValidator = Class.create({
      * Show validated addresses form if APIs were able to verify/suggest
      */
     showForm: function() {
-        this.openModal(
-            this.responseJSON.form,
-            "validated-addresses-modal",
-            this.bindModalSuccessObservers.bind(this)
-        );
+        if (this.responseJSON.is_modal) {
+            this.openModal(
+                this.responseJSON.form,
+                "validated-addresses-modal",
+                this.bindModalSuccessObservers.bind(this)
+            );
+        } else {
+            this.slideContent(this.responseJSON.form, this.bindSlideSuccessObservers);
+        }
     },
 
     /**
      * Show error message if it exists on response (this happens when APIs cannot verify)
      */
     showError: function() {
-        // Open Error Modal
-        this.openModal(
-            this.responseJSON.error,
-            "error-modal",
-            this.bindModalErrorObservers.bind(this)
-        );
+        if (this.responseJSON.is_modal) {
+            this.openModal(
+                this.responseJSON.error,
+                "error-modal",
+                this.bindModalErrorObservers.bind(this)
+            );
+        } else {
+            this.slideContent(this.responseJSON.error, this.bindSlideErrorObservers);
+        }
     },
 
     /**
      * Generic open modal method for any content
+     * TODO: Check for jQuery otherwise prototype window
      * @param content
      * @param wrapClass
      * @param afterShow
@@ -117,42 +125,103 @@ var AddressValidator = Class.create({
     },
 
     /**
-     * Bind modal events for validated address form content
+     * Slide action to show form/error content instead of modal
+     * @param content
      */
-    bindModalSuccessObservers: function(){
-        var self = this;
+    slideContent: function(content, callback) {
+        // Remove form/error content if already exists
+        var $form = $(this.form),
+            $error = $$('.error-container');
+        if ($form) {
+            $form.remove();
+        }
+        if ($error.length) {
+            $error.first().remove();
+        }
 
-        $$('#validated-address-form button.btn-submit').first().observe('click', function(event) {
+        // Insert new content and call callback
+        $(this.parentForm).insert({
+            after: content
+        });
+        new Effect.SlideUp(this.parentForm);
+        callback.call(this);
+    },
+
+    bindSuccessObservers: function(continueCb, cancelCb) {
+        // Handle submit action
+        $(this.form).querySelector('.btn-submit').observe('click', function(event) {
             Event.stop(event);
             var addressId = $$('input:checked[type=radio][name=validated_address]')[0].value;
             if (addressId != 'original') {
-                self.unpackToParentForm(self.responseJSON.addresses[addressId]);
+                this.unpackToParentForm(this.responseJSON.addresses[addressId]);
             }
-            jQuery.fancybox.close();
-            self.callback();
-        });
+            continueCb.call(this);
+            this.callback();
+        }.bind(this));
 
-        $$('#validated-address-form .go-back').first().observe('click', function(event) {
+        // Handle go back action
+        $(this.form).select('.go-back').each(function(element) {
+            element.observe('click', function(event) {
+                Event.stop(event);
+                cancelCb.call(this);
+            }.bind(this));
+        }.bind(this));
+    },
+
+    bindErrorObservers: function(continueCb, cancelCb) {
+        $$('.error-container button.btn-continue').first().observe('click', function(event) {
             Event.stop(event);
-            jQuery.fancybox.close();
-        });
+            continueCb.call(this);
+            this.callback();
+        }.bind(this));
+        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
+            Event.stop(event);
+            cancelCb.call(this);
+        }.bind(this));
+    },
+
+    /**
+     * Bind modal events for validated address form content
+     */
+    bindModalSuccessObservers: function(){
+        this.bindSuccessObservers(jQuery.fancybox.close, jQuery.fancybox.close);
+    },
+
+    /**
+     * Bind slide events for validated address form content
+     */
+    bindSlideSuccessObservers: function() {
+        this.bindSuccessObservers(function() {
+            setTimeout(function() {
+                $(this.form).remove();
+                $(this.parentForm).show();
+            }.bind(this), 3500);
+        }.bind(this), function() {
+            $(this.form).remove();
+            new Effect.SlideDown(this.parentForm);
+        }.bind(this));
     },
 
     /**
      * Bind modal events for error message content
      */
-    bindModalErrorObservers: function(){
-        var self = this;
+    bindModalErrorObservers: function() {
+        this.bindErrorObservers(jQuery.fancybox.close, jQuery.fancybox.close);
+    },
 
-        $$('.error-container button.btn-continue').first().observe('click', function(event) {
-            Event.stop(event);
-            jQuery.fancybox.close();
-            self.callback();
-        });
-        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
-            Event.stop(event);
-            jQuery.fancybox.close();
-        });
+    /**
+     * Bind slide events for error message content
+     */
+    bindSlideErrorObservers: function() {
+        this.bindErrorObservers(function() {
+            setTimeout(function() {
+                $$('.error-container').first().remove();
+                $(this.parentForm).show();
+            }.bind(this), 2000);
+        }.bind(this), function() {
+            $$('.error-container').first().remove();
+            new Effect.SlideDown(this.parentForm);
+        }.bind(this));
     },
 
     /**
