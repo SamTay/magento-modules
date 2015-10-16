@@ -11,11 +11,10 @@
  */
 var AddressValidator = Class.create({
     /**
-     * Inititalize class with parent form element
+     * Inititalize class
      * @param form
      */
-    initialize: function(form) {
-        this.parentForm = form;
+    initialize: function() {
         this.form = 'validated-address-form';
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
         this.slideTimeout = 3800;
@@ -31,6 +30,21 @@ var AddressValidator = Class.create({
          * @type {string[]}
          */
         this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
+
+        /**
+         * Override this.setupObservers in specific integrations to attach "this" to parent forms
+         */
+        this.setupObservers();
+    },
+
+    /**
+     * Attach to parent object, save parent object form
+     * @param form
+     * @returns {AddressValidator}
+     */
+    attach: function(form) {
+        this.parentForm = form;
+        return this;
     },
 
     /**
@@ -236,6 +250,11 @@ var AddressValidator = Class.create({
         this.fields.each(function(field, index) {
             Form.Element.setValue(fieldPrefix + field, addressJSON[field]);
         });
-    }
+    },
+
+    /**
+     * Override in extended classes
+     */
+    setupObservers: function() {}
 });
 
