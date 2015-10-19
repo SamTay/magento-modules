@@ -62,4 +62,6 @@ var ADAddressValidator = Class.create(AddressValidator, {
     }
 });
 
-adAddressValidator = new ADAddressValidator();
+Event.observe(window, "load", function() {
+    var adAddressValidator = new ADAddressValidator();
+});

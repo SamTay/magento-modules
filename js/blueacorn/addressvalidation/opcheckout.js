@@ -68,4 +68,6 @@ var OPAddressValidator = Class.create(AddressValidator, {
     }
 });
 
-opAddressValidator = new OPAddressValidator();
+Event.observe(window, "load", function() {
+    var opAddressValidator = new OPAddressValidator();
+});
