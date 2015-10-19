@@ -6,7 +6,7 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
-class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
+class BlueAcorn_AddressValidation_Model_Validation_Result extends Varien_Object
 {
     /**
      * Validated addresses returned from API
@@ -130,10 +130,10 @@ class BlueAcorn_AddressValidation_Model_Result extends Varien_Object
      * takes precedence over the argument object (duplicates are removed from the
      * argument, not from this object).
      *
-     * @param BlueAcorn_AddressValidation_Model_Result $otherResult
+     * @param BlueAcorn_AddressValidation_Model_Validation_Result $otherResult
      * @return $this
      */
-    public function merge(BlueAcorn_AddressValidation_Model_Result $otherResult)
+    public function merge(BlueAcorn_AddressValidation_Model_Validation_Result $otherResult)
     {
         // Cycle through the both Results, and log keys to ignore from other Result
         $otherAddresses = $otherResult->getAddresses();

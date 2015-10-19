@@ -7,17 +7,14 @@
  */
 
 /**
- * Interface BlueAcorn_AddressValidation_Model_ApiInterface
+ * Interface BlueAcorn_AddressValidation_Model_Validation_ApiInterface
  * All address validation APIs are required to implement ApiInterface
  */
-interface BlueAcorn_AddressValidation_Model_ApiInterface
+interface BlueAcorn_AddressValidation_Model_Validation_ApiInterface
 {
-    const RESPONSE_ERROR = 'RESPONSE_ERROR';
-    const REQUEST_ERROR = 'REQUEST_ERROR';
-
     /**
      * @param array $address
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      */
     public function validateAddress(array $address);
 }

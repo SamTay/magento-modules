@@ -6,27 +6,12 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
-class BlueAcorn_AddressValidation_Model_Api_Usps
+class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
-    implements BlueAcorn_AddressValidation_Model_ApiInterface
+    implements BlueAcorn_AddressValidation_Model_Validation_ApiInterface
 {
-
-    /**
-     * Address data from form submission
-     * @var array
-     */
-    protected $_address;
-
-    /**
-     * @var BlueAcorn_AddressValidation_Model_Result
-     */
-    protected $_result;
-
-    /**
-     * Default cgi gateway URL
-     * @var string
-     */
-    protected $_defaultGatewayUrl = 'http://production.shippingapis.com/ShippingAPI.dll';
+    use BlueAcorn_AddressValidation_Model_UspsTrait,
+        BlueAcorn_AddressValidation_Model_Validation_ValidationTrait;
 
     /**
      * Api parameter value; i.e., ?API=Verify
@@ -39,7 +24,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps
      * the API to retrieve validation and suggested addresses.
      *
      * @param array $address
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      * @throws Mage_Api_Exception
      */
     public function validateAddress(array $address)
@@ -55,26 +40,6 @@ class BlueAcorn_AddressValidation_Model_Api_Usps
     }
 
     /**
-     * Set address to validate
-     *
-     * @param array $address
-     */
-    public function setAddress(array $address)
-    {
-        $this->_address = $address;
-    }
-
-    /**
-     * Get result of API call
-     *
-     * @return BlueAcorn_AddressValidation_Model_Result
-     */
-    public function getResult()
-    {
-        return $this->_result;
-    }
-
-    /**
      * Makes the API call to validate $this->_address
      *
      * @throws Mage_Api_Exception
@@ -86,7 +51,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps
             $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Usps');
         }
         $requestXml = $this->_parseAddressDataToXml();
-        $url = Mage::getStoreConfig('carriers/usps/gateway_url') ?: $this->_defaultGatewayUrl;
+        $url = $this->_getGatewayUrl();
         $client = new Zend_Http_Client();
         $client->setUri($url)
             ->setConfig(array('maxredirects' => 0, 'timeout' => 30))
@@ -106,11 +71,8 @@ class BlueAcorn_AddressValidation_Model_Api_Usps
      */
     protected function _parseAddressDataToXml()
     {
-        $userId = Mage::getStoreConfig('carriers/usps/userid');
+        $userId = $this->_getUserId();
         if (!$userId) {
-            //TODO: Catch exception in controller
-            // Exceptions should be logged and controller should return validated (or let result
-            // be determined by sys config)
             throw new Mage_Api_Exception(self::REQUEST_ERROR,
                 'User ID must be specified in system configuration carriers/usps/userid'
             );
@@ -143,7 +105,7 @@ class BlueAcorn_AddressValidation_Model_Api_Usps
 
     /**
      * @param string $response
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      * @throws Mage_Api_Exception
      */
     protected function _parseXmlResponse($response)
@@ -198,11 +160,11 @@ class BlueAcorn_AddressValidation_Model_Api_Usps
      *
      * @param array $validatedAddresses
      * @param null $returnText
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      */
     protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
     {
-        $result = Mage::getModel('blueacorn_addressvalidation/result');
+        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
         foreach($validatedAddresses as $address) {
             if (isset($address['state'])) {
                 $address['region_id'] = Mage::helper('blueacorn_addressvalidation')->getRegionId($address['state']);

@@ -9,9 +9,16 @@
 /**
  * Class BlueAcorn_AddressValidation_Model_ApiAbstract
  * Optional class for APIs to extend to automatically give helper/debug properties
+ * Use this instead of trait because __construct in trait is not propertly implemented by PHP
  */
 abstract class BlueAcorn_AddressValidation_Model_ApiAbstract
 {
+    /**
+     * Code types used in throwing Mage_Api_Exception
+     */
+    const RESPONSE_ERROR = 'RESPONSE_ERROR';
+    const REQUEST_ERROR = 'REQUEST_ERROR';
+
     /**
      * Hold instance of module helper
      * @var BlueAcorn_AddressValidation_Helper_Data

@@ -5,24 +5,15 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
-class BlueAcorn_AddressValidation_Model_Api_Fedex
+class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
-    implements BlueAcorn_AddressValidation_Model_ApiInterface
+    implements BlueAcorn_AddressValidation_Model_Validation_ApiInterface
 {
+    use BlueAcorn_AddressValidation_Model_Validation_ValidationTrait;
+
     const FEDEX_SANDBOX_MODE = 'carriers/fedex/sandbox_mode';
     const FEDEX_SANDBOX_URL = 'https://wsbeta.fedex.com:443/web-services';
     const FEDEX_LIVE_URL = 'https://ws.fedex.com:443/web-services';
-
-    /**
-     * Address data from form submission
-     * @var array
-     */
-    protected $_address;
-
-    /**
-     * @var BlueAcorn_AddressValidation_Model_Result
-     */
-    protected $_result;
 
     /**
      * Default cgi gateway URL
@@ -52,7 +43,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex
      * the API to retrieve validation and suggested addresses.
      *
      * @param array $address
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      * @throws Mage_Api_Exception
      */
     public function validateAddress(array $address)
@@ -65,26 +56,6 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex
         $this->setAddress($address);
         $this->_result = $this->_getFedexValidation();
         return $this->getResult();
-    }
-
-    /**
-     * Set address to validate
-     *
-     * @param array $address
-     */
-    public function setAddress(array $address)
-    {
-        $this->_address = $address;
-    }
-
-    /**
-     * Get result of API call
-     *
-     * @return BlueAcorn_AddressValidation_Model_Result
-     */
-    public function getResult()
-    {
-        return $this->_result;
     }
 
     /**
@@ -249,11 +220,11 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex
      *
      * @param array $validatedAddresses
      * @param null $returnText
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      */
     protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
     {
-        $result = Mage::getModel('blueacorn_addressvalidation/result');
+        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
         foreach($validatedAddresses as $address) {
             if (isset($address['state'])) {
                 $address['region_id'] = $this->_helper->getRegionId($address['state']);
@@ -271,7 +242,7 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex
      * Convert SOAP response object into validated address object
      *
      * @param stdClass $response
-     * @return BlueAcorn_AddressValidation_Model_Result
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
      */
     protected function _parseSoapResponse($response)
     {
