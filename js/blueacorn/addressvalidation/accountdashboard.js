@@ -45,29 +45,19 @@ var ADAddressValidator = Class.create(AddressValidator, {
             dataForm.form.select('button[type="submit"]').first()
                 .writeAttribute('onclick', 'dataForm.submit()')
                 .writeAttribute('type', 'button');
-            dataForm.submit = dataForm.submit.wrap(function ($super) {
-                // HALT if ba object doesn't exit
-                if(typeof ba === "undefined"){
-                    console.log('Address Validation module depends on GP...');
-                    return $super();
-                }
-
+            dataForm.submit = dataForm.submit.wrap(this.wrapperGenerator(function ($super) {
                 // Validation only available for US addresses
                 var notInUS = !($F('country') == 'US');
                 if (notInUS) {
                     return $super();
                 }
-
                 // Attach ADAddressValidator
                 if (!this.addressValidator) {
                     this.addressValidator = adAddressValidator.attach(this.form);
                 }
-
-                // Varien validator comes first
-                if (this.validator && this.validator.validate()) {
-                    this.addressValidator.validate($super.bind(this));
-                }
-            });
+                // Validate address
+                this.addressValidator.validate($super.bind(this));
+            }));
         }
     }
 });

@@ -20,25 +20,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
      * Set up DOM observers to inject address validator
      */
     setupObservers: function() {
-        /**
-         * Generate some wrapper methods for shipping/billing save actions. $super is the prototype wrap
-         * passed down from shipping/billing, while wrapper is the custom wrap
-         */
-        var wrapperGenerator = function (wrapper) {
-            return function ($super) {
-                // HALT if ba object doesn't exit
-                if (typeof ba === "undefined") {
-                    console.log('Address Validation module depends on GP...');
-                    return $super();
-                }
-                var formValidator = new Validation(this.form);
-                if (!formValidator.validate()) {
-                    return;
-                }
-                wrapper.call(this, $super);
-            }
-        }
-        var shippingWrapper = wrapperGenerator(function ($super) {
+        var shippingWrapper = this.wrapperGenerator(function ($super) {
             var notInUS = !($F('shipping:country_id') == 'US'),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
@@ -52,7 +34,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
             }
             this.addressValidator.validate($super.bind(this));
         });
-        var billingWrapper = wrapperGenerator(function ($super) {
+        var billingWrapper = this.wrapperGenerator(function ($super) {
             if (checkout.loadWaiting) return;
             /**
              * If we are using billing for shipping, uncheck billing for shipping option so that this doesn't

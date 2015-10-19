@@ -253,6 +253,26 @@ var AddressValidator = Class.create({
     },
 
     /**
+     * Generate some wrapper methods to reduce code duplication . $super is the prototype wrap
+     * passed down from parent (like shipping/billing/account-form), while wrapper is the custom wrap
+     */
+    wrapperGenerator: function(wrapper) {
+        return function ($super) {
+            // HALT if ba object doesn't exit
+            if (typeof ba === "undefined") {
+                console.log('Address Validation module depends on GP...');
+                return $super();
+            }
+            // Varien form validation comes first
+            var formValidator = new Validation(this.form);
+            if (!formValidator.validate()) {
+                return;
+            }
+            wrapper.call(this, $super);
+        }
+    },
+
+    /**
      * Override in extended classes
      */
     setupObservers: function() {}
