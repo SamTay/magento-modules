@@ -20,6 +20,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
      * Set up DOM observers to inject address validator
      */
     setupObservers: function() {
+        var self = this;
         var shippingWrapper = this.wrapperGenerator(function ($super) {
             var notInUS = !($F('shipping:country_id') == 'US'),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
@@ -30,7 +31,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
             }
 
             if (!this.addressValidator) {
-                this.addressValidator = opAddressValidator.attach(this.form);
+                this.addressValidator = self.attach(this.form);
             }
             this.addressValidator.validate($super.bind(this));
         });

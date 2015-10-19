@@ -41,6 +41,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
      * Injects validator into varien form object, modifies submit button to allow ajax request before submit
      */
     setupObservers: function() {
+        var self = this;
         if (typeof dataForm !== "undefined") {
             dataForm.form.select('button[type="submit"]').first()
                 .writeAttribute('onclick', 'dataForm.submit()')
@@ -53,7 +54,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
                 }
                 // Attach ADAddressValidator
                 if (!this.addressValidator) {
-                    this.addressValidator = adAddressValidator.attach(this.form);
+                    this.addressValidator = self.attach(this.form);
                 }
                 // Validate address
                 this.addressValidator.validate($super.bind(this));
