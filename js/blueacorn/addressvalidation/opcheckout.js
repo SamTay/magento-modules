@@ -61,7 +61,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
         this.addressValidator.validate($super.bind(this));
     });
     var billingWrapper = wrapperGenerator(function ($super) {
-        if (checkout.loadWaiting != false) return;
+        if (checkout.loadWaiting) return;
         /**
          * If we are using billing for shipping, uncheck billing for shipping option so that this doesn't
          * get saved in the billingSaveAction request. After saving billing address via $super, sync the
