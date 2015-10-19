@@ -189,9 +189,11 @@ var AddressValidator = Class.create({
             if (typeof continueCb === "function") continueCb.call(this);
             this.continueAddressSave();
         }.bind(this));
-        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
-            Event.stop(event);
-            if (typeof cancelCb === "function") cancelCb.call(this);
+        $$('.error-container .go-back').each(function(element) {
+            element.observe('click', function(event) {
+                Event.stop(event);
+                if (typeof cancelCb === "function") cancelCb.call(this);
+            }.bind(this));
         }.bind(this));
     },
 
