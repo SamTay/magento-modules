@@ -8,7 +8,7 @@
 
 /**
  * Interface BlueAcorn_AddressValidation_Model_Validation_ApiInterface
- * All address validation APIs are required to implement ApiInterface
+ * All address validation APIs are required to implement this interface
  */
 interface BlueAcorn_AddressValidation_Model_Validation_ApiInterface
 {
