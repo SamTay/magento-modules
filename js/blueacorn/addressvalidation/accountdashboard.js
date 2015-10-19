@@ -41,36 +41,34 @@ var ADAddressValidator = Class.create(AddressValidator, {
      * Injects validator into varien form object, modifies submit button to allow ajax request before submit
      */
     setupObservers: function() {
-        Event.observe(window, 'load', function() {
-            if (typeof dataForm !== "undefined") {
-                dataForm.form.select('button[type="submit"]').first()
-                    .writeAttribute('onclick', 'dataForm.submit()')
-                    .writeAttribute('type', 'button');
-                dataForm.submit = dataForm.submit.wrap(function ($super) {
-                    // HALT if ba object doesn't exit
-                    if(typeof ba === "undefined"){
-                        console.log('Address Validation module depends on GP...');
-                        return $super();
-                    }
+        if (typeof dataForm !== "undefined") {
+            dataForm.form.select('button[type="submit"]').first()
+                .writeAttribute('onclick', 'dataForm.submit()')
+                .writeAttribute('type', 'button');
+            dataForm.submit = dataForm.submit.wrap(function ($super) {
+                // HALT if ba object doesn't exit
+                if(typeof ba === "undefined"){
+                    console.log('Address Validation module depends on GP...');
+                    return $super();
+                }
 
-                    // Validation only available for US addresses
-                    var notInUS = !($F('country') == 'US');
-                    if (notInUS) {
-                        return $super();
-                    }
+                // Validation only available for US addresses
+                var notInUS = !($F('country') == 'US');
+                if (notInUS) {
+                    return $super();
+                }
 
-                    // Attach ADAddressValidator
-                    if (!this.addressValidator) {
-                        this.addressValidator = adAddressValidator.attach(this.form);
-                    }
+                // Attach ADAddressValidator
+                if (!this.addressValidator) {
+                    this.addressValidator = adAddressValidator.attach(this.form);
+                }
 
-                    // Varien validator comes first
-                    if (this.validator && this.validator.validate()) {
-                        this.addressValidator.validate($super.bind(this));
-                    }
-                });
-            }
-        });
+                // Varien validator comes first
+                if (this.validator && this.validator.validate()) {
+                    this.addressValidator.validate($super.bind(this));
+                }
+            });
+        }
     }
 });
 

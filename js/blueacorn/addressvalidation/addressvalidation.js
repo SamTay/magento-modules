@@ -34,7 +34,7 @@ var AddressValidator = Class.create({
         /**
          * Override this.setupObservers in specific integrations to attach "this" to parent forms
          */
-        this.setupObservers();
+        Event.observe(window, "load", this.setupObservers.bind(this));
     },
 
     /**

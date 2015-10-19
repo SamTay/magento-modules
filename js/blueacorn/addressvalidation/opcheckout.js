@@ -77,14 +77,12 @@ var OPAddressValidator = Class.create(AddressValidator, {
                 shipping.save();
             }
         });
-        Event.observe(window, 'load', function() {
-            if (typeof Shipping !== "undefined") {
-                Shipping.prototype.save = Shipping.prototype.save.wrap(shippingWrapper);
-            }
-            if (typeof Billing !== "undefined") {
-                Billing.prototype.save = Billing.prototype.save.wrap(billingWrapper);
-            }
-        });
+        if (typeof Shipping !== "undefined") {
+            Shipping.prototype.save = Shipping.prototype.save.wrap(shippingWrapper);
+        }
+        if (typeof Billing !== "undefined") {
+            Billing.prototype.save = Billing.prototype.save.wrap(billingWrapper);
+        }
     }
 });
 
