@@ -131,13 +131,13 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
                         $validatedAddress['street1'] = (string)$address->Address2;
                         $validatedAddress['street2'] = (string)$address->Address1;
                         $validatedAddresses[] = $validatedAddress;
+                        if (!empty($address->Error)) {
+                            $returnText[] = (string)$address->Error->Description;
+                        }
                     }
                     //TODO: Test the return text feature
                     if (!empty($xml->ReturnText)) {
                         $returnText[] = (string)$xml->ReturnText;
-                    }
-                    if (!empty($address->Error)) {
-                        $returnText[] = (string)$address->Error->Description;
                     }
 
                     if ($this->_debug) {
