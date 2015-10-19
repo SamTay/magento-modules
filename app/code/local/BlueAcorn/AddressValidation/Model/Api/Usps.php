@@ -6,7 +6,9 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
-class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressValidation_Model_ApiInterface
+class BlueAcorn_AddressValidation_Model_Api_Usps
+    extends BlueAcorn_AddressValidation_Model_ApiAbstract
+    implements BlueAcorn_AddressValidation_Model_ApiInterface
 {
 
     /**
@@ -21,12 +23,6 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
     protected $_result;
 
     /**
-     * Hold instance of module helper
-     * @var
-     */
-    protected $_helper;
-
-    /**
      * Default cgi gateway URL
      * @var string
      */
@@ -37,18 +33,6 @@ class BlueAcorn_AddressValidation_Model_Api_Usps implements BlueAcorn_AddressVal
      * @var string
      */
     protected $_api = 'Verify';
-
-    /**
-     * Debug mode on/off
-     * @var bool
-     */
-    protected $_debug = false;
-
-    public function __construct()
-    {
-        $this->_helper = Mage::helper('blueacorn_addressvalidation');
-        $this->_debug = $this->_helper->isDebugMode();
-    }
 
     /**
      * Accepts array with address data, sets request in XML format and calls

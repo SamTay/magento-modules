@@ -5,7 +5,9 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
-class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressValidation_Model_ApiInterface
+class BlueAcorn_AddressValidation_Model_Api_Fedex
+    extends BlueAcorn_AddressValidation_Model_ApiAbstract
+    implements BlueAcorn_AddressValidation_Model_ApiInterface
 {
     const FEDEX_SANDBOX_MODE = 'carriers/fedex/sandbox_mode';
     const FEDEX_SANDBOX_URL = 'https://wsbeta.fedex.com:443/web-services';
@@ -23,12 +25,6 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
     protected $_result;
 
     /**
-     * Hold instance of module helper
-     * @var
-     */
-    protected $_helper;
-
-    /**
      * Default cgi gateway URL
      * @var string
      */
@@ -42,15 +38,11 @@ class BlueAcorn_AddressValidation_Model_Api_Fedex implements BlueAcorn_AddressVa
     protected $_addressValidationWsdl;
 
     /**
-     * Debug mode on/off
-     * @var bool
+     * Add helper/debug properties and api settings
      */
-    protected $_debug = false;
-
     public function __construct()
     {
-        $this->_helper = Mage::helper('blueacorn_addressvalidation');
-        $this->_debug = $this->_helper->isDebugMode();
+        parent::__construct();
         $this->_soapUrl = $this->_getSoapUrl();
         $this->_addressValidationWsdl = $this->_getWsdlUrl();
     }

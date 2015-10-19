@@ -6,6 +6,10 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
+/**
+ * Interface BlueAcorn_AddressValidation_Model_ApiInterface
+ * All address validation APIs are required to implement ApiInterface
+ */
 interface BlueAcorn_AddressValidation_Model_ApiInterface
 {
     const RESPONSE_ERROR = 'RESPONSE_ERROR';
