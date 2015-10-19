@@ -23,7 +23,7 @@ var AddressValidator = Class.create({
          * See accountdashboard.js for examples
          * @type {string}
          */
-        this.url = '/ba_validation/ajax/checkout';
+        this.url = '/ba_validation/address/checkout';
         /**
          * Override this.fields in specific integrations to match parent form input IDs
          * See accountdashboard.js for examples
