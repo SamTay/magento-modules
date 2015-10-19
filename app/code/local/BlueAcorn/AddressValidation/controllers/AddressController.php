@@ -150,7 +150,7 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         if ($this->getSkipValidation()) {
             $this->getResponse()->setHttpResponseCode(200)
                 ->setHeader('Content-Type', 'application/json')
-                ->setBody(Zend_Json::encode(array('skip_validation' => true)));
+                ->setBody(Mage::helper('core')->jsonEncode(array('skip_validation' => true)));
             return;
         }
         if ($this->_result->hasAddress()) {
@@ -179,7 +179,7 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
 
         $this->getResponse()->setHttpResponseCode(200)
             ->setHeader('Content-Type', 'application/json')
-            ->setBody(Zend_Json::encode($response));
+            ->setBody(Mage::helper('core')->jsonEncode($response));
     }
 
     /**
