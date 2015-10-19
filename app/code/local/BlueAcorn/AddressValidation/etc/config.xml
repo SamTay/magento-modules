@@ -49,13 +49,6 @@
                     <frontName>ba_validation</frontName>
                 </args>
             </blueacorn_addressvalidation>
-            <checkout>
-                <args>
-                    <modules>
-                        <BlueAcorn_AddressValidation before="Mage_Checkout">BlueAcorn_AddressValidation_Checkout</BlueAcorn_AddressValidation>
-                    </modules>
-                </args>
-            </checkout>
         </routers>
         <events>
             <ba_addressvalidation_send_response_before>
