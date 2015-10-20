@@ -5,3 +5,11 @@
 .validated-addresses-modal #validated-address-form {
     padding: 20px;
 }
+
+.zipcode-lookup-progress:after {
+    display: block;
+    content: "";
+    width: 22px;
+    height: 5px;
+    background: transparent url('../images/ajax-loader.gif') no-repeat;
+}

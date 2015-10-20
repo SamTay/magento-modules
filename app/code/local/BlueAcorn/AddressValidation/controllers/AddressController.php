@@ -5,7 +5,7 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
-class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Front_Action
+class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller_Front_Action
 {
 
     /**
@@ -28,7 +28,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
 
     /**
      * Holds result of validation
-     * @var null|BlueAcorn_AddressValidation_Model_Result
+     * @var null|BlueAcorn_AddressValidation_Model_Validation_Result
      */
     protected $_result = null;
 
@@ -92,10 +92,10 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
     protected function _validate()
     {
         $address = $this->getRequestAddress();
-        $result = Mage::getModel('blueacorn_addressvalidation/result');
+        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
         foreach($this->helper()->getEnabledApis() as $api) {
             $apiResult = null;
-            $shortname = 'blueacorn_addressvalidation/api_' . $api;
+            $shortname = 'blueacorn_addressvalidation/validation_api_' . $api;
             try {
                 $apiResult = Mage::getModel($shortname)->validateAddress($address);
             } catch (Mage_Api_Exception $e) {
@@ -150,7 +150,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
         if ($this->getSkipValidation()) {
             $this->getResponse()->setHttpResponseCode(200)
                 ->setHeader('Content-Type', 'application/json')
-                ->setBody(Zend_Json::encode(array('skip_validation' => true)));
+                ->setBody(Mage::helper('core')->jsonEncode(array('skip_validation' => true)));
             return;
         }
         if ($this->_result->hasAddress()) {
@@ -179,7 +179,7 @@ class BlueAcorn_AddressValidation_AjaxController extends Mage_Core_Controller_Fr
 
         $this->getResponse()->setHttpResponseCode(200)
             ->setHeader('Content-Type', 'application/json')
-            ->setBody(Zend_Json::encode($response));
+            ->setBody(Mage::helper('core')->jsonEncode($response));
     }
 
     /**

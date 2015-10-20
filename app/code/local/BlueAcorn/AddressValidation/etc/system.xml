@@ -78,15 +78,14 @@
                             <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
                         <city_state translate="label">
-                            <label>Remove City/State Fields</label>
+                            <label>Auto-fill City/State Fields</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Note that if a customer switches the country from United States,
-                            the fields will show back up because validation is only available for US addresses.]]> </comment>
+                            <comment><![CDATA[This setting will also move the city/state fields before the zip code field.]]></comment>
                         </city_state>
                         <skip_on_equivalent translate="label">
                             <label>Skip Validation for Equivalent Addresses</label>
@@ -140,6 +139,16 @@
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
+                        <city_state translate="label">
+                            <label>Auto-fill City/State Fields</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment><![CDATA[This setting will also move the city/state fields before the zip code field.]]></comment>
+                        </city_state>
                         <skip_on_equivalent translate="label">
                             <label>Skip Validation for Equivalent Addresses</label>
                             <frontend_type>select</frontend_type>

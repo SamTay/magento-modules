@@ -66,6 +66,12 @@
         </events>
         <jsconfig>
             <blueacorn_addressvalidation>
+                <account>
+                    <city_state />
+                </account>
+                <checkout>
+                    <city_state />
+                </checkout>
                 <design>
                     <modal_width />
                     <verify_modaltext />

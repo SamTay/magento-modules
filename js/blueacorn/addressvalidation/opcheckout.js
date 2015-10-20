@@ -8,19 +8,29 @@
  */
 var OPAddressValidator = Class.create(AddressValidator, {
     /**
-     * Initialize class and override field prefix
+     * Initialize class and set form fields
      * @param $super
      */
-    initialize: function($super) {
-        $super();
-        this.fieldPrefix = 'shipping:';
+    initialize: function($super, parentFormId) {
+        $super(parentFormId);
+        this.fields = {
+            street1: 'shipping:street1',
+            street2: 'shipping:street2',
+            postcode: 'shipping:postcode',
+            city: 'shipping:city',
+            region_id: 'shipping:region_id'
+        }
+        this.countryId = 'shipping:country_id';
+        // Need explicit check against true to convert to integer/boolean (because "0" is truthy as string)
+        if (mageConfig['blueacorn_addressvalidation/checkout/city_state'] == true) {
+            this.zipcodeLookupTool = new ZipcodeLookupTool(this);
+        }
     },
 
     /**
      * Fill parent address form with values from addressJSON
      * Unset the possibly selected customer address ID from dropdown
      * @param addressJSON
-     * @param fieldPrefix
      */
     unpackToParentForm: function($super, addressJSON) {
         $super(addressJSON);
@@ -44,7 +54,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
     setupObservers: function() {
         var self = this;
         var shippingWrapper = this.wrapperGenerator(function ($super) {
-            var notInUS = !($F('shipping:country_id') == 'US'),
+            var notInUS = ($F(self.countryId) != 'US'),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
             // Validation only available for US. Previously verified addresses can skip this step
@@ -53,7 +63,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
             }
 
             if (!this.addressValidator) {
-                this.addressValidator = self.attach(this.form);
+                this.addressValidator = self;
             }
             this.addressValidator.validate($super.bind(this));
         });
@@ -113,5 +123,5 @@ var OPAddressValidator = Class.create(AddressValidator, {
 });
 
 Event.observe(window, "load", function() {
-    var opAddressValidator = new OPAddressValidator();
+    var opAddressValidator = new OPAddressValidator('co-shipping-form');
 });

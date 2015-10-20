@@ -3,6 +3,7 @@
  * When extending, must define
  * this.url
  * this.fields
+ * this.setupObservers
  *
  * @package     BlueAcorn/AddressValidation
  * @version     0.1.0
@@ -14,8 +15,9 @@ var AddressValidator = Class.create({
      * Inititalize class
      * @param form
      */
-    initialize: function() {
+    initialize: function(parentFormId) {
         this.form = 'validated-address-form';
+        this.parentForm = parentFormId;
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
         this.slideTimeout = 3800;
         /**
@@ -23,7 +25,7 @@ var AddressValidator = Class.create({
          * See accountdashboard.js for examples
          * @type {string}
          */
-        this.url = '/ba_validation/ajax/checkout';
+        this.url = '/ba_validation/address/checkout';
         /**
          * Override this.fields in specific integrations to match parent form input IDs
          * See accountdashboard.js for examples
@@ -36,26 +38,11 @@ var AddressValidator = Class.create({
             city: 'city',
             region_id: 'region_id'
         };
-        /**
-         * Optional field prefix for parent form input IDs
-         * @type {string}
-         */
-        this.fieldPrefix = '';
 
         /**
          * Override this.setupObservers in specific integrations to attach "this" to parent forms
          */
         this.setupObservers();
-    },
-
-    /**
-     * Attach to parent object, save parent object form
-     * @param form
-     * @returns {AddressValidator}
-     */
-    attach: function(form) {
-        this.parentForm = form;
-        return this;
     },
 
     /**
@@ -280,11 +267,10 @@ var AddressValidator = Class.create({
      * Fill parent address form with values from addressJSON. This is used when a user
      * selects an address from the validated address form
      * @param addressJSON
-     * @param fieldPrefix
      */
     unpackToParentForm: function(addressJSON) {
         for(var key in this.fields) {
-            Form.Element.setValue(this.fieldPrefix + this.fields[key], addressJSON[key]);
+            Form.Element.setValue(this.fields[key], addressJSON[key]);
         }
     },
 
@@ -313,4 +299,3 @@ var AddressValidator = Class.create({
      */
     setupObservers: function() {}
 });
-

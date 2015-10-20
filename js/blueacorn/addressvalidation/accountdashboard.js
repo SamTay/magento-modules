@@ -8,12 +8,12 @@
  */
 var ADAddressValidator = Class.create(AddressValidator, {
     /**
-     * Initialize class and override some settings
+     * Initialize class, override some settings, and instantiate zipcode tool
      * @param $super
      */
-    initialize: function($super) {
-        $super();
-        this.url = '/ba_validation/ajax/account';
+    initialize: function($super, parentFormId) {
+        $super(parentFormId);
+        this.url = '/ba_validation/address/account';
         this.slideTimeout = 10000
         this.fields = {
             street1: 'street_1',
@@ -22,6 +22,11 @@ var ADAddressValidator = Class.create(AddressValidator, {
             city: 'city',
             region_id: 'region_id'
         };
+        this.countryId = 'country';
+        // Need explicit check against true to convert to integer/boolean (because "0" is truthy as string)
+        if (mageConfig['blueacorn_addressvalidation/account/city_state'] == true) {
+            this.zipcodeLookupTool = new ZipcodeLookupTool(this);
+        }
     },
 
     /**
@@ -42,18 +47,18 @@ var ADAddressValidator = Class.create(AddressValidator, {
      */
     setupObservers: function() {
         var self = this,
-            $form = $('form-validate');
+            $form = $(this.form);
         if ($form) {
             $form.observe('submit', function(event) {
                 // Validation only available for US addresses
-                var notInUS = !($F('country') == 'US');
+                var notInUS = ($F(self.countryId) != 'US');
                 if (notInUS) {
                     return true;
                 }
                 Event.stop(event);
                 // Attach ADAddressValidator
                 if (!this.addressValidator) {
-                    this.addressValidator = self.attach(this);
+                    this.addressValidator = self;
                 }
                 // Validate address
                 this.addressValidator.validate($form.submit.bind($form));
@@ -63,5 +68,5 @@ var ADAddressValidator = Class.create(AddressValidator, {
 });
 
 Event.observe(window, "load", function() {
-    var adAddressValidator = new ADAddressValidator();
+    var adAddressValidator = new ADAddressValidator('form-validate');
 });
