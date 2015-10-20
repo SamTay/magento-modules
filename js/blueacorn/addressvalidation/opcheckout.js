@@ -17,7 +17,68 @@ var OPAddressValidator = Class.create(AddressValidator, {
     },
 
     /**
-     * Set up DOM observers to inject address validator
+     * Show form as normal, then define a wrapper for shipping.onComplete
+     * @param $super
+     */
+    showAjaxResult: function($super, response) {
+        $super(response);
+        this.wrapShippingOnComplete();
+    },
+
+    /**
+     * Fill parent address form with values from addressJSON
+     * Unset the possibly selected customer address ID from dropdown
+     * @param addressJSON
+     * @param fieldPrefix
+     */
+    unpackToParentForm: function($super, addressJSON) {
+        $super(addressJSON);
+        shipping.resetSelectedAddress();
+        this.newAddress = true;
+    },
+
+    /**
+     * Wrap shipping.onComplete to clean up some address validator tasks
+     */
+    wrapShippingOnComplete: function() {
+        if (this.shippingOnCompleteWrapped) {
+            return;
+        }
+        var addressValidator = this;
+        shipping.onComplete = shipping.onComplete.wrap(function($super) {
+            $super();
+            // Show full address form (instead of shipping-address-select) if user submitted validated address
+            if (addressValidator.newAddress) {
+                this.newAddress(true);
+                addressValidator.newAddress = false;
+            }
+
+            // Remove form/error content
+            if ($(addressValidator.form)) {
+                $(addressValidator.form).remove();
+            }
+            if ($$('.error-container').length > 0) {
+                $$('.error-container').first().remove();
+            }
+
+            // Show shipping form by default
+            $(this.form).show();
+        }.bind(shipping));
+        this.shippingOnCompleteWrapped = true;
+    },
+
+    /**
+     * Override timeout as this gets taken care of in shiping.onComplete
+     */
+    onSlideSuccessContinue: null,
+
+    /**
+     * Override timeout as this gets taken care of in shiping.onComplete
+     */
+    onSlideErrorContinue: null,
+
+    /**
+     * Inject address validator into wrapped methods of op checkout objects
      */
     setupObservers: function() {
         var self = this;

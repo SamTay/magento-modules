@@ -29,25 +29,16 @@ var ADAddressValidator = Class.create(AddressValidator, {
      * because submitting post takes longer here, and since the action isn't ajax,
      * there's no reason to change what the page currently looks like.
      */
-    bindSlideSuccessObservers: function() {
-        this.bindSuccessObservers(null, function() {
-            $(this.form).remove();
-            new Effect.SlideDown(this.parentForm);
-        }.bind(this));
-    },
+    onSlideSuccessContinue: null,
 
     /**
      * Override so that "continue" action doesn't try to remove form,
      * for the same reason as above.
      */
-    bindSlideErrorObservers: function() {
-        this.bindErrorObservers(null, function() {
-            $$('.error-container').first().remove();
-            new Effect.SlideDown(this.parentForm);
-        }.bind(this));
-    },
+    onSlideErrorContinue: null,
 
     /**
+     * Inject address validator onto form submission
      */
     setupObservers: function() {
         var self = this,

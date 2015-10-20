@@ -173,6 +173,11 @@ var AddressValidator = Class.create({
         callback.call(this);
     },
 
+    /**
+     * Bind observers for form content, pass callbacks for submit/cancel events
+     * @param continueCb
+     * @param cancelCb
+     */
     bindSuccessObservers: function(continueCb, cancelCb) {
         // Handle submit action
         $(this.form).querySelector('.btn-submit').observe('click', function(event) {
@@ -194,6 +199,11 @@ var AddressValidator = Class.create({
         }.bind(this));
     },
 
+    /**
+     * Bind observers for error content, pass callbacks for continue/cancel events
+     * @param continueCb
+     * @param cancelCb
+     */
     bindErrorObservers: function(continueCb, cancelCb) {
         $$('.error-container button.btn-continue').first().observe('click', function(event) {
             Event.stop(event);
@@ -219,15 +229,10 @@ var AddressValidator = Class.create({
      * Bind slide events for validated address form content
      */
     bindSlideSuccessObservers: function() {
-        this.bindSuccessObservers(function() {
-            setTimeout(function() {
-                $(this.form).remove();
-                $(this.parentForm).show();
-            }.bind(this), this.slideTimeout);
-        }.bind(this), function() {
+        this.bindSuccessObservers(this.onSlideSuccessContinue, function() {
             $(this.form).remove();
             new Effect.SlideDown(this.parentForm);
-        }.bind(this));
+        });
     },
 
     /**
@@ -241,15 +246,34 @@ var AddressValidator = Class.create({
      * Bind slide events for error message content
      */
     bindSlideErrorObservers: function() {
-        this.bindErrorObservers(function() {
-            setTimeout(function() {
-                $$('.error-container').first().remove();
-                $(this.parentForm).show();
-            }.bind(this), this.slideTimeout);
-        }.bind(this), function() {
+        this.bindErrorObservers(this.onSlideErrorContinue, function() {
             $$('.error-container').first().remove();
             new Effect.SlideDown(this.parentForm);
-        }.bind(this));
+        });
+    },
+
+    /**
+     * Note: These timeouts are default, but they are worst case scenario. Ideally,
+     * override this in specific areas and inject this logic without timeout via
+     * wraps or listening for events
+     */
+    onSlideSuccessContinue: function() {
+        setTimeout(function() {
+            $(this.form).remove();
+            $(this.parentForm).show();
+        }.bind(this), this.slideTimeout);
+    },
+
+    /**
+     * Note: These timeouts are default, but they are worst case scenario. Ideally,
+     * override this in specific areas and inject this logic without timeout via
+     * wraps or listening for events
+     */
+    onSlideErrorContinue: function() {
+        setTimeout(function() {
+            $$('.error-container').first().remove();
+            $(this.parentForm).show();
+        }.bind(this), this.slideTimeout);
     },
 
     /**
