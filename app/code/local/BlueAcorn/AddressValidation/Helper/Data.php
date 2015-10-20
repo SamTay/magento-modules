@@ -120,7 +120,7 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
      * @param array $fieldsToCompare
      * @return bool
      */
-    public function compareAddresses($address1 = null, $address2 = null, array $fieldsToCompare = array())
+    public function compareAddresses($address1 = null, $address2 = null, array $fieldsToCompare = array(), $strict = false)
     {
         if (empty($fieldsToCompare)) {
             $fieldsToCompare = $this->_uniqueAddressFields;
@@ -137,6 +137,9 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
                 return false;
             }
             if (array_key_exists($field, $address1)) {
+                if ($strict && $address1[$field] != $address2[$field]) {
+                    return false;
+                }
                 if (strtoupper($address1[$field]) != strtoupper($address2[$field])) {
                     return false;
                 }

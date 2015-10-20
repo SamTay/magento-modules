@@ -126,15 +126,24 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         return $this->_result;
     }
 
+    /**
+     * Mark possible skips for validation step, such as equivalence in validated
+     * address and request address
+     */
     protected function _markPossibleSkips()
     {
-        if ($this->getConfigPerAction('skip_on_equivalent')
-            && $this->_result->getAddressCount() == 1
-        ) {
-            $validatedAddress = $this->_result->getFirstAddress();
+        if ($this->_result->getAddressCount() != 1) {
+            return;
+        }
+        $validatedAddress = $this->_result->getFirstAddress();
+        if ($this->getConfigPerAction('skip_on_equivalent')) {
             if ($this->helper()->compareAddresses($this->_requestAddress, $validatedAddress)) {
                 $this->_skipValidation = true;
+                return;
             }
+        }
+        if ($this->helper()->compareAddresses($this->_requestAddress, $validatedAddress, array(), true)) {
+            $this->_skipValidation = true;
         }
     }
 
