@@ -38,27 +38,25 @@ var ADAddressValidator = Class.create(AddressValidator, {
     },
 
     /**
-     * Injects validator into varien form object, modifies submit button to allow ajax request before submit
      */
     setupObservers: function() {
-        var self = this;
-        if (typeof dataForm !== "undefined") {
-            dataForm.form.select('button[type="submit"]').first()
-                .writeAttribute('onclick', 'dataForm.submit()')
-                .writeAttribute('type', 'button');
-            dataForm.submit = dataForm.submit.wrap(this.wrapperGenerator(function ($super) {
+        var self = this,
+            $form = $('form-validate');
+        if ($form) {
+            $form.observe('submit', function(event) {
                 // Validation only available for US addresses
                 var notInUS = !($F('country') == 'US');
                 if (notInUS) {
-                    return $super();
+                    return true;
                 }
+                Event.stop(event);
                 // Attach ADAddressValidator
                 if (!this.addressValidator) {
-                    this.addressValidator = self.attach(this.form);
+                    this.addressValidator = self.attach(this);
                 }
                 // Validate address
-                this.addressValidator.validate($super.bind(this));
-            }));
+                this.addressValidator.validate($form.submit.bind($form));
+            });
         }
     }
 });
