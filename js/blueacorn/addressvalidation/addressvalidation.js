@@ -285,7 +285,7 @@ var AddressValidator = Class.create({
     },
 
     /**
-     * Override in extended classes
+     * Override in extended classes to handle injection
      */
     setupObservers: function() {}
 });
