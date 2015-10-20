@@ -13,6 +13,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
      */
     initialize: function($super) {
         $super();
+        this.area = 'account';
         this.url = '/ba_validation/address/account';
         this.slideTimeout = 10000
         this.fields = {

@@ -3,6 +3,7 @@
  * When extending, must define
  * this.url
  * this.fields
+ * this.setupObservers
  *
  * @package     BlueAcorn/AddressValidation
  * @version     0.1.0
@@ -18,6 +19,7 @@ var AddressValidator = Class.create({
         this.form = 'validated-address-form';
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
         this.slideTimeout = 3800;
+        this.area = 'abstract';
         /**
          * Override this.url in specific extended integrations
          * See accountdashboard.js for examples
@@ -36,11 +38,6 @@ var AddressValidator = Class.create({
             city: 'city',
             region_id: 'region_id'
         };
-        /**
-         * Optional field prefix for parent form input IDs
-         * @type {string}
-         */
-        this.fieldPrefix = '';
 
         /**
          * Override this.setupObservers in specific integrations to attach "this" to parent forms
@@ -55,6 +52,9 @@ var AddressValidator = Class.create({
      */
     attach: function(form) {
         this.parentForm = form;
+        if (mageConfig['blueacorn_addressvalidation/' + this.area + '/city_state']) {
+            this.zipcodeLookupTool = new ZipcodeLookupTool(this);
+        }
         return this;
     },
 
@@ -280,11 +280,10 @@ var AddressValidator = Class.create({
      * Fill parent address form with values from addressJSON. This is used when a user
      * selects an address from the validated address form
      * @param addressJSON
-     * @param fieldPrefix
      */
     unpackToParentForm: function(addressJSON) {
         for(var key in this.fields) {
-            Form.Element.setValue(this.fieldPrefix + this.fields[key], addressJSON[key]);
+            Form.Element.setValue(this.fields[key], addressJSON[key]);
         }
     },
 
@@ -313,4 +312,3 @@ var AddressValidator = Class.create({
      */
     setupObservers: function() {}
 });
-

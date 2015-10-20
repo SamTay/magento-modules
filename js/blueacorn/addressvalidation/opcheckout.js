@@ -8,19 +8,25 @@
  */
 var OPAddressValidator = Class.create(AddressValidator, {
     /**
-     * Initialize class and override field prefix
+     * Initialize class and set form fields
      * @param $super
      */
     initialize: function($super) {
         $super();
-        this.fieldPrefix = 'shipping:';
+        this.area = 'checkout';
+        this.fields = {
+            street1: 'shipping:street1',
+            street2: 'shipping:street2',
+            postcode: 'shipping:postcode',
+            city: 'shipping:city',
+            region_id: 'shipping:region_id'
+        }
     },
 
     /**
      * Fill parent address form with values from addressJSON
      * Unset the possibly selected customer address ID from dropdown
      * @param addressJSON
-     * @param fieldPrefix
      */
     unpackToParentForm: function($super, addressJSON) {
         $super(addressJSON);

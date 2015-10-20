@@ -28,6 +28,9 @@
     <checkout_onepage_index>
         <update handle="addressvalidation"/>
         <reference name="head">
+            <action method="addJs" ifconfig="blueacorn_addressvalidation/checkout/city_state">
+                <script>blueacorn/addressvalidation/zipcodelookup.js</script>
+            </action>
             <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
                 <script>blueacorn/addressvalidation/opcheckout.js</script>
             </action>
@@ -42,6 +45,9 @@
     <customer_address_form>
         <update handle="addressvalidation"/>
         <reference name="head">
+            <action method="addJs" ifconfig="blueacorn_addressvalidation/account/city_state">
+                <script>blueacorn/addressvalidation/zipcodelookup.js</script>
+            </action>
             <action method="addJs" ifconfig="blueacorn_addressvalidation/general/enabled">
                 <script>blueacorn/addressvalidation/accountdashboard.js</script>
             </action>
