@@ -86,9 +86,9 @@ var ZipcodeLookupTool = Class.create({
      */
     getFirstField: function() {
         // Quick getKey method for this.fields
-        this.fields.getKey = function(value) {
-            for(var key in this) {
-                if (this[key] == value) {
+        var getKey = function(object, value) {
+            for(var key in object) {
+                if (object[key] == value) {
                     return key;
                 }
             }
@@ -102,7 +102,7 @@ var ZipcodeLookupTool = Class.create({
             fieldsArray.push(this.fields[key]);
         }
         $$('input#' + fieldsArray.join(', input#')).each(function(input, index) {
-            indexMap[index] = this.fields.getKey($(input).readAttribute('id'));
+            indexMap[index] = getKey(this.fields, $(input).readAttribute('id'));
             indices.push(index);
         });
         return indexMap[indices.min()];
