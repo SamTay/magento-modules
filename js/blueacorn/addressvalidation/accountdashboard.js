@@ -22,6 +22,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
             city: 'city',
             region_id: 'region_id'
         };
+        this.countryId = 'country';
         if (mageConfig['blueacorn_addressvalidation/account/city_state']) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
@@ -49,7 +50,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
         if ($form) {
             $form.observe('submit', function(event) {
                 // Validation only available for US addresses
-                var notInUS = !($F('country') == 'US');
+                var notInUS = ($F(self.countryId) != 'US');
                 if (notInUS) {
                     return true;
                 }

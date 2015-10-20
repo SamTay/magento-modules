@@ -14,11 +14,8 @@ var ZipcodeLookupTool = Class.create({
     initialize: function(parent) {
         this.url = '/ba_validation/zipcode/lookup';
         this.form = parent.form;
-        this.fields = {
-            postcode: parent.fields.postcode,
-            city: parent.fields.city,
-            region_id: parent.fields.region_id
-        }
+        this.fields = parent.fields;
+        this.fields.country = parent.countryId;
         this.lookupInProgress = false;
         this.organizeFormFields();
         this.setupFormObservers();
@@ -28,22 +25,21 @@ var ZipcodeLookupTool = Class.create({
      * Move postcode field before city/state if necessary
      */
     organizeFormFields: function() {
-        var firstField = this.getFirstField();
-
         // Move postcode field before city/state
-        if (firstField != 'postcode') {
-            $(this.fields[firstField]).up('div.field').insert({
-                before: $(this.fields.postcode)
-            });
-        }
+        $(this.fields.city).up('div.field').insert({
+            before: $(this.fields.postcode).up('div.field')
+        });
     },
 
     /**
      * Setup observer on postcode field to ajax populate the city/state
      */
     setupFormObservers: function () {
-        $(this.fields.postcode).on('keydown', function(event) {
-            if ($(this.fields.postcode).value.length >= 5 && !this.lookupInProgress) {
+        $(this.fields.postcode).on('keyup', function(event) {
+            if ($(this.fields.postcode).value.length >= 5
+                && !this.lookupInProgress
+                && $F(this.fields.country) == 'US'
+            ) {
                 this.lookupInProgress = true;
                 this.updateCityState();
             }
@@ -55,12 +51,15 @@ var ZipcodeLookupTool = Class.create({
      */
     updateCityState: function() {
         new Ajax.Request(this.url, {
-            parameters: {zipcode: $(this.fields.postcode).value},
+            parameters: {postcode: $(this.fields.postcode).value},
             onSuccess: function(response) {
-                if (response.hasOwnProperty(responseJSON)) {
+                if (response.hasOwnProperty('responseJSON')) {
                     this.populateCityState(response.responseJSON);
                 }
-            },
+            }.bind(this),
+            onComplete: function() {
+                this.lookupInProgress = false;
+            }.bind(this)
         });
     },
 
@@ -73,11 +72,12 @@ var ZipcodeLookupTool = Class.create({
             var currentValue = $(this.fields[fieldKey]);
             if (responseJSON.hasOwnProperty(fieldKey)) {
                 if (!currentValue || responseJSON[fieldKey].indexOf(currentValue)) {
-                    $(this.fields[fieldKey]).value = responseJSON[fieldKey];
+                    Form.Element.setValue(this.fields[fieldKey], responseJSON[fieldKey]);
+                    //$(this.fields[fieldKey]).value = responseJSON[fieldKey];
                 }
             }
-        });
-        this.lookupInProgress = false;
+        }, this);
+        jQuery(document).trigger('update:all');
     },
 
     /**

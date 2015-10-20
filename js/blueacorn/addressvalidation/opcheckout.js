@@ -20,6 +20,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
             city: 'shipping:city',
             region_id: 'shipping:region_id'
         }
+        this.countryId = 'shipping:country_id';
         if (mageConfig['blueacorn_addressvalidation/checkout/city_state']) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
@@ -52,7 +53,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
     setupObservers: function() {
         var self = this;
         var shippingWrapper = this.wrapperGenerator(function ($super) {
-            var notInUS = !($F('shipping:country_id') == 'US'),
+            var notInUS = ($F(self.countryId) != 'US'),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
             // Validation only available for US. Previously verified addresses can skip this step
