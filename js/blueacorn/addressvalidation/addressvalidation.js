@@ -11,11 +11,10 @@
  */
 var AddressValidator = Class.create({
     /**
-     * Inititalize class with parent form element
+     * Inititalize class
      * @param form
      */
-    initialize: function(form) {
-        this.parentForm = form;
+    initialize: function() {
         this.form = 'validated-address-form';
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
         this.slideTimeout = 3800;
@@ -28,9 +27,35 @@ var AddressValidator = Class.create({
         /**
          * Override this.fields in specific integrations to match parent form input IDs
          * See accountdashboard.js for examples
-         * @type {string[]}
+         * @type {{street1: string, street2: string, postcode: string, city: string, region_id: string}}
          */
-        this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
+        this.fields = {
+            street1: 'street1',
+            street2: 'street2',
+            postcode: 'postcode',
+            city: 'city',
+            region_id: 'region_id'
+        };
+        /**
+         * Optional field prefix for parent form input IDs
+         * @type {string}
+         */
+        this.fieldPrefix = '';
+
+        /**
+         * Override this.setupObservers in specific integrations to attach "this" to parent forms
+         */
+        this.setupObservers();
+    },
+
+    /**
+     * Attach to parent object, save parent object form
+     * @param form
+     * @returns {AddressValidator}
+     */
+    attach: function(form) {
+        this.parentForm = form;
+        return this;
     },
 
     /**
@@ -148,6 +173,11 @@ var AddressValidator = Class.create({
         callback.call(this);
     },
 
+    /**
+     * Bind observers for form content, pass callbacks for submit/cancel events
+     * @param continueCb
+     * @param cancelCb
+     */
     bindSuccessObservers: function(continueCb, cancelCb) {
         // Handle submit action
         $(this.form).querySelector('.btn-submit').observe('click', function(event) {
@@ -169,15 +199,22 @@ var AddressValidator = Class.create({
         }.bind(this));
     },
 
+    /**
+     * Bind observers for error content, pass callbacks for continue/cancel events
+     * @param continueCb
+     * @param cancelCb
+     */
     bindErrorObservers: function(continueCb, cancelCb) {
         $$('.error-container button.btn-continue').first().observe('click', function(event) {
             Event.stop(event);
             if (typeof continueCb === "function") continueCb.call(this);
             this.continueAddressSave();
         }.bind(this));
-        $$('.error-container button.btn-cancel').first().observe('click', function(event) {
-            Event.stop(event);
-            if (typeof cancelCb === "function") cancelCb.call(this);
+        $$('.error-container .go-back').each(function(element) {
+            element.observe('click', function(event) {
+                Event.stop(event);
+                if (typeof cancelCb === "function") cancelCb.call(this);
+            }.bind(this));
         }.bind(this));
     },
 
@@ -192,15 +229,10 @@ var AddressValidator = Class.create({
      * Bind slide events for validated address form content
      */
     bindSlideSuccessObservers: function() {
-        this.bindSuccessObservers(function() {
-            setTimeout(function() {
-                $(this.form).remove();
-                $(this.parentForm).show();
-            }.bind(this), this.slideTimeout);
-        }.bind(this), function() {
+        this.bindSuccessObservers(this.onSlideSuccessContinue, function() {
             $(this.form).remove();
             new Effect.SlideDown(this.parentForm);
-        }.bind(this));
+        });
     },
 
     /**
@@ -214,15 +246,34 @@ var AddressValidator = Class.create({
      * Bind slide events for error message content
      */
     bindSlideErrorObservers: function() {
-        this.bindErrorObservers(function() {
-            setTimeout(function() {
-                $$('.error-container').first().remove();
-                $(this.parentForm).show();
-            }.bind(this), this.slideTimeout);
-        }.bind(this), function() {
+        this.bindErrorObservers(this.onSlideErrorContinue, function() {
             $$('.error-container').first().remove();
             new Effect.SlideDown(this.parentForm);
-        }.bind(this));
+        });
+    },
+
+    /**
+     * Note: These timeouts are default, but they are worst case scenario. Ideally,
+     * override this in specific areas and inject this logic without timeout via
+     * wraps or listening for events
+     */
+    onSlideSuccessContinue: function() {
+        setTimeout(function() {
+            $(this.form).remove();
+            $(this.parentForm).show();
+        }.bind(this), this.slideTimeout);
+    },
+
+    /**
+     * Note: These timeouts are default, but they are worst case scenario. Ideally,
+     * override this in specific areas and inject this logic without timeout via
+     * wraps or listening for events
+     */
+    onSlideErrorContinue: function() {
+        setTimeout(function() {
+            $$('.error-container').first().remove();
+            $(this.parentForm).show();
+        }.bind(this), this.slideTimeout);
     },
 
     /**
@@ -231,11 +282,35 @@ var AddressValidator = Class.create({
      * @param addressJSON
      * @param fieldPrefix
      */
-    unpackToParentForm: function(addressJSON, fieldPrefix) {
-        fieldPrefix = fieldPrefix ? fieldPrefix : "";
-        this.fields.each(function(field, index) {
-            Form.Element.setValue(fieldPrefix + field, addressJSON[field]);
-        });
-    }
+    unpackToParentForm: function(addressJSON) {
+        for(var key in this.fields) {
+            Form.Element.setValue(this.fieldPrefix + this.fields[key], addressJSON[key]);
+        }
+    },
+
+    /**
+     * Generate some wrapper methods to reduce code duplication . $super is the prototype wrap
+     * passed down from parent (like shipping/billing/account-form), while wrapper is the custom wrap
+     */
+    wrapperGenerator: function(wrapper) {
+        return function ($super) {
+            // HALT if ba object doesn't exit
+            if (typeof ba === "undefined") {
+                console.log('Address Validation module depends on GP...');
+                return $super();
+            }
+            // Varien form validation comes first
+            var formValidator = new Validation(this.form);
+            if (!formValidator.validate()) {
+                return;
+            }
+            wrapper.call(this, $super);
+        }
+    },
+
+    /**
+     * Override in extended classes to handle injection
+     */
+    setupObservers: function() {}
 });
 
