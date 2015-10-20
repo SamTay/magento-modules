@@ -7,11 +7,21 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 var ADAddressValidator = Class.create(AddressValidator, {
+    /**
+     * Initialize class and override some settings
+     * @param $super
+     */
     initialize: function($super) {
         $super();
         this.url = '/ba_validation/ajax/account';
-        this.fields = ['street_1', 'street_2', 'zip', 'city', 'region_id'];
         this.slideTimeout = 10000
+        this.fields = {
+            street1: 'street_1',
+            street2: 'street_2',
+            postcode: 'zip',
+            city: 'city',
+            region_id: 'region_id'
+        };
     },
 
     /**

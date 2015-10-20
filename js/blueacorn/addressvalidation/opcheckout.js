@@ -8,12 +8,12 @@
  */
 var OPAddressValidator = Class.create(AddressValidator, {
     /**
-     * Specify field prefix and call parent method to unpack
+     * Initialize class and override field prefix
      * @param $super
-     * @param addressJSON
      */
-    unpackToParentForm: function($super, addressJSON) {
-        $super(addressJSON, 'shipping:');
+    initialize: function($super) {
+        $super();
+        this.fieldPrefix = 'shipping:';
     },
 
     /**

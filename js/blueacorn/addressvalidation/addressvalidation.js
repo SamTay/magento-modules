@@ -27,9 +27,20 @@ var AddressValidator = Class.create({
         /**
          * Override this.fields in specific integrations to match parent form input IDs
          * See accountdashboard.js for examples
-         * @type {string[]}
+         * @type {{street1: string, street2: string, postcode: string, city: string, region_id: string}}
          */
-        this.fields = ['street1', 'street2', 'postcode', 'city', 'region_id'];
+        this.fields = {
+            street1: 'street1',
+            street2: 'street2',
+            postcode: 'postcode',
+            city: 'city',
+            region_id: 'region_id'
+        };
+        /**
+         * Optional field prefix for parent form input IDs
+         * @type {string}
+         */
+        this.fieldPrefix = '';
 
         /**
          * Override this.setupObservers in specific integrations to attach "this" to parent forms
@@ -247,11 +258,10 @@ var AddressValidator = Class.create({
      * @param addressJSON
      * @param fieldPrefix
      */
-    unpackToParentForm: function(addressJSON, fieldPrefix) {
-        fieldPrefix = fieldPrefix ? fieldPrefix : "";
-        this.fields.each(function(field, index) {
-            Form.Element.setValue(fieldPrefix + field, addressJSON[field]);
-        });
+    unpackToParentForm: function(addressJSON) {
+        for(var key in this.fields) {
+            Form.Element.setValue(this.fieldPrefix + this.fields[key], addressJSON[key]);
+        }
     },
 
     /**
