@@ -21,7 +21,8 @@ var OPAddressValidator = Class.create(AddressValidator, {
             region_id: 'shipping:region_id'
         }
         this.countryId = 'shipping:country_id';
-        if (mageConfig['blueacorn_addressvalidation/checkout/city_state']) {
+        // Need explicit check against true to convert to integer/boolean (because "0" is truthy as string)
+        if (mageConfig['blueacorn_addressvalidation/checkout/city_state'] == true) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },

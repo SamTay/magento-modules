@@ -40,10 +40,27 @@ var ZipcodeLookupTool = Class.create({
                 && !this.lookupInProgress
                 && $F(this.fields.country) == 'US'
             ) {
-                this.lookupInProgress = true;
+                this.toggleInProgress(true);
                 this.updateCityState();
             }
         }.bind(this));
+    },
+
+    /**
+     * Set this.lookInProgress boolean and apply/remove any in-progress styles
+     * @param inProgress
+     */
+    toggleInProgress: function(inProgress) {
+        this.lookupInProgress = inProgress;
+        if (inProgress) {
+            ['city', 'region_id'].forEach(function(fieldKey) {
+                $(this.fields[fieldKey]).addClassName('zipcode-lookup-progress');
+            }, this);
+        } else {
+            ['city', 'region_id'].forEach(function(fieldKey) {
+                $(this.fields[fieldKey]).removeClassName('zipcode-lookup-progress');
+            }, this);
+        }
     },
 
     /**
@@ -58,7 +75,7 @@ var ZipcodeLookupTool = Class.create({
                 }
             }.bind(this),
             onComplete: function() {
-                this.lookupInProgress = false;
+                this.toggleInProgress(false);
             }.bind(this)
         });
     },
@@ -73,38 +90,9 @@ var ZipcodeLookupTool = Class.create({
             if (responseJSON.hasOwnProperty(fieldKey)) {
                 if (!currentValue || responseJSON[fieldKey].indexOf(currentValue)) {
                     Form.Element.setValue(this.fields[fieldKey], responseJSON[fieldKey]);
-                    //$(this.fields[fieldKey]).value = responseJSON[fieldKey];
                 }
             }
         }, this);
         jQuery(document).trigger('update:all');
-    },
-
-    /**
-     * Get first relevant input in the form of this.fields key
-     * @returns string ('postcode', 'city', or 'region_id')
-     */
-    getFirstField: function() {
-        // Quick getKey method for this.fields
-        var getKey = function(object, value) {
-            for(var key in object) {
-                if (object[key] == value) {
-                    return key;
-                }
-            }
-            return null;
-        }
-        // Determine first relevant input
-        var fieldsArray = [],
-            indices = [],
-            indexMap = {};
-        for (var key in this.fields) {
-            fieldsArray.push(this.fields[key]);
-        }
-        $$('input#' + fieldsArray.join(', input#')).each(function(input, index) {
-            indexMap[index] = getKey(this.fields, $(input).readAttribute('id'));
-            indices.push(index);
-        });
-        return indexMap[indices.min()];
     }
 });

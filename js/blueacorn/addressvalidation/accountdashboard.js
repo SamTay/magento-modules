@@ -23,7 +23,8 @@ var ADAddressValidator = Class.create(AddressValidator, {
             region_id: 'region_id'
         };
         this.countryId = 'country';
-        if (mageConfig['blueacorn_addressvalidation/account/city_state']) {
+        // Need explicit check against true to convert to integer/boolean (because "0" is truthy as string)
+        if (mageConfig['blueacorn_addressvalidation/account/city_state'] == true) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },
