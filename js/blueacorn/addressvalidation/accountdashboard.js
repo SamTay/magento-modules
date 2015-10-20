@@ -8,12 +8,11 @@
  */
 var ADAddressValidator = Class.create(AddressValidator, {
     /**
-     * Initialize class and override some settings
+     * Initialize class, override some settings, and instantiate zipcode tool
      * @param $super
      */
-    initialize: function($super) {
-        $super();
-        this.area = 'account';
+    initialize: function($super, parentFormId) {
+        $super(parentFormId);
         this.url = '/ba_validation/address/account';
         this.slideTimeout = 10000
         this.fields = {
@@ -23,6 +22,9 @@ var ADAddressValidator = Class.create(AddressValidator, {
             city: 'city',
             region_id: 'region_id'
         };
+        if (mageConfig['blueacorn_addressvalidation/account/city_state']) {
+            this.zipcodeLookupTool = new ZipcodeLookupTool(this);
+        }
     },
 
     /**
@@ -43,7 +45,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
      */
     setupObservers: function() {
         var self = this,
-            $form = $('form-validate');
+            $form = $(this.form);
         if ($form) {
             $form.observe('submit', function(event) {
                 // Validation only available for US addresses
@@ -54,7 +56,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
                 Event.stop(event);
                 // Attach ADAddressValidator
                 if (!this.addressValidator) {
-                    this.addressValidator = self.attach(this);
+                    this.addressValidator = self;
                 }
                 // Validate address
                 this.addressValidator.validate($form.submit.bind($form));
@@ -64,5 +66,5 @@ var ADAddressValidator = Class.create(AddressValidator, {
 });
 
 Event.observe(window, "load", function() {
-    var adAddressValidator = new ADAddressValidator();
+    var adAddressValidator = new ADAddressValidator('form-validate');
 });

@@ -11,15 +11,17 @@ var OPAddressValidator = Class.create(AddressValidator, {
      * Initialize class and set form fields
      * @param $super
      */
-    initialize: function($super) {
-        $super();
-        this.area = 'checkout';
+    initialize: function($super, parentFormId) {
+        $super(parentFormId);
         this.fields = {
             street1: 'shipping:street1',
             street2: 'shipping:street2',
             postcode: 'shipping:postcode',
             city: 'shipping:city',
             region_id: 'shipping:region_id'
+        }
+        if (mageConfig['blueacorn_addressvalidation/checkout/city_state']) {
+            this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },
 
@@ -59,7 +61,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
             }
 
             if (!this.addressValidator) {
-                this.addressValidator = self.attach(this.form);
+                this.addressValidator = self;
             }
             this.addressValidator.validate($super.bind(this));
         });
@@ -119,5 +121,5 @@ var OPAddressValidator = Class.create(AddressValidator, {
 });
 
 Event.observe(window, "load", function() {
-    var opAddressValidator = new OPAddressValidator();
+    var opAddressValidator = new OPAddressValidator('co-shipping-form');
 });

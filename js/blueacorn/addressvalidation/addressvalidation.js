@@ -15,11 +15,11 @@ var AddressValidator = Class.create({
      * Inititalize class
      * @param form
      */
-    initialize: function() {
+    initialize: function(parentFormId) {
         this.form = 'validated-address-form';
+        this.parentForm = parentFormId;
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
         this.slideTimeout = 3800;
-        this.area = 'abstract';
         /**
          * Override this.url in specific extended integrations
          * See accountdashboard.js for examples
@@ -43,19 +43,6 @@ var AddressValidator = Class.create({
          * Override this.setupObservers in specific integrations to attach "this" to parent forms
          */
         this.setupObservers();
-    },
-
-    /**
-     * Attach to parent object, save parent object form
-     * @param form
-     * @returns {AddressValidator}
-     */
-    attach: function(form) {
-        this.parentForm = form;
-        if (mageConfig['blueacorn_addressvalidation/' + this.area + '/city_state']) {
-            this.zipcodeLookupTool = new ZipcodeLookupTool(this);
-        }
-        return this;
     },
 
     /**
