@@ -47,7 +47,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
      */
     setupObservers: function() {
         var self = this,
-            $form = $(this.form);
+            $form = $(this.parentForm);
         if ($form) {
             $form.observe('submit', function(event) {
                 // Validation only available for US addresses
