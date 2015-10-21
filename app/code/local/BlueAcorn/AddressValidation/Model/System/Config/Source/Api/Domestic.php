@@ -5,13 +5,13 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
-class BlueAcorn_AddressValidation_Model_System_Config_Source_Api
+class BlueAcorn_AddressValidation_Model_System_Config_Source_Api_Domestic
 {
-    const USPS = 'USPS';
-    const FEDEX = 'FEDEX';
+    const USPS = 'usps';
+    const FEDEX = 'fedex';
 
     /**
-     * Get sys config options for Presentation select
+     * Get sys config options for domestic API select
      *
      * @return array
      */

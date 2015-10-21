@@ -160,12 +160,39 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Return array of enabled APIs (these are the VALUES, i.e., constants of the source model class), but
-     * converted to lower case for convenience.
+     * Return array of enabled domestic APIs
+     *
+     * @return array
      */
-    public function getEnabledApis()
+    public function getEnabledDomesticApis()
     {
-        return explode(',', strtolower($this->getConfig('enabled_apis')));
+        return $this->getMultiselectSysConfig('enabled_domestic_apis');
+    }
+
+    /**
+     * Return array of enabled international APIs
+     *
+     * @return array
+     */
+    public function getEnabledInternationalApis()
+    {
+        return $this->getMultiselectSysConfig('enabled_international_apis');
+    }
+
+    /**
+     * Get intuitive multiselect value from system config
+     *
+     * @param $field
+     * @param $group
+     * @return array
+     */
+    public function getMultiselectSysConfig($field, $group = false)
+    {
+        $stringValue = $this->getConfig($field, $group);
+        if (empty($stringValue)) {
+            return array();
+        }
+        return explode(',', $stringValue);
     }
 
     /**

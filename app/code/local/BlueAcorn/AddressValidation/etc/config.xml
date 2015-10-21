@@ -66,6 +66,10 @@
         </events>
         <jsconfig>
             <blueacorn_addressvalidation>
+                <general>
+                    <enabled_domestic_apis />
+                    <enabled_international_apis />
+                </general>
                 <account>
                     <city_state type="boolean"/>
                 </account>
@@ -91,6 +95,12 @@
                 <skip_on_equivalent>0</skip_on_equivalent>
                 <display_errors>0</display_errors>
             </checkout>
+            <account>
+                <presentation>1</presentation>
+                <city_state>0</city_state>
+                <skip_on_equivalent>0</skip_on_equivalent>
+                <display_errors>0</display_errors>
+            </account>
             <design>
                 <modal_width>400</modal_width>
                 <verify_modaltext>Verify Your Address</verify_modaltext>

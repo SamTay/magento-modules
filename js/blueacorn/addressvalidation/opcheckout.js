@@ -53,11 +53,11 @@ var OPAddressValidator = Class.create(AddressValidator, {
     setupObservers: function() {
         var self = this;
         var shippingWrapper = this.wrapperGenerator(function ($super) {
-            var notInUS = ($F(self.countryId) != 'US'),
+            var canValidateCountry = self.canValidateCountry(),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
             // Validation only available for US. Previously verified addresses can skip this step
-            if (notInUS || alreadyVerified) {
+            if (canValidateCountry || alreadyVerified) {
                 return $super();
             }
 

@@ -49,9 +49,8 @@ var ADAddressValidator = Class.create(AddressValidator, {
             $form = $(this.parentForm);
         if ($form) {
             $form.observe('submit', function(event) {
-                // Validation only available for US addresses
-                var notInUS = ($F(self.countryId) != 'US');
-                if (notInUS) {
+                // Check if we can validate current selected country
+                if (!self.canValidateCountry()) {
                     return true;
                 }
                 Event.stop(event);
