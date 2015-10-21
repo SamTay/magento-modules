@@ -86,7 +86,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
+                            <comment><![CDATA[Modals require Fancybox to be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
                         <city_state translate="label">
                             <label>Auto-fill City/State Fields</label>
@@ -148,7 +148,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Fancybox must be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
+                            <comment><![CDATA[Modals require Fancybox to be enabled in Javascript Plugins > Modal Window Plugins.]]></comment>
                         </presentation>
                         <city_state translate="label">
                             <label>Auto-fill City/State Fields</label>
@@ -201,7 +201,6 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
                     <fields>
                         <modal_width translate="label">
                             <label>Modal Minimum Width</label>
