@@ -5,6 +5,7 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
     implements BlueAcorn_AddressValidation_Model_Validation_ApiInterface
@@ -164,9 +165,11 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
 
         $request = array();
 
-        $street1 = $address['street1'];
-        $street2 = $address['street2'];
-        $regionId = $address['region_id'];
+        $street1 = $address[AddressField::STREET_LINE_1];
+        $street2 = $address[AddressField::STREET_LINE_2];
+        $regionId = $address[AddressField::REGION_ID];
+        $postcode = $address[AddressField::POSTCODE];
+        $city = $address[AddressField::CITY];
         $state = $regionId ? $this->_helper->getState($regionId) : null;
 
         $formattedAddress = array(
@@ -174,8 +177,8 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
             'Address' =>
                 array(
                     'StreetLines' => array($street1, $street2),
-                    'PostalCode' => $address['postcode'],
-                    'City' => $address['city'],
+                    'PostalCode' => $postcode,
+                    'City' => $city,
                     'StateorProvinceCode' => $state,
                     'Company' => '',
                 )
@@ -249,23 +252,23 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
         $data = $response->AddressResults->EffectiveAddress;
         $validatedAddress = array();
 
-        $validatedAddress['city'] = $data->City;
-        $validatedAddress['state'] = $data->StateOrProvinceCode;
+        $validatedAddress[AddressField::CITY] = $data->City;
+        $validatedAddress[AddressField::STATE] = $data->StateOrProvinceCode;
 
         if (is_array($data->StreetLines)) {
             $streetAddress = $data->StreetLines;
-            $validatedAddress['street1'] = $streetAddress[0];
-            $validatedAddress['street2'] = $streetAddress[1];
+            $validatedAddress[AddressField::STREET_LINE_1] = $streetAddress[0];
+            $validatedAddress[AddressField::STREET_LINE_2] = $streetAddress[1];
         } else {
-            $validatedAddress['street1'] = $data->StreetLines;
+            $validatedAddress[AddressField::STREET_LINE_1] = $data->StreetLines;
         }
 
         if (preg_match('/-/', $data->PostalCode)) {
             $postcode = explode('-', $data->PostalCode);
-            $validatedAddress['postcode'] = $postcode[0];
-            $validatedAddress['zip4'] = $postcode[1];
+            $validatedAddress[AddressField::POSTCODE] = $postcode[0];
+            $validatedAddress[AddressField::ZIP4] = $postcode[1];
         } else {
-            $validatedAddress['postcode'] = $data->PostalCode;
+            $validatedAddress[AddressField::POSTCODE] = $data->PostalCode;
         }
 
         $validatedAddresses[] = $validatedAddress;

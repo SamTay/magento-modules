@@ -5,6 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 trait BlueAcorn_AddressValidation_Model_Validation_ValidationTrait
 {
     /**

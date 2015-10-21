@@ -4,7 +4,8 @@
  * @version     0.1.0
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
- */ 
+ */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const CONFIG_PATH = 'blueacorn_addressvalidation';
@@ -28,9 +29,9 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
      * @var array
      */
     protected $_uniqueAddressFields = array(
-        'street1',
-        'street2',
-        'postcode',
+        AddressField::STREET_LINE_1,
+        AddressField::STREET_LINE_2,
+        AddressField::POSTCODE,
     );
 
     /**
@@ -203,9 +204,9 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function validateAddressFields(array $address)
     {
-        $cityAndState = (!empty($address['city']) && !empty($address['region_id']));
-        $zip = !empty($address['postcode']);
-        $street = !empty($address['street1']);
+        $cityAndState = (!empty($address[AddressField::CITY]) && !empty($address[AddressField::REGION_ID]));
+        $zip = !empty($address[AddressField::POSTCODE]);
+        $street = !empty($address[AddressField::STREET_LINE_1]);
 
         return ($street
             && ($zip || $cityAndState)

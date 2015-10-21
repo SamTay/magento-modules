@@ -5,6 +5,7 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller_Front_Action
 {
 
@@ -34,14 +35,15 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
 
     /**
      * The fields that make up the request address
+     * 'street' is converted into the proper 'sreet1' and 'street2' in $this->_initAddress()
      * @var array
      */
     protected $_addressFields = array(
         'street',
-        'city',
-        'region_id',
-        'postcode',
-        'country'
+        AddressField::CITY,
+        AddressField::REGION_ID,
+        AddressField::POSTCODE,
+        AddressField::COUNTRY,
     );
 
     /**
@@ -222,12 +224,12 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
         // Get country
-        if (is_null($address['country']) && isset($request['country_id'])) {
-            $address['country'] = $request['country_id'];
+        if (is_null($address[AddressField::COUNTRY]) && isset($request['country_id'])) {
+            $address[AddressField::COUNTRY] = $request['country_id'];
         }
         // Get state code from region ID
-        if (!is_null($address['region_id'])) {
-            $address['state'] = $this->helper()->getState($address['region_id']);
+        if (!is_null($address[AddressField::REGION_ID])) {
+            $address[AddressField::STATE] = $this->helper()->getState($address[AddressField::REGION_ID]);
         }
         // Get street into 'street1' and 'street2' lines
         if (is_string($address['street'])) {
@@ -267,8 +269,8 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
      */
     public function isInternational()
     {
-        return array_key_exists('country', $this->_requestAddress)
-            && $this->_requestAddress['country'] != 'US';
+        return array_key_exists(AddressField::COUNTRY, $this->_requestAddress)
+            && $this->_requestAddress[AddressField::COUNTRY] != 'US';
     }
 
     /**

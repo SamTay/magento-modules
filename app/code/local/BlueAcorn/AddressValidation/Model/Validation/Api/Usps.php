@@ -6,6 +6,7 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
     implements BlueAcorn_AddressValidation_Model_Validation_ApiInterface
@@ -87,17 +88,19 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
         // Address nodes (all required nodes, some optional values)
         $addressNode = $xml->addChild('Address');
         $addressNode->addChild('FirmName');
-        $addressNode->addChild('Address1', $this->_address['street2']);
-        $addressNode->addChild('Address2', $this->_address['street1']);
-        $addressNode->addChild('City', $this->_address['city']);
+        // USPS swaps street lines 1 and 2
+        $addressNode->addChild('Address1', $this->_address[AddressField::STREET_LINE_2]);
+        $addressNode->addChild('Address2', $this->_address[AddressField::STREET_LINE_1]);
+        $addressNode->addChild('City', $this->_address[AddressField::CITY]);
         // Get state from region ID (possibly removed from shipping address)
-        if ($this->_address['region_id']) {
-            $state = Mage::helper('blueacorn_addressvalidation')->getState($this->_address['region_id']);
+        if ($this->_address[AddressField::REGION_ID]) {
+            $regionId = $this->_address[AddressField::REGION_ID];
+            $state = Mage::helper('blueacorn_addressvalidation')->getState($regionId);
         } else {
             $state = null;
         }
         $addressNode->addChild('State', $state);
-        $addressNode->addChild('Zip5', $this->_address['postcode']);
+        $addressNode->addChild('Zip5', $this->_address[AddressField::POSTCODE]);
         $addressNode->addChild('Zip4');
 
         return $xml->asXML();
@@ -124,12 +127,12 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
                     $returnText = array();
                     foreach ($xml->Address as $address) {
                         $validatedAddress = array();
-                        $validatedAddress['city'] = (string)$address->City;
-                        $validatedAddress['state'] = (string)$address->State;
-                        $validatedAddress['postcode'] = (string)$address->Zip5;
-                        $validatedAddress['zip4'] = (string)$address->Zip4;
-                        $validatedAddress['street1'] = (string)$address->Address2;
-                        $validatedAddress['street2'] = (string)$address->Address1;
+                        $validatedAddress[AddressField::CITY] = (string)$address->City;
+                        $validatedAddress[AddressField::STATE] = (string)$address->State;
+                        $validatedAddress[AddressField::POSTCODE] = (string)$address->Zip5;
+                        $validatedAddress[AddressField::ZIP4] = (string)$address->Zip4;
+                        $validatedAddress[AddressField::STREET_LINE_1] = (string)$address->Address2;
+                        $validatedAddress[AddressField::STREET_LINE_2] = (string)$address->Address1;
                         $validatedAddresses[] = $validatedAddress;
                         if (!empty($address->Error)) {
                             $returnText[] = (string)$address->Error->Description;
