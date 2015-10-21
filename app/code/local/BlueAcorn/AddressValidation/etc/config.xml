@@ -67,10 +67,10 @@
         <jsconfig>
             <blueacorn_addressvalidation>
                 <account>
-                    <city_state />
+                    <city_state type="boolean"/>
                 </account>
                 <checkout>
-                    <city_state />
+                    <city_state type="boolean"/>
                 </checkout>
                 <design>
                     <modal_width />
