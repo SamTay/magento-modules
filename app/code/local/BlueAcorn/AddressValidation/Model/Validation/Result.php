@@ -6,6 +6,7 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Validation_Result extends Varien_Object
 {
     /**

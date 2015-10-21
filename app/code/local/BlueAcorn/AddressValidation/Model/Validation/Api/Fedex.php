@@ -219,29 +219,6 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
     }
 
     /**
-     * Converts address arrays and return text to the proper Result object
-     *
-     * @param array $validatedAddresses
-     * @param null $returnText
-     * @return BlueAcorn_AddressValidation_Model_Validation_Result
-     */
-    protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
-    {
-        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
-        foreach($validatedAddresses as $address) {
-            if (isset($address['state'])) {
-                $address['region_id'] = $this->_helper->getRegionId($address['state']);
-            }
-            $result->addAddress($address);
-        }
-        if (!is_null($returnText)) {
-            $result->addMessage($returnText);
-        }
-
-        return $result;
-    }
-
-    /**
      * Convert SOAP response object into validated address object
      *
      * @param stdClass $response
@@ -273,6 +250,6 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
 
         $validatedAddresses[] = $validatedAddress;
 
-        return $this->_convertToResult($validatedAddresses);
+        return $this->_convertArrayToResult($validatedAddresses);
     }
 }

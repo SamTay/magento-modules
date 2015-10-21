@@ -38,4 +38,28 @@ trait BlueAcorn_AddressValidation_Model_Validation_ValidationTrait
     {
         return $this->_result;
     }
+
+    /**
+     * Converts address arrays and return text to the proper Result object
+     *
+     * @param array $validatedAddresses
+     * @param null $returnText
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
+     */
+    protected function _convertArrayToResult(array $validatedAddresses = array(), $returnText = null)
+    {
+        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
+        foreach($validatedAddresses as $address) {
+            if (isset($address[AddressField::STATE])) {
+                $state = $address[AddressField::STATE];
+                $address[AddressField::REGION_ID] = Mage::helper('blueacorn_addressvalidation')->getRegionId($state);
+            }
+            $result->addAddress($address);
+        }
+        if (!empty($returnText)) {
+            $result->addMessage($returnText);
+        }
+
+        return $result;
+    }
 }

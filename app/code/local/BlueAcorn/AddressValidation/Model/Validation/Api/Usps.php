@@ -149,7 +149,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
                             . 'Return text: ' . print_r($returnText, true);
                         $this->_helper->log($info, null, 'Usps');
                     }
-                    return $this->_convertToResult($validatedAddresses, $returnText);
+                    return $this->_convertArrayToResult($validatedAddresses, $returnText);
                 }
             }
         }
@@ -157,28 +157,4 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
             'XML response object not received. This could be due to an uncaught error in request.'
         );
     }
-
-    /**
-     * Converts address arrays and return text to the proper Result object
-     *
-     * @param array $validatedAddresses
-     * @param null $returnText
-     * @return BlueAcorn_AddressValidation_Model_Validation_Result
-     */
-    protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
-    {
-        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
-        foreach($validatedAddresses as $address) {
-            if (isset($address['state'])) {
-                $address['region_id'] = Mage::helper('blueacorn_addressvalidation')->getRegionId($address['state']);
-            }
-            $result->addAddress($address);
-        }
-        if (!empty($returnText)) {
-            $result->addMessage($returnText);
-        }
-
-        return $result;
-    }
-
 }
