@@ -84,31 +84,83 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Accepts region ID and returns state as 2 letter code
+     * Accepts region ID and returns region code (useful for domestic apis)
+     * For example '54' => 'SC' for South Carolina in US
+     * or '236' => '54' for Meurthe-et-Moselle in FR
      *
      * @param $regionId
-     * @return mixed
+     * @return string
      */
     public function getState($regionId)
     {
         return Mage::getModel('directory/region')->getCollection()
-            ->addFieldToSelect('code')
-            ->addFieldToFilter('main_table.region_id', $regionId)
-            ->getFirstItem()
-            ->getCode();
+                ->addFieldToSelect('code')
+                ->addFieldToFilter('main_table.region_id', $regionId)
+                ->getFirstItem()
+                ->getCode();
     }
 
     /**
-     * Accepts state 2 letter code and returns region ID
+     * Get region name instead of code
+     * For example '54' => 'South Carolina'
+     * or '236' => 'Meurthe-et-Moselle')
      *
-     * @param $state
+     * @param $regionId
+     * @return string
+     */
+    public function getRegionName($regionId)
+    {
+        return Mage::getModel('directory/region')->getCollection()
+            ->addFieldToFilter('main_table.region_id', $regionId)
+            ->getFirstItem()
+            ->getName(); // Mage sets name based on locale on load, no need to add field to select
+    }
+
+    /**
+     * Get country name (in locale en_US) by country_id
+     * For example 'FR' => 'France'
+     *
+     * @param $countryId
+     * @return array
+     */
+    public function getCountryName($countryId)
+    {
+        return Mage::getModel('core/locale', 'en_US')->getCountryTranslation($countryId);
+    }
+
+    /**
+     * Get country ID from country name (where country name is in en_US)
+     * I agree, this is terrible, but my hands are tied.
+     *
+     * @param $countryName
+     * @return int|null|string
+     */
+    public function getCountryId($countryName)
+    {
+        $countryName = ucwords(strtolower($countryName));
+        $countryList = Mage::getModel('core/locale', 'en_US')->getCountryTranslationList();
+        foreach($countryList as $id => $name) {
+            if ($name == $countryName) {
+                return $id;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Accepts region code or name and returns region ID
+     * For example ('SC', false, 'US') => '54'
+     * or ('Meurthe-et-Moselle', true, 'FR') => '236'
+     *
+     * @param $code
      * @return mixed
      */
-    public function getRegionId($state)
+    public function getRegionId($code, $byName = false, $countryId = 'US')
     {
         return Mage::getModel('directory/region')->getCollection()
             ->addFieldToSelect(array('code', 'region_id'))
-            ->addFieldToFilter('main_table.code', $state)
+            ->addFieldToFilter('main_table.country_id', $countryId)
+            ->addFieldToFilter($byName ? 'name' : 'main_table.code', $code)
             ->getFirstItem()
             ->getRegionId();
     }
