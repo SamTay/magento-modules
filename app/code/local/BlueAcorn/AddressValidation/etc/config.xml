@@ -89,6 +89,10 @@
                 <enabled>0</enabled>
                 <debug>0</debug>
             </general>
+            <strikeiron>
+                <base_url><![CDATA[http://ws.strikeiron.com/StrikeIron/GlobalAddressVerification5/GlobalAddressVerification/]]></base_url>
+                <password backend_model="adminhtml/system_config_backend_encrypted"/>
+            </strikeiron>
             <checkout>
                 <presentation>1</presentation>
                 <city_state>0</city_state>

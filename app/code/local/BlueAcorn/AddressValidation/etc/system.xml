@@ -54,8 +54,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[Fill out credentials for these APIs in the International Validation
-                            settings below.]]></comment>
+                            <comment><![CDATA[Fill out credentials for these APIs in the settings below.]]></comment>
                         </enabled_international_apis>
                         <debug translate="label">
                             <label>Debug Mode</label>
@@ -70,6 +69,41 @@
                         </debug>
                     </fields>
                 </general>
+                <strikeiron translate="label">
+                    <label>StrikeIron Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>3</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <user_id translate="label">
+                            <label>User ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </user_id>
+                        <password translate="label">
+                            <label>Password</label>
+                            <frontend_type>obscure</frontend_type>
+                            <backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </password>
+                        <base_url translate="label">
+                            <label>Base URL</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </base_url>
+                    </fields>
+                </strikeiron>
                 <checkout translate="label">
                     <label>Checkout</label>
                     <frontend_type>text</frontend_type>
