@@ -56,8 +56,8 @@ var OPAddressValidator = Class.create(AddressValidator, {
             var canValidateCountry = self.canValidateCountry(),
                 alreadyVerified = $('shipping-address-select') && $F('shipping-address-select') && verifiedAddressJson[$F('shipping-address-select')];
 
-            // Validation only available for US. Previously verified addresses can skip this step
-            if (canValidateCountry || alreadyVerified) {
+            // Check if validation is available. Previously verified addresses can skip this step
+            if (!canValidateCountry || alreadyVerified) {
                 return $super();
             }
 
