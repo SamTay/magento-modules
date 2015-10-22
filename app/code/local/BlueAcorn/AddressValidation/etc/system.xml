@@ -43,8 +43,9 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <comment><![CDATA[For performance reasons, it is recommended to only enable one API in a
-                            production environment. Note that to enable USPS, you must enter a User ID in the Shipping
-                            Methods > USPS > User Id field.]]></comment>
+                            production environment. To enable USPS, you must enter a User ID under Shipping
+                            Methods > USPS. To enable Fedex, you must enter Key, Password, Account Number, and
+                            Meter Number under Shipping Methods > Fedex.]]></comment>
                         </enabled_domestic_apis>
                         <enabled_international_apis translate="label">
                             <label>Enabled International APIs</label>
