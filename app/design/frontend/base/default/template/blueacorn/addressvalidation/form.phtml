@@ -1,4 +1,5 @@
 <?php
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 $first = true;
 $_helper = Mage::helper('blueacorn_addressvalidation');
 ?>
@@ -11,9 +12,9 @@ $_helper = Mage::helper('blueacorn_addressvalidation');
             <input id="address_<?php echo $index ?>" value="<?php echo $index ?>" type="radio" name="validated_address" class="no-style radio"
                 <?php if ($first): echo ' checked="checked"'; $first = false; endif; ?>/>
             <label for="address_<?php echo $index ?>">
-                <?php echo $address['street1'] ?>
-                <?php echo $address['street2'] ?>
-                <?php echo $address['city'] . ', ' . $address['state'] . ' ' . $address['postcode'] ?>
+                <?php echo $address[AddressField::STREET_LINE_1] ?>
+                <?php echo $address[AddressField::STREET_LINE_2] ?>
+                <?php echo $address[AddressField::CITY] . ', ' . $address[AddressField::STATE] . ' ' . $address[AddressField::POSTCODE] ?>
             </label>
         <?php endforeach ?>
 
@@ -22,12 +23,12 @@ $_helper = Mage::helper('blueacorn_addressvalidation');
 
             <input id="address_original" value="original" type="radio" name="validated_address" class="no-style radio original-address" />
             <label for="address_original" class="original-address">
-                <?php echo $originalAddress['street1'] ?>
-                <?php echo $originalAddress['street2'] ?>
-                <?php if (array_key_exists('city', $originalAddress) && array_key_exists('state', $originalAddress)): ?>
-                    <?php echo $originalAddress['city'] . ', ' . $originalAddress['state'] . ' ' ?>
+                <?php echo $originalAddress[AddressField::STREET_LINE_1] ?>
+                <?php echo $originalAddress[AddressField::STREET_LINE_2] ?>
+                <?php if (array_key_exists(AddressField::CITY, $originalAddress) && array_key_exists(AddressField::STATE, $originalAddress)): ?>
+                    <?php echo $originalAddress[AddressField::CITY] . ', ' . $originalAddress[AddressField::STATE] . ' ' ?>
                 <?php endif ?>
-                <?php echo $originalAddress['postcode'] ?>
+                <?php echo $originalAddress[AddressField::POSTCODE] ?>
             </label>
         <?php endif ?>
 
