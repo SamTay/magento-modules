@@ -44,13 +44,27 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
      * Address field map for StrikeIron specific params
      * @var array
      */
-    protected $_addressFieldMap = array(
+    protected $_requestFieldMap = array(
         AddressField::STREET_LINE_1 => 'StreetAddressLines',
         AddressField::STREET_LINE_2 => 'StreetAddressLines',
         AddressField::CITY => 'CountrySpecificLocalityLine',
         AddressField::POSTCODE => 'CountrySpecificLocalityLine',
         AddressField::STATE => 'CountrySpecificLocalityLine',
         AddressField::COUNTRY => 'Country'
+    );
+
+    /**
+     * Address field map for StrikeIron specific response
+     * Not sure what is relevant as "Street Line 2", so passing it the "Residue" for now
+     * @var array
+     */
+    protected $_responseFieldMap = array(
+        'DeliveryAddressLine' => AddressField::STREET_LINE_1,
+        'PostalCode' => AddressField::POSTCODE,
+        'Locality' => AddressField::CITY,
+        'Province' => AddressField::STATE,
+        'Country' => AddressField::COUNTRY,
+        'Residue' => AddressField::STREET_LINE_2
     );
 
     /**
@@ -107,8 +121,21 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
             $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Strikeiron');
         }
 
+        // Attach region name to request address
+        if (!empty($this->_address[AddressField::REGION_ID])) {
+            // "State" is really the "Region Name" in this case, but trying to have consistent naming across APIs
+            $this->_address[AddressField::STATE] = $this->_helper
+                ->getRegionName($this->_address[AddressField::REGION_ID]);
+        }
+
+        // Use full english country name instead of country ID
+        if (!empty($this->_address[AddressField::COUNTRY])) {
+            $this->_address[AddressField::COUNTRY] = $this->_helper
+                ->getCountryName($this->_address[AddressField::COUNTRY]);
+        }
+
         $params = array();
-        foreach($this->_addressFieldMap as $baKey => $siKey) {
+        foreach($this->_requestFieldMap as $baKey => $siKey) {
             if (empty($this->_address[$baKey])) {
                 continue;
             }
@@ -126,17 +153,96 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
 
     /**
      * Parse response json and return result
+     *
      * @param $response
-     * @throws Zend_Json_Exception
      * @return BlueAcorn_AddressValidation_Model_Validation_Result
+     * @throws Mage_Api_Exception
+     * @throws Zend_Json_Exception
      */
     protected function _parseJsonResponse($response)
     {
-        //TODO: Finish writing after seeing response - need active credentials
         $response = Zend_Json::decode($response);
-        $this->_helper->log('TEST RESPONSE:' . PHP_EOL . print_r($response, true), null, 'Strikeiron');
-        $validatedAddresses = array();
-        return $this->_convertArrayToResult($validatedAddresses);
+
+        // Traverse down response a few levels
+        foreach(array('WebServiceResponse', 'BasicVerifyResponse', 'BasicVerifyResult') as $arrayKey) {
+            if (!isset($response[$arrayKey])) {
+                throw new Mage_Api_Exception(
+                    self::RESPONSE_ERROR,
+                    'StrikeIron has no response information, this is likely a missed error in request.'
+                );
+            }
+            $response = $response[$arrayKey];
+        }
+        // Check response status
+        if (isset($response['ServiceStatus'])) {
+            $this->_verifyServiceStatus($response['ServiceStatus']);
+        }
+        // Parse response address
+        if (isset($response['ServiceResult'])) {
+            return $this->_parseServiceResult($response['ServiceResult']);
+        }
+
+        throw new Mage_Api_Exception(self::RESPONSE_ERROR, 'StrikeIron did not supply a ServiceResult.');
+    }
+
+    /**
+     * Parse response service result into address array, then return converted result object
+     *
+     * @param $serviceResult
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
+     */
+    protected function _parseServiceResult($serviceResult)
+    {
+        /**
+         * StrikeIron seems to only give one suggestion, not multiple.
+         */
+        $validatedAddress = array();
+        foreach($this->_responseFieldMap as $siKey => $baKey) {
+            $validatedAddress[$baKey] = isset($serviceResult[$siKey]) ? $serviceResult[$siKey] : null;
+        }
+        // Convert country name into country ID
+        if (isset($validatedAddress[AddressField::COUNTRY])) {
+            $validatedAddress[AddressField::COUNTRY] = $this->_helper->getCountryId($validatedAddress[AddressField::COUNTRY]);
+            // Set region_id on address
+            // Here "STATE" is actually the "Region Name" in Magento
+            if (isset($validatedAddress[AddressField::STATE])) {
+                $validatedAddress[AddressField::REGION_ID] = Mage::helper('blueacorn_addressvalidation')
+                    ->getRegionId($validatedAddress[AddressField::STATE], true, $validatedAddress[AddressField::COUNTRY]);
+            }
+        }
+        if ($this->_debug) {
+            $this->_helper->log('Parsed address response: ' . PHP_EOL . print_r($validatedAddress, true), null, 'Strikeiron');
+        }
+
+        return $this->_convertArrayToResult(array($validatedAddress));
+    }
+
+    /**
+     * Checks service status on response and throws exceptions if necessary
+     *
+     * @param $status
+     * @throws Mage_Api_Exception
+     */
+    protected function _verifyServiceStatus($status)
+    {
+        $statusNbr = isset($status['StatusNbr']) ? $status['StatusNbr'] : 200; // Assume good response by default
+        if (300 < $statusNbr && $statusNbr < 325) {
+            // Address can't be corrected, but could be deliverable
+            // Possibly create system configuration for how strict this should be
+            return;
+        }
+        if ($statusNbr == 325) {
+            // Address can't be corrected and is unlikely to be delivered
+            return;
+        }
+        if (400 < $statusNbr && $statusNbr < 500) {
+            // Request issues
+            throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
+        }
+        if (500 <= $status) {
+            // Server response issues
+            throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
+        }
     }
 
     /**
@@ -168,5 +274,26 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
         }
 
         return array('UserID' => $userId, 'Password' => $password);
+    }
+
+    /**
+     * Override from trait because of international differences in region code/name in response
+     * Converts address arrays and return text to the proper Result object
+     *
+     * @param array $validatedAddresses
+     * @param null $returnText
+     * @return BlueAcorn_AddressValidation_Model_Validation_Result
+     */
+    protected function _convertArrayToResult(array $validatedAddresses = array(), $returnText = null)
+    {
+        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
+        foreach($validatedAddresses as $address) {
+            $result->addAddress($address);
+        }
+        if (!empty($returnText)) {
+            $result->addMessage($returnText);
+        }
+
+        return $result;
     }
 }
