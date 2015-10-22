@@ -54,11 +54,11 @@ var ZipcodeLookupTool = Class.create({
         this.lookupInProgress = inProgress;
         if (inProgress) {
             ['city', 'region_id'].forEach(function(fieldKey) {
-                $(this.fields[fieldKey]).addClassName('zipcode-lookup-progress');
+                $(this.fields[fieldKey]).up('div.field').addClassName('zipcode-lookup-progress');
             }, this);
         } else {
             ['city', 'region_id'].forEach(function(fieldKey) {
-                $(this.fields[fieldKey]).removeClassName('zipcode-lookup-progress');
+                $(this.fields[fieldKey]).up('div.field').removeClassName('zipcode-lookup-progress');
             }, this);
         }
     },
