@@ -227,9 +227,11 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         if (is_null($address[AddressField::COUNTRY]) && isset($request['country_id'])) {
             $address[AddressField::COUNTRY] = $request['country_id'];
         }
-        // Get state code from region ID
+        // Get state or region name from region ID
         if (!is_null($address[AddressField::REGION_ID])) {
-            $address[AddressField::STATE] = $this->helper()->getState($address[AddressField::REGION_ID]);
+            $address[AddressField::STATE] = (isset($address[AddressField::COUNTRY]) && $address[AddressField::COUNTRY] != 'US')
+                ? $this->helper()->getState($address[AddressField::REGION_ID])
+                : $this->helper()->getRegionName($address[AddressField::REGION_ID]);
         }
         // Get street into 'street1' and 'street2' lines
         if (is_string($address['street'])) {
