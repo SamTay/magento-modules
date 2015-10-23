@@ -41,9 +41,7 @@ class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
      */
     protected function _uspsLookup($zipcode)
     {
-        if ($this->_debug) {
-            $this->_helper->log('Initial zipcode request: ' . print_r($zipcode, true), null, 'Usps');
-        }
+        $this->_helper->debug('Initial zipcode request: ' . print_r($zipcode, true), null, 'Usps');
         $requestXml = $this->_getRequestXml($zipcode);
         $url = $this->_getGatewayUrl();
         $client = new Zend_Http_Client();
@@ -121,8 +119,8 @@ class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
                 } else if ($xml->getName() == 'CityStateLookupResponse') {
                     if (!empty($xml->ZipCode)) {
                         $zipcode = $xml->ZipCode;
-                        if ($this->_debug && !empty($zipcode->Error)) {
-                            $this->_helper->log(
+                        if (!empty($zipcode->Error)) {
+                            $this->_helper->debug(
                                 'Error in city/state lookup response: ' . print_r($zipcode->Error, true),
                                 null,
                                 'Usps'
@@ -141,7 +139,7 @@ class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
                     }
                     if ($this->_debug) {
                         $info = 'Parsed XML response: ' . PHP_EOL . print_r($parsedResponse, true) . PHP_EOL;
-                        $this->_helper->log($info, null, 'Usps');
+                        $this->_helper->debug($info, null, 'Usps');
                     }
 
                     return $parsedResponse;

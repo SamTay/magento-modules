@@ -83,9 +83,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
      */
     protected function _parseAddressDataToXml()
     {
-        if ($this->_debug) {
-            $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Usps');
-        }
+        $this->_helper->debug('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Usps');
         $userId = $this->_getUserId();
         if (!$userId) {
             throw new Mage_Api_Exception(self::REQUEST_ERROR,
@@ -158,7 +156,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
                         $info = 'Parsed XML response arrays: ' . PHP_EOL
                             . 'Validated addresses: ' . print_r($validatedAddresses, true) . PHP_EOL
                             . 'Return text: ' . print_r($returnText, true);
-                        $this->_helper->log($info, null, 'Usps');
+                        $this->_helper->debug($info, null, 'Usps');
                     }
                     return $this->_convertArrayToResult($validatedAddresses, $returnText);
                 }

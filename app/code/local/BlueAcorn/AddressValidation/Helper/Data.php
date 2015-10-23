@@ -84,6 +84,20 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Wrapper for the log method that checks if debugging is enabled
+     *
+     * @param $message
+     * @param null $code
+     * @param null $api
+     */
+    public function debug($message, $code = null, $api = null)
+    {
+        if ($this->isDebugMode()) {
+            $this->log($message, $code, $api);
+        }
+    }
+
+    /**
      * Accepts region ID and returns region code (useful for domestic apis)
      * For example '54' => 'SC' for South Carolina in US
      * or '236' => '54' for Meurthe-et-Moselle in FR

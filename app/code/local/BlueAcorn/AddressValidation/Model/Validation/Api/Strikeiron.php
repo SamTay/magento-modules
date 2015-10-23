@@ -117,9 +117,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
      */
     protected function _parseAddressToParams()
     {
-        if ($this->_debug) {
-            $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Strikeiron');
-        }
+        $this->_helper->debug('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Strikeiron');
 
         // Attach region name to request address
         if (!empty($this->_address[AddressField::REGION_ID])) {
@@ -144,9 +142,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
                 : $params[$siKey] . ' ' . $this->_address[$baKey];
         }
 
-        if ($this->_debug) {
-            $this->_helper->log('Converted StrikeIron address params:' . PHP_EOL . print_r($params, true), null, 'Strikeiron');
-        }
+        $this->_helper->debug('Converted StrikeIron address params:' . PHP_EOL . print_r($params, true), null, 'Strikeiron');
 
         return $params;
     }
@@ -210,9 +206,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
                     ->getRegionId($validatedAddress[AddressField::STATE], true, $validatedAddress[AddressField::COUNTRY]);
             }
         }
-        if ($this->_debug) {
-            $this->_helper->log('Parsed address response: ' . PHP_EOL . print_r($validatedAddress, true), null, 'Strikeiron');
-        }
+        $this->_helper->debug('Parsed address response: ' . PHP_EOL . print_r($validatedAddress, true), null, 'Strikeiron');
 
         return $this->_convertArrayToResult(array($validatedAddress));
     }

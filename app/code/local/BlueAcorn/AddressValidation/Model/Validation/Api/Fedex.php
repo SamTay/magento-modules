@@ -67,9 +67,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
      */
     protected function _getFedexValidation()
     {
-        if ($this->_debug) {
-            $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'FedEx');
-        }
+        $this->_helper->debug('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'FedEx');
 
         try {
             $client = new SoapClient($this->_addressValidationWsdl, array('trace' => 1));
@@ -79,9 +77,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
 
             $response = $client->addressValidation($request);
 
-            if ($this->_debug) {
-                $this->_helper->log("Response: \n" . print_r($response, true), null, 'FedEx');
-            }
+            $this->_helper->debug("Response: \n" . print_r($response, true), null, 'FedEx');
 
             if ($response->HighestSeverity == 'ERROR' &&
                 $response->Notifications->Code == 1000) {
@@ -91,9 +87,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
             return $this->_parseSoapResponse($response);
 
         } catch (Mage_Api_Exception $e) {
-            if ($this->_debug) {
-                $this->_helper->log($e->getCustomMessage(), null, 'FedEx');
-            }
+            $this->_helper->debug($e->getCustomMessage(), null, 'FedEx');
         } catch (Exception $e) {
             switch ($e->getMessage()) {
                 // assuming more cases to come later
@@ -106,9 +100,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
                     break;
             }
 
-            if ($this->_debug) {
-                $this->_helper->log($errorMsg, null, 'FedEx');
-            }
+            $this->_helper->debug($errorMsg, null, 'FedEx');
         }
 
         return false;
@@ -124,9 +116,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
         $isSandboxMode = Mage::getStoreConfigFlag(self::FEDEX_SANDBOX_MODE, Mage::app()->getStore());
         $soapUrl = $isSandboxMode ? self::FEDEX_SANDBOX_URL : self::FEDEX_LIVE_URL;
 
-        if ($this->_debug) {
-            $this->_helper->log('SOAP URL is ' . $soapUrl, null, 'FedEx');
-        }
+        $this->_helper->debug('SOAP URL is ' . $soapUrl, null, 'FedEx');
 
         return $soapUrl;
     }
@@ -141,9 +131,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
         $wsdlBasePath = Mage::getModuleDir('etc', 'BlueAcorn_AddressValidation')  . DS . 'wsdl' . DS . 'Fedex' . DS;
         $wsdlUrl = $wsdlBasePath . 'AddressValidationService_v3.wsdl';
 
-        if ($this->_debug) {
-            $this->_helper->log('WSDL URL is ' . $wsdlUrl, null, 'Fedex');
-        }
+        $this->_helper->debug('WSDL URL is ' . $wsdlUrl, null, 'Fedex');
 
         return $wsdlUrl;
     }
@@ -211,9 +199,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
             0 => $formattedAddress,
         );
 
-        if ($this->_debug) {
-            $this->_helper->log("Request: \n" . print_r($request, true), null, 'FedEx');
-        }
+        $this->_helper->debug("Request: \n" . print_r($request, true), null, 'FedEx');
 
         return $request;
     }
