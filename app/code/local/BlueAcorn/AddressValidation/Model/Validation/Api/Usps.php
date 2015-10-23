@@ -6,6 +6,7 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
     implements BlueAcorn_AddressValidation_Model_Validation_ApiInterface
@@ -18,6 +19,20 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
      * @var string
      */
     protected $_api = 'Verify';
+
+    /**
+     * Address field map BA -> USPS
+     * USPS swaps street lines 1 and 2
+     * @var array
+     */
+    protected $_addressFieldMap = array(
+        AddressField::STREET_LINE_2 => 'Address1',
+        AddressField::STREET_LINE_1 => 'Address2',
+        AddressField::CITY => 'City',
+        AddressField::STATE => 'State',
+        AddressField::POSTCODE => 'Zip5',
+        AddressField::ZIP4 => 'Zip4'
+    );
 
     /**
      * Accepts array with address data, sets request in XML format and calls
@@ -47,9 +62,6 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
      */
     protected function _getUspsValidation()
     {
-        if ($this->_debug) {
-            $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Usps');
-        }
         $requestXml = $this->_parseAddressDataToXml();
         $url = $this->_getGatewayUrl();
         $client = new Zend_Http_Client();
@@ -71,6 +83,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
      */
     protected function _parseAddressDataToXml()
     {
+        $this->_helper->debug('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'Usps');
         $userId = $this->_getUserId();
         if (!$userId) {
             throw new Mage_Api_Exception(self::REQUEST_ERROR,
@@ -87,18 +100,20 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
         // Address nodes (all required nodes, some optional values)
         $addressNode = $xml->addChild('Address');
         $addressNode->addChild('FirmName');
-        $addressNode->addChild('Address1', $this->_address['street2']);
-        $addressNode->addChild('Address2', $this->_address['street1']);
-        $addressNode->addChild('City', $this->_address['city']);
-        // Get state from region ID (possibly removed from shipping address)
-        if ($this->_address['region_id']) {
-            $state = Mage::helper('blueacorn_addressvalidation')->getState($this->_address['region_id']);
+
+        // Set state from region ID
+        if ($this->_address[AddressField::REGION_ID]) {
+            $this->_address[AddressField::STATE] = Mage::helper('blueacorn_addressvalidation')
+                ->getState($this->_address[AddressField::REGION_ID]);
         } else {
-            $state = null;
+            $this->_address[AddressField::STATE] = null;
         }
-        $addressNode->addChild('State', $state);
-        $addressNode->addChild('Zip5', $this->_address['postcode']);
-        $addressNode->addChild('Zip4');
+        $this->_address[AddressField::ZIP4] = null;
+
+        // Add all fields in $this->_addressFieldMap
+        foreach($this->_addressFieldMap as $baKey => $uspsKey) {
+            $addressNode->addChild($uspsKey, $this->_address[$baKey]);
+        }
 
         return $xml->asXML();
     }
@@ -124,12 +139,9 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
                     $returnText = array();
                     foreach ($xml->Address as $address) {
                         $validatedAddress = array();
-                        $validatedAddress['city'] = (string)$address->City;
-                        $validatedAddress['state'] = (string)$address->State;
-                        $validatedAddress['postcode'] = (string)$address->Zip5;
-                        $validatedAddress['zip4'] = (string)$address->Zip4;
-                        $validatedAddress['street1'] = (string)$address->Address2;
-                        $validatedAddress['street2'] = (string)$address->Address1;
+                        foreach($this->_addressFieldMap as $baKey => $uspsKey) {
+                            $validatedAddress[$baKey] = (string)$address->$uspsKey;
+                        }
                         $validatedAddresses[] = $validatedAddress;
                         if (!empty($address->Error)) {
                             $returnText[] = (string)$address->Error->Description;
@@ -144,9 +156,9 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
                         $info = 'Parsed XML response arrays: ' . PHP_EOL
                             . 'Validated addresses: ' . print_r($validatedAddresses, true) . PHP_EOL
                             . 'Return text: ' . print_r($returnText, true);
-                        $this->_helper->log($info, null, 'Usps');
+                        $this->_helper->debug($info, null, 'Usps');
                     }
-                    return $this->_convertToResult($validatedAddresses, $returnText);
+                    return $this->_convertArrayToResult($validatedAddresses, $returnText);
                 }
             }
         }
@@ -154,28 +166,4 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Usps
             'XML response object not received. This could be due to an uncaught error in request.'
         );
     }
-
-    /**
-     * Converts address arrays and return text to the proper Result object
-     *
-     * @param array $validatedAddresses
-     * @param null $returnText
-     * @return BlueAcorn_AddressValidation_Model_Validation_Result
-     */
-    protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
-    {
-        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
-        foreach($validatedAddresses as $address) {
-            if (isset($address['state'])) {
-                $address['region_id'] = Mage::helper('blueacorn_addressvalidation')->getRegionId($address['state']);
-            }
-            $result->addAddress($address);
-        }
-        if (!empty($returnText)) {
-            $result->addMessage($returnText);
-        }
-
-        return $result;
-    }
-
 }

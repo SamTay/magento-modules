@@ -23,8 +23,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
             region_id: 'region_id'
         };
         this.countryId = 'country';
-        // Need explicit check against true to convert to integer/boolean (because "0" is truthy as string)
-        if (mageConfig['blueacorn_addressvalidation/account/city_state'] == true) {
+        if (mageConfig['blueacorn_addressvalidation/account/city_state']) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },
@@ -50,9 +49,8 @@ var ADAddressValidator = Class.create(AddressValidator, {
             $form = $(this.parentForm);
         if ($form) {
             $form.observe('submit', function(event) {
-                // Validation only available for US addresses
-                var notInUS = ($F(self.countryId) != 'US');
-                if (notInUS) {
+                // Check if we can validate current selected country
+                if (!self.canValidateCountry()) {
                     return true;
                 }
                 Event.stop(event);

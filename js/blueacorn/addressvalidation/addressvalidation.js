@@ -19,6 +19,8 @@ var AddressValidator = Class.create({
         this.form = 'validated-address-form';
         this.parentForm = parentFormId;
         this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
+        this.domesticEnabled = !!mageConfig['blueacorn_addressvalidation/general/enabled_domestic_apis'];
+        this.internationalEnabled = !!mageConfig['blueacorn_addressvalidation/general/enabled_international_apis'];
         this.slideTimeout = 3800;
         /**
          * Override this.url in specific extended integrations
@@ -27,7 +29,7 @@ var AddressValidator = Class.create({
          */
         this.url = '/ba_validation/address/checkout';
         /**
-         * Override this.fields in specific integrations to match parent form input IDs
+         * Override this.fields and this.countryId in specific integrations to match parent form input IDs
          * See accountdashboard.js for examples
          * @type {{street1: string, street2: string, postcode: string, city: string, region_id: string}}
          */
@@ -38,11 +40,14 @@ var AddressValidator = Class.create({
             city: 'city',
             region_id: 'region_id'
         };
+        this.countryId = 'country';
 
         /**
          * Override this.setupObservers in specific integrations to attach "this" to parent forms
          */
-        this.setupObservers();
+        if (this.domesticEnabled || this.internationalEnabled) {
+            this.setupObservers();
+        }
     },
 
     /**
@@ -292,6 +297,15 @@ var AddressValidator = Class.create({
             }
             wrapper.call(this, $super);
         }
+    },
+
+    /**
+     * Check if the appropriate APIs are enabled for this request
+     * @returns {boolean|*}
+     */
+    canValidateCountry: function() {
+        return (this.domesticEnabled && $F(this.countryId) == 'US')
+            || (this.internationalEnabled && $F(this.countryId) != 'US');
     },
 
     /**

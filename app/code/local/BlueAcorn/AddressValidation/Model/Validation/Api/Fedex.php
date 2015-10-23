@@ -5,6 +5,7 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
     implements BlueAcorn_AddressValidation_Model_Validation_ApiInterface
@@ -66,9 +67,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
      */
     protected function _getFedexValidation()
     {
-        if ($this->_debug) {
-            $this->_helper->log('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'FedEx');
-        }
+        $this->_helper->debug('Initial address request array:' . PHP_EOL . print_r($this->_address, true), null, 'FedEx');
 
         try {
             $client = new SoapClient($this->_addressValidationWsdl, array('trace' => 1));
@@ -78,9 +77,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
 
             $response = $client->addressValidation($request);
 
-            if ($this->_debug) {
-                $this->_helper->log("Response: \n" . print_r($response, true), null, 'FedEx');
-            }
+            $this->_helper->debug("Response: \n" . print_r($response, true), null, 'FedEx');
 
             if ($response->HighestSeverity == 'ERROR' &&
                 $response->Notifications->Code == 1000) {
@@ -90,9 +87,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
             return $this->_parseSoapResponse($response);
 
         } catch (Mage_Api_Exception $e) {
-            if ($this->_debug) {
-                $this->_helper->log($e->getCustomMessage(), null, 'FedEx');
-            }
+            $this->_helper->debug($e->getCustomMessage(), null, 'FedEx');
         } catch (Exception $e) {
             switch ($e->getMessage()) {
                 // assuming more cases to come later
@@ -105,9 +100,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
                     break;
             }
 
-            if ($this->_debug) {
-                $this->_helper->log($errorMsg, null, 'FedEx');
-            }
+            $this->_helper->debug($errorMsg, null, 'FedEx');
         }
 
         return false;
@@ -123,9 +116,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
         $isSandboxMode = Mage::getStoreConfigFlag(self::FEDEX_SANDBOX_MODE, Mage::app()->getStore());
         $soapUrl = $isSandboxMode ? self::FEDEX_SANDBOX_URL : self::FEDEX_LIVE_URL;
 
-        if ($this->_debug) {
-            $this->_helper->log('SOAP URL is ' . $soapUrl, null, 'FedEx');
-        }
+        $this->_helper->debug('SOAP URL is ' . $soapUrl, null, 'FedEx');
 
         return $soapUrl;
     }
@@ -140,9 +131,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
         $wsdlBasePath = Mage::getModuleDir('etc', 'BlueAcorn_AddressValidation')  . DS . 'wsdl' . DS . 'Fedex' . DS;
         $wsdlUrl = $wsdlBasePath . 'AddressValidationService_v3.wsdl';
 
-        if ($this->_debug) {
-            $this->_helper->log('WSDL URL is ' . $wsdlUrl, null, 'Fedex');
-        }
+        $this->_helper->debug('WSDL URL is ' . $wsdlUrl, null, 'Fedex');
 
         return $wsdlUrl;
     }
@@ -164,9 +153,11 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
 
         $request = array();
 
-        $street1 = $address['street1'];
-        $street2 = $address['street2'];
-        $regionId = $address['region_id'];
+        $street1 = $address[AddressField::STREET_LINE_1];
+        $street2 = $address[AddressField::STREET_LINE_2];
+        $regionId = $address[AddressField::REGION_ID];
+        $postcode = $address[AddressField::POSTCODE];
+        $city = $address[AddressField::CITY];
         $state = $regionId ? $this->_helper->getState($regionId) : null;
 
         $formattedAddress = array(
@@ -174,8 +165,8 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
             'Address' =>
                 array(
                     'StreetLines' => array($street1, $street2),
-                    'PostalCode' => $address['postcode'],
-                    'City' => $address['city'],
+                    'PostalCode' => $postcode,
+                    'City' => $city,
                     'StateorProvinceCode' => $state,
                     'Company' => '',
                 )
@@ -208,34 +199,9 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
             0 => $formattedAddress,
         );
 
-        if ($this->_debug) {
-            $this->_helper->log("Request: \n" . print_r($request, true), null, 'FedEx');
-        }
+        $this->_helper->debug("Request: \n" . print_r($request, true), null, 'FedEx');
 
         return $request;
-    }
-
-    /**
-     * Converts address arrays and return text to the proper Result object
-     *
-     * @param array $validatedAddresses
-     * @param null $returnText
-     * @return BlueAcorn_AddressValidation_Model_Validation_Result
-     */
-    protected function _convertToResult(array $validatedAddresses = array(), $returnText = null)
-    {
-        $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
-        foreach($validatedAddresses as $address) {
-            if (isset($address['state'])) {
-                $address['region_id'] = $this->_helper->getRegionId($address['state']);
-            }
-            $result->addAddress($address);
-        }
-        if (!is_null($returnText)) {
-            $result->addMessage($returnText);
-        }
-
-        return $result;
     }
 
     /**
@@ -249,27 +215,27 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Fedex
         $data = $response->AddressResults->EffectiveAddress;
         $validatedAddress = array();
 
-        $validatedAddress['city'] = $data->City;
-        $validatedAddress['state'] = $data->StateOrProvinceCode;
+        $validatedAddress[AddressField::CITY] = $data->City;
+        $validatedAddress[AddressField::STATE] = $data->StateOrProvinceCode;
 
         if (is_array($data->StreetLines)) {
             $streetAddress = $data->StreetLines;
-            $validatedAddress['street1'] = $streetAddress[0];
-            $validatedAddress['street2'] = $streetAddress[1];
+            $validatedAddress[AddressField::STREET_LINE_1] = $streetAddress[0];
+            $validatedAddress[AddressField::STREET_LINE_2] = $streetAddress[1];
         } else {
-            $validatedAddress['street1'] = $data->StreetLines;
+            $validatedAddress[AddressField::STREET_LINE_1] = $data->StreetLines;
         }
 
         if (preg_match('/-/', $data->PostalCode)) {
             $postcode = explode('-', $data->PostalCode);
-            $validatedAddress['postcode'] = $postcode[0];
-            $validatedAddress['zip4'] = $postcode[1];
+            $validatedAddress[AddressField::POSTCODE] = $postcode[0];
+            $validatedAddress[AddressField::ZIP4] = $postcode[1];
         } else {
-            $validatedAddress['postcode'] = $data->PostalCode;
+            $validatedAddress[AddressField::POSTCODE] = $data->PostalCode;
         }
 
         $validatedAddresses[] = $validatedAddress;
 
-        return $this->_convertToResult($validatedAddresses);
+        return $this->_convertArrayToResult($validatedAddresses);
     }
 }

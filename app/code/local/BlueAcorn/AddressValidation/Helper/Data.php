@@ -4,7 +4,8 @@
  * @version     0.1.0
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
- */ 
+ */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const CONFIG_PATH = 'blueacorn_addressvalidation';
@@ -28,9 +29,9 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
      * @var array
      */
     protected $_uniqueAddressFields = array(
-        'street1',
-        'street2',
-        'postcode',
+        AddressField::STREET_LINE_1,
+        AddressField::STREET_LINE_2,
+        AddressField::POSTCODE,
     );
 
     /**
@@ -83,31 +84,97 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Accepts region ID and returns state as 2 letter code
+     * Wrapper for the log method that checks if debugging is enabled
+     *
+     * @param $message
+     * @param null $code
+     * @param null $api
+     */
+    public function debug($message, $code = null, $api = null)
+    {
+        if ($this->isDebugMode()) {
+            $this->log($message, $code, $api);
+        }
+    }
+
+    /**
+     * Accepts region ID and returns region code (useful for domestic apis)
+     * For example '54' => 'SC' for South Carolina in US
+     * or '236' => '54' for Meurthe-et-Moselle in FR
      *
      * @param $regionId
-     * @return mixed
+     * @return string
      */
     public function getState($regionId)
     {
         return Mage::getModel('directory/region')->getCollection()
-            ->addFieldToSelect('code')
-            ->addFieldToFilter('main_table.region_id', $regionId)
-            ->getFirstItem()
-            ->getCode();
+                ->addFieldToSelect('code')
+                ->addFieldToFilter('main_table.region_id', $regionId)
+                ->getFirstItem()
+                ->getCode();
     }
 
     /**
-     * Accepts state 2 letter code and returns region ID
+     * Get region name instead of code
+     * For example '54' => 'South Carolina'
+     * or '236' => 'Meurthe-et-Moselle')
      *
-     * @param $state
+     * @param $regionId
+     * @return string
+     */
+    public function getRegionName($regionId)
+    {
+        return Mage::getModel('directory/region')->getCollection()
+            ->addFieldToFilter('main_table.region_id', $regionId)
+            ->getFirstItem()
+            ->getName(); // Mage sets name based on locale on load, no need to add field to select
+    }
+
+    /**
+     * Get country name (in locale en_US) by country_id
+     * For example 'FR' => 'France'
+     *
+     * @param $countryId
+     * @return array
+     */
+    public function getCountryName($countryId)
+    {
+        return Mage::getModel('core/locale', 'en_US')->getCountryTranslation($countryId);
+    }
+
+    /**
+     * Get country ID from country name (where country name is in en_US)
+     * I agree, this is terrible, but my hands are tied.
+     *
+     * @param $countryName
+     * @return int|null|string
+     */
+    public function getCountryId($countryName)
+    {
+        $countryName = ucwords(strtolower($countryName));
+        $countryList = Mage::getModel('core/locale', 'en_US')->getCountryTranslationList();
+        foreach($countryList as $id => $name) {
+            if ($name == $countryName) {
+                return $id;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Accepts region code or name and returns region ID
+     * For example ('SC', false, 'US') => '54'
+     * or ('Meurthe-et-Moselle', true, 'FR') => '236'
+     *
+     * @param $code
      * @return mixed
      */
-    public function getRegionId($state)
+    public function getRegionId($code, $byName = false, $countryId = 'US')
     {
         return Mage::getModel('directory/region')->getCollection()
             ->addFieldToSelect(array('code', 'region_id'))
-            ->addFieldToFilter('main_table.code', $state)
+            ->addFieldToFilter('main_table.country_id', $countryId)
+            ->addFieldToFilter($byName ? 'name' : 'main_table.code', $code)
             ->getFirstItem()
             ->getRegionId();
     }
@@ -160,12 +227,39 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Return array of enabled APIs (these are the VALUES, i.e., constants of the source model class), but
-     * converted to lower case for convenience.
+     * Return array of enabled domestic APIs
+     *
+     * @return array
      */
-    public function getEnabledApis()
+    public function getEnabledDomesticApis()
     {
-        return explode(',', strtolower($this->getConfig('enabled_apis')));
+        return $this->getMultiselectSysConfig('enabled_domestic_apis');
+    }
+
+    /**
+     * Return array of enabled international APIs
+     *
+     * @return array
+     */
+    public function getEnabledInternationalApis()
+    {
+        return $this->getMultiselectSysConfig('enabled_international_apis');
+    }
+
+    /**
+     * Get intuitive multiselect value from system config
+     *
+     * @param $field
+     * @param $group
+     * @return array
+     */
+    public function getMultiselectSysConfig($field, $group = false)
+    {
+        $stringValue = $this->getConfig($field, $group);
+        if (empty($stringValue)) {
+            return array();
+        }
+        return explode(',', $stringValue);
     }
 
     /**
@@ -176,9 +270,9 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function validateAddressFields(array $address)
     {
-        $cityAndState = (!empty($address['city']) && !empty($address['region_id']));
-        $zip = !empty($address['postcode']);
-        $street = !empty($address['street1']);
+        $cityAndState = (!empty($address[AddressField::CITY]) && !empty($address[AddressField::REGION_ID]));
+        $zip = !empty($address[AddressField::POSTCODE]);
+        $street = !empty($address[AddressField::STREET_LINE_1]);
 
         return ($street
             && ($zip || $cityAndState)

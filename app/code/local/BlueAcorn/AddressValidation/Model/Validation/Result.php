@@ -6,12 +6,13 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Validation_Result extends Varien_Object
 {
     /**
      * Validated addresses returned from API
-     * Possible Keys: 'street', 'postcode', 'city', 'zip4' and 'state' (as 2 letter code)
-     * Required keys: 'street', 'postcode', and street value must be an array of at least 2 elements
+     * Possible Keys: 'street1', 'street2', 'postcode', 'city', 'zip4' and 'state' (as 2 letter code)
+     * Required keys: 'street1', 'postcode'
      * @var array
      */
     protected $_addresses = array();
@@ -50,7 +51,9 @@ class BlueAcorn_AddressValidation_Model_Validation_Result extends Varien_Object
      */
     public function addAddress(array $address = array())
     {
-        if (!empty($address['postcode']) && !empty($address['street1'])) {
+        if (!empty($address[AddressField::POSTCODE])
+            && !empty($address[AddressField::STREET_LINE_1])
+        ) {
             $this->_addresses[] = $address;
             return $this;
         }
@@ -93,7 +96,9 @@ class BlueAcorn_AddressValidation_Model_Validation_Result extends Varien_Object
     public function hasAddress()
     {
         foreach ($this->_addresses as $_address) {
-            if (!empty($_address['street1']) && !empty($_address['postcode'])) {
+            if (!empty($_address[AddressField::POSTCODE])
+                && !empty($_address[AddressField::STREET_LINE_1])
+            ) {
                 return true;
             }
         }

@@ -5,6 +5,7 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller_Front_Action
 {
 
@@ -34,13 +35,15 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
 
     /**
      * The fields that make up the request address
+     * 'street' is converted into the proper 'sreet1' and 'street2' in $this->_initAddress()
      * @var array
      */
     protected $_addressFields = array(
         'street',
-        'city',
-        'region_id',
-        'postcode'
+        AddressField::CITY,
+        AddressField::REGION_ID,
+        AddressField::POSTCODE,
+        AddressField::COUNTRY,
     );
 
     /**
@@ -92,8 +95,12 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
     protected function _validate()
     {
         $address = $this->getRequestAddress();
+
+        $apiGetter = 'getEnabled'
+            . ($this->isInternational() ? 'International' : 'Domestic')
+            . 'Apis';
         $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
-        foreach($this->helper()->getEnabledApis() as $api) {
+        foreach($this->helper()->$apiGetter() as $api) {
             $apiResult = null;
             $shortname = 'blueacorn_addressvalidation/validation_api_' . $api;
             try {
@@ -216,9 +223,17 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         foreach($this->_addressFields as $field) {
             $address[$field] = isset($request[$field]) ? $request[$field] : null;
         }
-        if (!is_null($address['region_id'])) {
-            $address['state'] = $this->helper()->getState($address['region_id']);
+        // Get country
+        if (is_null($address[AddressField::COUNTRY]) && isset($request['country_id'])) {
+            $address[AddressField::COUNTRY] = $request['country_id'];
         }
+        // Get state or region name from region ID
+        if (!is_null($address[AddressField::REGION_ID])) {
+            $address[AddressField::STATE] = (isset($address[AddressField::COUNTRY]) && $address[AddressField::COUNTRY] != 'US')
+                ? $this->helper()->getState($address[AddressField::REGION_ID])
+                : $this->helper()->getRegionName($address[AddressField::REGION_ID]);
+        }
+        // Get street into 'street1' and 'street2' lines
         if (is_string($address['street'])) {
             $address['street'] = explode("\n", $address['street']);
         }
@@ -247,6 +262,17 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
     public function getRequestAddress()
     {
         return $this->_requestAddress ?: $this->_initAddress();
+    }
+
+    /**
+     * Check if requested address is international
+     *
+     * @return bool
+     */
+    public function isInternational()
+    {
+        return array_key_exists(AddressField::COUNTRY, $this->_requestAddress)
+            && $this->_requestAddress[AddressField::COUNTRY] != 'US';
     }
 
     /**
