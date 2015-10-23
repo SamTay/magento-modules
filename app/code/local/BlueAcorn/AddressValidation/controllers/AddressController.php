@@ -111,13 +111,6 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
                     $e->getCode(),
                     $api
                 );
-                /**
-                 * If this is a request error, it is likely our fault for attempting to verify an
-                 * address with insufficient fields or lack of system configuration for APIs.
-                 */
-                if ($e->getCode() == BlueAcorn_AddressValidation_Model_ApiAbstract::REQUEST_ERROR) {
-                    $this->_abort = true;
-                }
             } catch (Exception $e) {
                 $this->helper()->log(
                     $e->getMessage(),
