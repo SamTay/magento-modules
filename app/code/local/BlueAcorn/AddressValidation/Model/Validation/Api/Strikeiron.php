@@ -239,7 +239,7 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
             // Request issues
             throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
         }
-        if (500 <= $status) {
+        if (500 <= $statusNbr) {
             // Server response issues
             throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
         }
