@@ -36,8 +36,8 @@ var ZipcodeLookupTool = Class.create({
      */
     setupFormObservers: function () {
         $(this.fields.postcode).on('keyup', function(event) {
-            if ($(this.fields.postcode).value.length >= 5
-                && !this.lookupInProgress
+            if (!this.lookupInProgress
+                && $F(this.fields.postcode).length >= 5
                 && $F(this.fields.country) == 'US'
             ) {
                 this.toggleInProgress(true);
@@ -54,11 +54,13 @@ var ZipcodeLookupTool = Class.create({
         this.lookupInProgress = inProgress;
         if (inProgress) {
             ['city', 'region_id'].forEach(function(fieldKey) {
-                $(this.fields[fieldKey]).up('div.field').addClassName('zipcode-lookup-progress');
+                $(this.fields[fieldKey]).disable()
+                    .up('div.field').addClassName('zipcode-lookup-progress');
             }, this);
         } else {
             ['city', 'region_id'].forEach(function(fieldKey) {
-                $(this.fields[fieldKey]).up('div.field').removeClassName('zipcode-lookup-progress');
+                $(this.fields[fieldKey]).enable()
+                    .up('div.field').removeClassName('zipcode-lookup-progress');
             }, this);
         }
     },
