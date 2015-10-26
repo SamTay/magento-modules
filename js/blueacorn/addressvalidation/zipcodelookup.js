@@ -36,9 +36,11 @@ var ZipcodeLookupTool = Class.create({
      */
     setupFormObservers: function () {
         $(this.fields.postcode).on('keyup', function(event) {
+            var zipcode = $F(this.fields.postcode);
             if (!this.lookupInProgress
-                && $F(this.fields.postcode).length >= 5
+                && zipcode.length >= 5
                 && $F(this.fields.country) == 'US'
+                && /^\d{5}(-\d{4})?$/.test(zipcode)
             ) {
                 this.toggleInProgress(true);
                 this.updateCityState();
