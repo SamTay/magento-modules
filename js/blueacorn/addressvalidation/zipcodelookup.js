@@ -2,7 +2,7 @@
  * Zipcode lookup tool - instantiated object belongs to address validator object
  *
  * @package     BlueAcorn/AddressValidation
- * @version     0.1.0
+ * @version     0.2.0
  * @author      Sam Tay @ Blue Acorn <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
@@ -36,9 +36,11 @@ var ZipcodeLookupTool = Class.create({
      */
     setupFormObservers: function () {
         $(this.fields.postcode).on('keyup', function(event) {
+            var zipcode = $F(this.fields.postcode);
             if (!this.lookupInProgress
-                && $F(this.fields.postcode).length >= 5
+                && zipcode.length >= 5
                 && $F(this.fields.country) == 'US'
+                && /^\d{5}(-\d{4})?$/.test(zipcode)
             ) {
                 this.toggleInProgress(true);
                 this.updateCityState();

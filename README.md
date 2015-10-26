@@ -1,10 +1,14 @@
 # Development Progress
 Look in the issues for new features to build or bugs to squash.
 
+# Version 0.2.0
+- 0.2.0 - Phase 2 includes international validation via StrikeIron integration
+- 0.1.0 - Phase 1 includes zipcode lookup and basic domestic validation in onepage checkout and account dashboard.
+
 # API Support
 - US Address Validation
-	- USPS
-	- Fedex
+    - USPS
+    - Fedex
 - International Address Validation
 	- StrikeIron
 - US City & State Auto Completion
@@ -30,8 +34,6 @@ Look in the issues for new features to build or bugs to squash.
 - Small Refactoring Issues (see [#44](https://github.com/BlueAcornInc/ba-address-validation/issues/44) and [#40](https://github.com/BlueAcornInc/ba-address-validation/issues/40))
 - Multi-shipping Area
 - Admin Area (see [#24](https://github.com/BlueAcornInc/ba-address-validation/issues/24))
-    - Include AV content within a modal
-    - Include button in shipping address form trigger validation modal
 - Skip validation for saved addresses that have been previously verified by an API (see [#19](https://github.com/BlueAcornInc/ba-address-validation/issues/19))
 
 # Phase 4

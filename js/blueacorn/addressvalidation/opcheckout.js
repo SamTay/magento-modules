@@ -2,7 +2,7 @@
  * Onepage Checkout - Address Validation
  *
  * @package     BlueAcorn/AddressValidation
- * @version     0.1.0
+ * @version     0.2.0
  * @author      Sam Tay @ Blue Acorn <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */

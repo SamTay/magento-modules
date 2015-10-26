@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     BlueAcorn\AddressValidation
- * @version     0.1.0
+ * @version     0.2.0
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
@@ -102,9 +102,8 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
         foreach($this->helper()->$apiGetter() as $api) {
             $apiResult = null;
-            $shortname = 'blueacorn_addressvalidation/validation_api_' . $api;
             try {
-                $apiResult = Mage::getModel($shortname)->validateAddress($address);
+                $apiResult = Mage::getModel($api)->validateAddress($address);
             } catch (Mage_Api_Exception $e) {
                 $this->helper()->log(
                     $e->getCustomMessage(),
@@ -229,7 +228,7 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         }
         // Get state or region name from region ID
         if (!is_null($address[AddressField::REGION_ID])) {
-            $address[AddressField::STATE] = (isset($address[AddressField::COUNTRY]) && $address[AddressField::COUNTRY] != 'US')
+            $address[AddressField::STATE] = (isset($address[AddressField::COUNTRY]) && $address[AddressField::COUNTRY] == 'US')
                 ? $this->helper()->getState($address[AddressField::REGION_ID])
                 : $this->helper()->getRegionName($address[AddressField::REGION_ID]);
         }
