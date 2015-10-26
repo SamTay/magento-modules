@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     BlueAcorn\AddressValidation
- * @version     0.1.0
+ * @version     0.2.0
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
