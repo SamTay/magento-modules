@@ -5,6 +5,7 @@
  * @author      Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
+use BlueAcorn_AddressValidation_Helper_Constants as AddressField;
 class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
     extends BlueAcorn_AddressValidation_Model_ApiAbstract
     implements BlueAcorn_AddressValidation_Model_Zipcode_ApiInterface
@@ -17,6 +18,16 @@ class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
      * @var string
      */
     protected $_api = 'CityStateLookup';
+
+    /**
+     * Address field map BA -> USPS
+     * @var array
+     */
+    protected $_addressFieldMap = array(
+        AddressField::CITY => 'City',
+        AddressField::STATE => 'State',
+        AddressField::POSTCODE => 'Zip5',
+    );
 
     /**
      * Lookup zipcode to get city/state from USPS lookup webtool
@@ -85,7 +96,7 @@ class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
         $xml->addAttribute('USERID', $userId);
         // Add ZipCode and Zip5 node, both required
         $zipcodeNode = $xml->addChild('ZipCode');
-        $zipcodeNode->addChild('Zip5', $zipcode);
+        $zipcodeNode->addChild($this->_addressFieldMap[AddressField::POSTCODE], $zipcode);
 
         // Ensure we are returning a string value, otherwise throw exception for bad request
         $request = $xml->asXML();
@@ -126,15 +137,13 @@ class BlueAcorn_AddressValidation_Model_Zipcode_Api_Usps
                                 'Usps'
                             );
                         }
-                        $parsedResponse = array(
-                            'postcode' => (string)$zipcode->Zip5,
-                            'city' => (string)$zipcode->City,
-                            'state' => (string)$zipcode->State,
-                            'region_id' => ''
-                        );
-                        if (!empty($parsedResponse['state'])) {
-                            $parsedResponse['region_id'] = Mage::helper('blueacorn_addressvalidation')
-                                ->getRegionId($parsedResponse['state']);
+                        $parsedResponse = array(AddressField::REGION_ID => '');
+                        foreach($this->_addressFieldMap as $baKey => $uspsKey) {
+                            $parsedResponse[$baKey] = (string)$zipcode->$uspsKey;
+                        }
+                        if (!empty($parsedResponse[AddressField::STATE])) {
+                            $parsedResponse[AddressField::REGION_ID] = Mage::helper('blueacorn_addressvalidation')
+                                ->getRegionId($parsedResponse[AddressField::STATE]);
                         }
                     }
                     if ($this->_debug) {
