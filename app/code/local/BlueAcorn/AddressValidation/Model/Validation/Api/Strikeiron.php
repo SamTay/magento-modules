@@ -12,9 +12,41 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
 {
     use BlueAcorn_AddressValidation_Model_Validation_ValidationTrait;
 
+    /**
+     * StrikeIron system config XML paths
+     */
     const SYS_CONFIG_PATH_USERID = 'blueacorn_addressvalidation/strikeiron/user_id';
     const SYS_CONFIG_PATH_PASSWORD = 'blueacorn_addressvalidation/strikeiron/password';
     const SYS_CONFIG_PATH_BASEURL = 'blueacorn_addressvalidation/strikeiron/base_url';
+
+    /**
+     * Correct/corrected by web service
+     */
+    const STATUS_NBR_CORRECT_ON_INPUT = 221;
+    const STATUS_NBR_CORRECTED = 222;
+    /**
+     * Not found
+     */
+    const STATUS_NBR_NOT_FOUND = 300;
+    /**
+     * Data cannot be corrected, but might be deliverable
+     */
+    const STATUS_NBR_HIGH_CHANCE_DELIVERABLE = 323;
+    const STATUS_NBR_MEDIUM_CHANCE_DELIVERABLE = 324;
+    const STATUS_NBR_LOW_CHANCE_DELIVERABLE = 325;
+    /**
+     * Request issues
+     */
+    const STATUS_NBR_INPUT_ADDRESS_REQUIRED = 401;
+    const STATUS_NBR_INPUT_ADDRESS_EMPTY = 402;
+    const STATUS_NBR_COUNTRY_LOCKED = 421;
+    const STATUS_NBR_COUNTRY_NOT_RECOGNIZED = 422;
+    /**
+     * Server issues
+     */
+    const STATUS_NBR_INTERNAL_ERROR = 500;
+    const STATUS_NBR_METHOD_NOT_CALLED = 521;
+    const STATUS_NBR_DATABASE_NOT_FOUND = 522;
 
     /**
      * Default base URL (system config overrides this)
@@ -213,29 +245,33 @@ class BlueAcorn_AddressValidation_Model_Validation_Api_Strikeiron
 
     /**
      * Checks service status on response and throws exceptions if necessary
-     *
      * @param $status
      * @throws Mage_Api_Exception
      */
     protected function _verifyServiceStatus($status)
     {
-        $statusNbr = isset($status['StatusNbr']) ? $status['StatusNbr'] : 200; // Assume good response by default
-        if (300 < $statusNbr && $statusNbr < 325) {
-            // Address can't be corrected, but could be deliverable
-            // Possibly create system configuration for how strict this should be
-            return;
-        }
-        if ($statusNbr == 325) {
-            // Address can't be corrected and is unlikely to be delivered
-            return;
-        }
-        if (400 < $statusNbr && $statusNbr < 500) {
-            // Request issues
-            throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
-        }
-        if (500 <= $statusNbr) {
-            // Server response issues
-            throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
+        // Assume good response by default
+        $statusNbr = isset($status['StatusNbr']) ? $status['StatusNbr'] : self::STATUS_NBR_CORRECT_ON_INPUT;
+        switch ($statusNbr) {
+            case self::STATUS_NBR_CORRECT_ON_INPUT:
+            case self::STATUS_NBR_CORRECTED:
+            case self::STATUS_NBR_NOT_FOUND:
+            case self::STATUS_NBR_HIGH_CHANCE_DELIVERABLE:
+            case self::STATUS_NBR_MEDIUM_CHANCE_DELIVERABLE:
+            case self::STATUS_NBR_LOW_CHANCE_DELIVERABLE:
+                // TODO: Segment the above cases by system configuration settings on strictness
+                return;
+            case self::STATUS_NBR_INPUT_ADDRESS_REQUIRED:
+            case self::STATUS_NBR_INPUT_ADDRESS_EMPTY:
+            case self::STATUS_NBR_COUNTRY_LOCKED:
+            case self::STATUS_NBR_COUNTRY_NOT_RECOGNIZED:
+            case self::STATUS_NBR_INTERNAL_ERROR:
+            case self::STATUS_NBR_METHOD_NOT_CALLED:
+            case self::STATUS_NBR_DATABASE_NOT_FOUND:
+                throw new Mage_Api_Exception(self::RESPONSE_ERROR, print_r($status, true));
+                break;
+            default:
+                return;
         }
     }
 
