@@ -246,15 +246,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </modal_width>
-                        <verify_modaltext translate="label">
-                            <label>Modal Verify Address Title</label>
-                            <comment><![CDATA[Sets the title of the Verify Your Address Modal.]]></comment>
+                        <form_title translate="label">
+                            <label>Verify Address Form Title</label>
+                            <comment><![CDATA[Sets the title of the Verify Your Address form.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </verify_modaltext>
+                        </form_title>
                     </fields>
                 </design>
             </groups>

@@ -78,7 +78,7 @@
                 </checkout>
                 <design>
                     <modal_width />
-                    <verify_modaltext />
+                    <form_title />
                 </design>
             </blueacorn_addressvalidation>
         </jsconfig>
@@ -107,7 +107,7 @@
             </account>
             <design>
                 <modal_width>400</modal_width>
-                <verify_modaltext>Verify Your Address</verify_modaltext>
+                <form_title>Verify Your Address</form_title>
             </design>
         </blueacorn_addressvalidation>
     </default>

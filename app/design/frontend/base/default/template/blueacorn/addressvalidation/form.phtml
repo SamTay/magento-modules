@@ -5,7 +5,7 @@ $_helper = Mage::helper('blueacorn_addressvalidation');
 ?>
 <form id="validated-address-form" method="post" action="#">
 
-    <h2><?php echo $_helper->getConfig("verify_modaltext", "design") ?></h2>
+    <h2><?php echo $_helper->getConfig("form_title", "design") ?></h2>
 
     <div class="container validated-addresses">
         <?php foreach($this->getAddresses() as $index => $address): ?>
