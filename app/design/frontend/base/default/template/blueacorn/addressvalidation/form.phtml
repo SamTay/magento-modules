@@ -15,12 +15,14 @@ $_helper = Mage::helper('blueacorn_addressvalidation');
                 <?php echo $address[AddressField::STREET_LINE_1] ?>
                 <?php echo $address[AddressField::STREET_LINE_2] ?>
                 <?php echo $address[AddressField::CITY] . ', ' . $address[AddressField::STATE] . ' ' . $address[AddressField::POSTCODE] ?>
+                <?php if (array_key_exists(AddressField::COUNTRY, $address) && $address[AddressField::COUNTRY] != 'US'): ?>
+                    <?php echo ' ' . $address[AddressField::COUNTRY] ?>
+                <?php endif ?>
             </label>
         <?php endforeach ?>
 
         <?php if ($originalAddress = $this->getOriginalAddress()): ?>
             <h4><?php echo $this->__("Original Address") ?></h4>
-
             <input id="address_original" value="original" type="radio" name="validated_address" class="no-style radio original-address" />
             <label for="address_original" class="original-address">
                 <?php echo $originalAddress[AddressField::STREET_LINE_1] ?>
@@ -29,6 +31,9 @@ $_helper = Mage::helper('blueacorn_addressvalidation');
                     <?php echo $originalAddress[AddressField::CITY] . ', ' . $originalAddress[AddressField::STATE] . ' ' ?>
                 <?php endif ?>
                 <?php echo $originalAddress[AddressField::POSTCODE] ?>
+                <?php if (array_key_exists(AddressField::COUNTRY, $originalAddress) && $originalAddress[AddressField::COUNTRY] != 'US'): ?>
+                    <?php echo ' ' . $originalAddress[AddressField::COUNTRY] ?>
+                <?php endif ?>
             </label>
         <?php endif ?>
 
