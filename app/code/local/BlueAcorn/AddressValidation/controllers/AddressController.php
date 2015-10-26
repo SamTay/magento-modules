@@ -229,7 +229,7 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         }
         // Get state or region name from region ID
         if (!is_null($address[AddressField::REGION_ID])) {
-            $address[AddressField::STATE] = (isset($address[AddressField::COUNTRY]) && $address[AddressField::COUNTRY] != 'US')
+            $address[AddressField::STATE] = (isset($address[AddressField::COUNTRY]) && $address[AddressField::COUNTRY] == 'US')
                 ? $this->helper()->getState($address[AddressField::REGION_ID])
                 : $this->helper()->getRegionName($address[AddressField::REGION_ID]);
         }
