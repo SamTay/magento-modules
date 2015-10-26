@@ -78,6 +78,10 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
             $message = "$code: $message";
         }
         if ($api) {
+            // Allow passing class shortname
+            if (strpos($api, 'blueacorn_addressvalidation/validation_api') === 0) {
+                $api = substr($api, strrpos($api, '_') + 1);
+            }
             $message = strtoupper($api) . ": $message";
         }
         Mage::log($message, null, self::LOG, true);
@@ -227,7 +231,7 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Return array of enabled domestic APIs
+     * Return array of enabled domestic API model shortnames
      *
      * @return array
      */
@@ -237,7 +241,7 @@ class BlueAcorn_AddressValidation_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Return array of enabled international APIs
+     * Return array of enabled international API model shortnames
      *
      * @return array
      */

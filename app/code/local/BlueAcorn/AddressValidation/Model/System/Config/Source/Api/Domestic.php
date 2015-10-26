@@ -6,9 +6,13 @@
  * @copyright   Copyright © 2015 Blue Acorn, Inc.
  */
 class BlueAcorn_AddressValidation_Model_System_Config_Source_Api_Domestic
+    extends BlueAcorn_AddressValidation_Model_System_Config_Source_ApiAbstract
 {
-    const USPS = 'usps';
-    const FEDEX = 'fedex';
+    /**
+     * System config values should be model shortnames that implement the ApiInterface
+     */
+    const USPS = 'blueacorn_addressvalidation/validation_api_usps';
+    const FEDEX = 'blueacorn_addressvalidation/validation_api_fedex';
 
     /**
      * Get sys config options for domestic API select
@@ -17,7 +21,7 @@ class BlueAcorn_AddressValidation_Model_System_Config_Source_Api_Domestic
      */
     public function toOptionArray()
     {
-        return array(
+        return array_filter(array(
             array(
                 'label' => Mage::helper('blueacorn_addressvalidation')->__('Usps'),
                 'value' => self::USPS
@@ -26,6 +30,6 @@ class BlueAcorn_AddressValidation_Model_System_Config_Source_Api_Domestic
                 'label' => Mage::helper('blueacorn_addressvalidation')->__('Fedex'),
                 'value' => self::FEDEX
             )
-        );
+        ), array($this, '_filterImplements'));
     }
 }

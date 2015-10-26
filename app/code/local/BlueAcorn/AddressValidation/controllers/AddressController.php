@@ -102,9 +102,8 @@ class BlueAcorn_AddressValidation_AddressController extends Mage_Core_Controller
         $result = Mage::getModel('blueacorn_addressvalidation/validation_result');
         foreach($this->helper()->$apiGetter() as $api) {
             $apiResult = null;
-            $shortname = 'blueacorn_addressvalidation/validation_api_' . $api;
             try {
-                $apiResult = Mage::getModel($shortname)->validateAddress($address);
+                $apiResult = Mage::getModel($api)->validateAddress($address);
             } catch (Mage_Api_Exception $e) {
                 $this->helper()->log(
                     $e->getCustomMessage(),
