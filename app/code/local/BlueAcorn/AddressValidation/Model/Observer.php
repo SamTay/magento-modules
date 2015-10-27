@@ -16,7 +16,7 @@ class BlueAcorn_AddressValidation_Model_Observer
     public function addFormHtml(Varien_Event_Observer $observer)
     {
         $response = $observer->getResponse();
-        if (empty($response->getAddresses())) {
+        if (!$response->getAddresses()) {
             return;
         }
 
@@ -38,7 +38,7 @@ class BlueAcorn_AddressValidation_Model_Observer
     {
         $response = $observer->getResponse();
         $helper = Mage::helper('blueacorn_addressvalidation');
-        if (!empty($response->getAddresses()) || !$response->getDisplayErrors()) {
+        if ($response->getAddresses() || !$response->getDisplayErrors()) {
             return;
         }
         // Get error message from sys config
