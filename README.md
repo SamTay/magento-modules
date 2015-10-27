@@ -1,11 +1,14 @@
-# Development Progress
+# Address Validation
+Blue Acorn module for validating shipping addresses
+
+### Development Progress
 Look in the issues for new features to build or bugs to squash.
 
-# Version 0.2.0
+### Version 0.2.0
 - 0.2.0 - Phase 2 includes international validation via StrikeIron integration
 - 0.1.0 - Phase 1 includes zipcode lookup and basic domestic validation in onepage checkout and account dashboard.
 
-# API Support
+### API Support
 - US Address Validation
     - USPS
     - Fedex
@@ -14,11 +17,11 @@ Look in the issues for new features to build or bugs to squash.
 - US City & State Auto Completion
 	- USPS
 
-# Available Magento Areas
+### Available Magento Areas
 - Onepage Checkout
 - Account Dashboard
 
-# Configuration per Magento Area
+### Configuration per Magento Area
 - Presentation
     - Modal
     - Slide (replace form content)
@@ -30,13 +33,13 @@ Look in the issues for new features to build or bugs to squash.
 - Error Message
 	- Customizable HTML message to display to user if Display Errors is enabled
 
-# Phase 3
+### Phase 3
 - Small Refactoring Issues (see [#44](https://github.com/BlueAcornInc/ba-address-validation/issues/44) and [#40](https://github.com/BlueAcornInc/ba-address-validation/issues/40))
 - Multi-shipping Area
 - Admin Area (see [#24](https://github.com/BlueAcornInc/ba-address-validation/issues/24))
 - Skip validation for saved addresses that have been previously verified by an API (see [#19](https://github.com/BlueAcornInc/ba-address-validation/issues/19))
 
-# Phase 4
+### Phase 4
 - Gmaps API Support (visualization)
 	- Map displaying location of address as entered, and also automatically readjusts based on selected suggestion.
     - Google Maps-driven autocomplete suggestions for individual address fields (with results prioritized by GeoIP results, configurable in admin)
