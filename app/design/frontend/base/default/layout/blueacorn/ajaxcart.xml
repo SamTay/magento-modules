@@ -14,17 +14,8 @@
                 <type>skin_js</type>
                 <script>js/blueacorn/ajaxcart.js</script>
             </action>
-            <action method="addItem" ifconfig="blueacorn_ajaxcart/general/enabled">
-                <type>skin_js</type>
-                <script>js/vendor/jquery.fancybox.js</script>
-            </action>
-            <action method="addItem" ifconfig="blueacorn_ajaxcart/general/enabled">
-                <type>skin_css</type>
-                <script>css/jquery.fancybox.css</script>
-            </action>
         </reference>
     </catalog_category_view>
-
     <catalog_product_view>
         <reference name="head">
             <action method="addItem" ifconfig="blueacorn_ajaxcart/general/enabled">
