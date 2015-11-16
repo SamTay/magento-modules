@@ -4,7 +4,8 @@
             <active>true</active>
             <codePool>local</codePool>
             <depends>
-                <Mage_Checkout />
+                <Mage_Checkout/>
+                <BlueAcorn_GreenPistachio/>
             </depends>
         </BlueAcorn_AjaxCart>
     </modules>
