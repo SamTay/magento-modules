@@ -6,14 +6,15 @@
  */
 
 /**
- * Add an ajax addItem method to the minicart prototype
+ * Adds an ajax addItem method to the minicart prototype
  * Observe 'ajax-add-to-cart-complete' to hook into add-to-cart completion
  *
  * @param url
  * @param requestData
- * @dispatches 'ajax-add-to-cart-complete'
+ * @dispatches 'ajax-add-to-cart-complete', 'ajax-add-to-cart-before'
  */
 Minicart.prototype.addItem = function(url, requestData) {
+    $j(document).trigger('ajax-add-to-cart-before');
     var cart = this;
     cart.hideMessage();
     cart.showOverlay();
@@ -28,6 +29,7 @@ Minicart.prototype.addItem = function(url, requestData) {
         if (result.success) {
             cart.updateCartQty(result.qty);
             cart.updateContentOnUpdate(result);
+            $j(cart.selectors.countHider).removeClass('no-count');
             $j(document).trigger('ajax-add-to-cart-complete', [result]);
         } else {
             cart.showMessage(result);
@@ -39,20 +41,38 @@ Minicart.prototype.addItem = function(url, requestData) {
 };
 
 /**
- * Extend Minicart initialization to hook into new 'ajax-add-to-cart' events
+ * Show minicart and scroll to top of page
+ */
+Minicart.prototype.showCart = function() {
+    $j(this.selectors.toggleVisibility).addClass('skip-active')
+    $j('html, body').animate({ scrollTop: 0 }, 'slow');
+};
+
+/**
+ * Extend Minicart initialization to hook into new ajax events
  */
 Minicart.prototype.init = Minicart.prototype.init.wrap(function($super) {
     var cart = this;
     $j.extend(cart.initAfterEvents, {
         attachCartAddListeners: function() {
-            $j(document).off('ajax-add-to-cart').on('ajax-add-to-cart', function (event, url, requestData) {
+            $j(document).off('ajax-add-to-cart-hook').on('ajax-add-to-cart-hook', function (event, url, requestData) {
                 cart.addItem(url, requestData);
             });
+            $j(document).off('ajax-add-to-cart-before').on('ajax-add-to-cart-before', function(event) {
+                cart.showCart();
+            });
         }
+    });
+    $j.extend(cart.selectors, {
+        toggleVisibility: '#header-cart.skip-content, .skip-link[data-target-element="#header-cart"]',
+        countHider: 'a.skip-link.skip-cart'
     });
     $super();
 });
 
+/**
+ * Detach previous add-to-cart events and hook into new Minicart functionality
+ */
 (function($) {
     var selectors = {
         form: '#product_addtocart_form',
@@ -65,7 +85,7 @@ Minicart.prototype.init = Minicart.prototype.init.wrap(function($super) {
                 if (productAddToCartForm.validator.validate()) {
                     var url = $(form).attr('action'),
                         requestData = $(form).serialize();
-                    $(document).trigger('ajax-add-to-cart', [url, requestData]);
+                    $(document).trigger('ajax-add-to-cart-hook', [url, requestData]);
                 }
             });
         // Set up dispatchers for other pages (no product form)
@@ -79,7 +99,7 @@ Minicart.prototype.init = Minicart.prototype.init.wrap(function($super) {
                 }
 
                 $(this).removeAttr('onclick').off('click').on('click', function() {
-                    $(document).trigger('ajax-add-to-cart', [url, {}]);
+                    $(document).trigger('ajax-add-to-cart-hook', [url, {}]);
                 });
             });
         }
