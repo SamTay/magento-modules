@@ -1,36 +1,31 @@
 BlueAcorn Ajax Mini Cart
 ========================
 
-This module adds ajax functionality to the product and category pages so that adding a product to the cart is done via ajax and the minicart is shown.
+This module adds ajax functionality to the product and category pages so that adding a product to the cart is done via
+ajax and the minicart is shown. The current version is implemented against 1.14.2.0, but should drop in to any
+1.14+ version of EE. See other branches for earlier versions.
 
-Assumptions
-----------
-- (UPDATED) Further customization will be needed on sites that have links with referer actions
-on product/category pages. It will be necessary to extend controllers so that customers are not redirected to the
-add to cart action (see Fabricgeek.com for an example).
-- (UPDATED) This module can only be used for EE 1.14 Sites and has been tested with all product types
-- (UPDATED) Deleting products is done via ajax in mini cart natively for EE 1.14+
-- Customizations will need to be made for custom themes
-- (UPDATED) The system configuration is located @ Blue Acorn->AjaxCart
-- (ADDITION) Module implemented using jQuery
-- (ADDITION) Module comes packaged with Fancybox (a jQuery library for modal popups)
-- (ADDITION) Module includes design and skin changes inside of the default theme of the blueacorn package
-
+Currently there is a dependency on [green pistachio](https://github.com/BlueAcornInc/green-pistachio) since most of our
+sites utitlize that module and it moves the native *minicart.js* to the footer. The dependency is declared to ensure that
+*ajaxcart.js* gets included after *minicart.js* as it builds on that functionality.
 
 Version
 ----
-0.2.1
+1.0.0
 
 Changelog
 ----
+- **1.0.0**: Complete overhaul of approach. There is now a lot less code included, and the php and javascript
+stay as close to native Magento as possible. Approach is now largely based on existing native ajax minicart functionality.
+The fancybox has also been removed to keep this base module as simple as possible. This motivation stems from the fact
+that this has always been a very buggy internal module.
 
 Sample Sites
 ----
-- GoStephens.com (< EE 1.14)
-- Scoutbags.com (< EE 1.14)
-- Vietri.com (EE 1.14.0.1)
+- [BEK](staging.abeka.com)
 
 Authors
 ----
-(< EE 1.14) Thomas Slade <thomas@blueacorn.com>
-(EE 1.14+) Jim Simon <jim@blueacorn.com>, Sam Tay <sam.tay@blueacorn.com>
+- (EE 1.14.2) Sam Tay <sam.tay@blueacorn.com>
+- (< EE 1.14.2) Jim Simon <jim@blueacorn.com>, Sam Tay <sam.tay@blueacorn.com>
+- (< EE 1.14.0) Thomas Slade <thomas@blueacorn.com>
