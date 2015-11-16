@@ -83,8 +83,8 @@ Minicart.prototype.init = Minicart.prototype.init.wrap(function($super) {
         if ($('body').hasClass('catalog-product-view')) {
             $(selectors.cartButtons).removeAttr('onclick').off('click').on('click', function(){
                 if (productAddToCartForm.validator.validate()) {
-                    var url = $(form).attr('action'),
-                        requestData = $(form).serialize();
+                    var url = $(selectors.form).attr('action'),
+                        requestData = $(selectors.form).serialize();
                     $(document).trigger('ajax-add-to-cart-hook', [url, requestData]);
                 }
             });
