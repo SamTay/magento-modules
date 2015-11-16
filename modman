@@ -1,4 +1,5 @@
 app/code/local/BlueAcorn/AjaxCart                               app/code/local/BlueAcorn/AjaxCart
 app/design/frontend/base/default/layout/blueacorn/ajaxcart.xml  app/design/frontend/base/default/layout/blueacorn/ajaxcart.xml
+app/design/frontend/base/default/template/blueacorn/ajaxcart/minicart.phtml  app/design/frontend/base/default/template/blueacorn/ajaxcart/minicart.phtml
 app/etc/modules/BlueAcorn_AjaxCart.xml                          app/etc/modules/BlueAcorn_AjaxCart.xml
 skin/frontend/base/default/js/blueacorn/ajaxcart.js             skin/frontend/base/default/js/blueacorn/ajaxcart.js

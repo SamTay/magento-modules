@@ -1,0 +1,16 @@
+<?php
+/**
+ * @package     BlueAcorn\AjaxCart
+ * @version
+ * @author      Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2015 Blue Acorn, Inc.
+ */
+?>
+<script type="text/javascript">
+    $j('document').ready(function() {
+        var Mini = new Minicart({
+            formKey: "<?php echo Mage::getSingleton('core/session')->getFormKey() ?>"
+        });
+        Mini.init();
+    });
+</script>

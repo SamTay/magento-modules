@@ -41,12 +41,16 @@ Minicart.prototype.addItem = function(url, requestData) {
 /**
  * Extend Minicart initialization to hook into new 'ajax-add-to-cart' events
  */
-$j.extend(Minicart.prototype.initAfterEvents, {
-    attachCartAddListeners: function() {
-        $j(document).on('ajax-add-to-cart', function (event, url, requestData) {
-            this.addItem(url, requestData);
-        }.bind(this));
-    }
+Minicart.prototype.init = Minicart.prototype.init.wrap(function($super) {
+    var cart = this;
+    $j.extend(cart.initAfterEvents, {
+        attachCartAddListeners: function() {
+            $j(document).off('ajax-add-to-cart').on('ajax-add-to-cart', function (event, url, requestData) {
+                cart.addItem(url, requestData);
+            });
+        }
+    });
+    $super();
 });
 
 (function($) {
@@ -57,7 +61,7 @@ $j.extend(Minicart.prototype.initAfterEvents, {
     $(document).ready(function() {
         // Set up dispatchers for product view page
         if ($('body').hasClass('catalog-product-view')) {
-            $(selectors.cartButtons).removeAttr('onclick').click(function(){
+            $(selectors.cartButtons).removeAttr('onclick').off('click').on('click', function(){
                 if (productAddToCartForm.validator.validate()) {
                     var url = $(form).attr('action'),
                         requestData = $(form).serialize();
@@ -74,7 +78,7 @@ $j.extend(Minicart.prototype.initAfterEvents, {
                     return; // Nothing to do if this button doesnt add to cart
                 }
 
-                $(this).removeAttr('onclick').click(function() {
+                $(this).removeAttr('onclick').off('click').on('click', function() {
                     $(document).trigger('ajax-add-to-cart', [url, {}]);
                 });
             });

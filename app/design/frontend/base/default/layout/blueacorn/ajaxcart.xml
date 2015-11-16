@@ -8,20 +8,22 @@
  */
  -->
 <layout>
-    <catalog_category_view>
+    <ba_ajaxcart_handle>
         <reference name="scripts_in_footer">
             <action method="addItem" ifconfig="blueacorn_ajaxcart/general/enabled">
                 <type>skin_js</type>
                 <script>js/blueacorn/ajaxcart.js</script>
             </action>
         </reference>
+        <reference name="before_body_end">
+            <block type="core/template" template="blueacorn/ajaxcart/minicart.phtml" />
+        </reference>
+    </ba_ajaxcart_handle>
+
+    <catalog_category_view>
+        <update handle="ba_ajaxcart_handle"></update>
     </catalog_category_view>
     <catalog_product_view>
-        <reference name="scripts_in_footer">
-            <action method="addItem" ifconfig="blueacorn_ajaxcart/general/enabled">
-                <type>skin_js</type>
-                <script>js/blueacorn/ajaxcart.js</script>
-            </action>
-        </reference>
+        <update handle="ba_ajaxcart_handle"></update>
     </catalog_product_view>
 </layout>
