@@ -15,17 +15,6 @@
         </blueacorn>
     </tabs>
     <sections>
-        <checkout>
-            <groups>
-                <cart>
-                    <fields>
-                        <redirect_to_cart>
-                            <comment>Will be overridden if AJAX Cart is Enabled</comment>
-                        </redirect_to_cart>
-                    </fields>
-                </cart>
-            </groups>
-        </checkout>
         <blueacorn_ajaxcart translate="label" module="blueacorn_ajaxcart">
             <label>AJAX Cart</label>
             <tab>blueacorn</tab>
@@ -41,6 +30,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
                     <fields>
                         <enabled translate="label">
                             <label>Enabled</label>
