@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @package     BlueAcorn\AttributeFlag
+* @version     0.1.0
+* @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+* @copyright   Copyright © 2015 Blue Acorn, Inc.
+*/
+-->
+<config>
+    <modules>
+        <BlueAcorn_AttributeFlag>
+            <version>0.1.0</version>
+        </BlueAcorn_AttributeFlag>
+    </modules>
+    <global>
+        <models>
+            <ba_attributeflag>
+                <class>BlueAcorn_AttributeFlag_Model</class>
+                <resourceModel>ba_attributeflag_resource</resourceModel>
+            </ba_attributeflag>
+            <ba_attributeflag_resource>
+                <class>BlueAcorn_AttributeFlag_Model_Resource</class>
+            </ba_attributeflag_resource>
+        </models>
+        <blocks>
+            <ba_attributeflag>
+                <class>BlueAcorn_AttributeFlag_Block</class>
+            </ba_attributeflag>
+        </blocks>
+        <helpers>
+            <ba_attributeflag>
+                <class>BlueAcorn_AttributeFlag_Helper</class>
+            </ba_attributeflag>
+        </helpers>
+        <resources>
+            <ba_attributeflag_setup>
+                <setup>
+                    <module>BlueAcorn_AttributeFlag</module>
+                </setup>
+            </ba_attributeflag_setup>
+        </resources>
+    </global>
+</config>

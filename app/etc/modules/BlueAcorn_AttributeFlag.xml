@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <BlueAcorn_AttributeFlag>
+            <active>true</active>
+            <codePool>local</codePool>
+        </BlueAcorn_AttributeFlag>
+    </modules>
+</config>
