@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+/**
+* @package     BlueAcorn\AttributeFlag
+* @version     0.1.0
+* @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+* @copyright   Copyright © 2015 Blue Acorn, Inc.
+*/
+-->
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <ba_attributeflag translate="title" module="ba_attributeflag">
+                                        <title>Attribute Flags</title>
+                                    </ba_attributeflag>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
