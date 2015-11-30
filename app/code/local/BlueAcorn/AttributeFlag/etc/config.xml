@@ -40,5 +40,16 @@
                 </setup>
             </ba_attributeflag_setup>
         </resources>
+        <ba_attributeflags>
+            <sale>
+                <label>Sale</label>
+                <model>ba_attributeflag/flag_sale</model>
+            </sale>
+            <new>
+                <label>New</label>
+                <model>ba_attributeflag/flag_new</model>
+                <disabled>true</disabled>
+            </new>
+        </ba_attributeflags>
     </global>
 </config>
