@@ -52,4 +52,12 @@
             </new>
         </ba_attributeflags>
     </global>
+    <default>
+        <ba_attributeflag>
+            <general>
+                <module_enabled>0</module_enabled>
+                <max_flags>1</max_flags>
+            </general>
+        </ba_attributeflag>
+    </default>
 </config>
