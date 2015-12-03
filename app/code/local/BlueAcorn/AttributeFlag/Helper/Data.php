@@ -85,7 +85,6 @@ class BlueAcorn_AttributeFlag_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Get all flags enabled via system config, load models and other flag info
      *
-     * @todo Finish adding flag data from sys config
      * @return Varien_Object[]
      */
     public function getEnabledFlags()
@@ -101,6 +100,13 @@ class BlueAcorn_AttributeFlag_Helper_Data extends Mage_Core_Helper_Abstract
                 : null;
             $this->_flags[$flagId] = new Varien_Object($flag);
         }
+
+        // Prioritize flags based on <sort> node
+        usort($this->_flags, function($flagA, $flagB) {
+            $sortA = $flagA->getSort() ?: 0;
+            $sortB = $flagB->getSort() ?: 0;
+            return $sortA - $sortB;
+        });
 
         return $this->_flags;
     }

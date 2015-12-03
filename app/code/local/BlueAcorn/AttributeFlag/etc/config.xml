@@ -44,10 +44,14 @@
             <sale>
                 <label>Sale</label>
                 <model>ba_attributeflag/flag_sale</model>
+                <hex>E9B226</hex>
+                <sort>10</sort>
             </sale>
             <new>
                 <label>New</label>
                 <model>ba_attributeflag/flag_new</model>
+                <hex>08107B</hex>
+                <sort>30</sort>
                 <disabled>true</disabled>
             </new>
         </ba_attributeflags>
