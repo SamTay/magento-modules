@@ -17,6 +17,7 @@ var ZipcodeLookupTool = Class.create({
         this.fields = parent.fields;
         this.fields.country = parent.countryId;
         this.lookupInProgress = false;
+        this.keyupWhileLookupInProgress = false;
         this.organizeFormFields();
         this.setupFormObservers();
     },
@@ -37,13 +38,16 @@ var ZipcodeLookupTool = Class.create({
     setupFormObservers: function () {
         $(this.fields.postcode).on('keyup', function(event) {
             var zipcode = $F(this.fields.postcode);
-            if (!this.lookupInProgress
-                && zipcode.length >= 5
+            if (zipcode.length >= 5
                 && $F(this.fields.country) == 'US'
                 && /^\d{5}(-\d{4})?$/.test(zipcode)
             ) {
-                this.toggleInProgress(true);
-                this.updateCityState();
+                if (!this.lookupInProgress) {
+                    this.toggleInProgress(true);
+                    this.updateCityState();
+                } else {
+                    this.keyupWhileLookupInProgress = true;
+                }
             }
         }.bind(this));
     },
@@ -76,6 +80,11 @@ var ZipcodeLookupTool = Class.create({
             onSuccess: function(response) {
                 if (response.hasOwnProperty('responseJSON')) {
                     this.populateCityState(response.responseJSON);
+
+                    if (this.keyupWhileLookupInProgress) {
+                        this.updateCityState();
+                        this.keyupWhileLookupInProgress = false;
+                    }
                 }
             }.bind(this),
             onComplete: function() {
