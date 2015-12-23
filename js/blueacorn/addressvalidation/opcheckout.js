@@ -22,7 +22,7 @@ var OPAddressValidator = Class.create(AddressValidator, {
         }
         this.countryId = 'shipping:country_id';
         this.setupObserversIfEnabled();
-        if (mageConfig['blueacorn_addressvalidation/checkout/city_state']) {
+        if (this.getConfig('blueacorn_addressvalidation/checkout/city_state')) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },

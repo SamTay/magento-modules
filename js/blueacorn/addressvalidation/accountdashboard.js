@@ -24,7 +24,7 @@ var ADAddressValidator = Class.create(AddressValidator, {
         };
         this.countryId = 'country';
         this.setupObserversIfEnabled();
-        if (mageConfig['blueacorn_addressvalidation/account/city_state']) {
+        if (this.getConfig('blueacorn_addressvalidation/account/city_state')) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },

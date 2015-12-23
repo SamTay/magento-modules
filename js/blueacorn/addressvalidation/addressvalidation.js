@@ -16,11 +16,30 @@ var AddressValidator = Class.create({
      * @param form
      */
     initialize: function(parentFormId) {
+        /**
+         * Creates default configurations to fall back to incase mageConfig is undefined
+         * @type {{
+         *   blueacorn_addressvalidation/design/modal_width: string,
+         *   blueacorn_addressvalidation/general/enabled_domestic_apis: boolean,
+         *   blueacorn_addressvalidation/general/enabled_international_apis: boolean,
+         *   blueacorn_addressvalidation/account/city_state: string,
+         *   blueacorn_addressvalidation/checkout/city_state: string
+         * }}
+         */
+        this.defaultConfiguration = {
+            'blueacorn_addressvalidation/design/modal_width': "400",
+            'blueacorn_addressvalidation/general/enabled_domestic_apis': false,
+            'blueacorn_addressvalidation/general/enabled_international_apis': false,
+            'blueacorn_addressvalidation/account/city_state': "0",
+            'blueacorn_addressvalidation/checkout/city_state': "0"
+        };
+
         this.form = 'validated-address-form';
         this.parentForm = parentFormId;
-        this.modalWidth = mageConfig['blueacorn_addressvalidation/design/modal_width'];
-        this.domesticEnabled = !!mageConfig['blueacorn_addressvalidation/general/enabled_domestic_apis'];
-        this.internationalEnabled = !!mageConfig['blueacorn_addressvalidation/general/enabled_international_apis'];
+        this.modalWidth = this.getConfig('blueacorn_addressvalidation/design/modal_width');
+        this.domesticEnabled = !!this.getConfig('blueacorn_addressvalidation/general/enabled_domestic_apis');
+        this.internationalEnabled = !!this.getConfig('blueacorn_addressvalidation/general/enabled_international_apis');
+        this.requestInProgress = false;
         this.slideTimeout = 3800;
         /**
          * Override this.url in specific extended integrations
@@ -41,6 +60,21 @@ var AddressValidator = Class.create({
             region_id: 'region_id'
         };
         this.countryId = 'country';
+    },
+
+    /**
+     * Get configuration from path, first trying mageConfig, if mageConfig is undefined fallback to
+     * defaultConfigurationObject, if path is not found in object, fallback to second parameter, which
+     * defaults to undefined
+     * @param configurationPath
+     * @param fallbackValue
+     * @returns configuration value of configurationPath
+     */
+    getConfig: function(configurationPath, fallbackValue) {
+        if (typeof window.mageConfig !== 'undefined') {
+            return mageConfig[configurationPath] || this.defaultConfiguration[configurationPath] || fallbackValue;
+        }
+        return this.defaultConfiguration[configurationPath] || fallbackValue;
     },
 
     /**
