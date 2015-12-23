@@ -23,7 +23,8 @@ var ADAddressValidator = Class.create(AddressValidator, {
             region_id: 'region_id'
         };
         this.countryId = 'country';
-        if (mageConfig['blueacorn_addressvalidation/account/city_state']) {
+        this.setupObserversIfEnabled();
+        if (this.getConfig('blueacorn_addressvalidation/account/city_state')) {
             this.zipcodeLookupTool = new ZipcodeLookupTool(this);
         }
     },
