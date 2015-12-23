@@ -41,13 +41,6 @@ var AddressValidator = Class.create({
             region_id: 'region_id'
         };
         this.countryId = 'country';
-
-        /**
-         * Override this.setupObservers in specific integrations to attach "this" to parent forms
-         */
-        if (this.domesticEnabled || this.internationalEnabled) {
-            this.setupObservers();
-        }
     },
 
     /**
@@ -306,6 +299,15 @@ var AddressValidator = Class.create({
     canValidateCountry: function() {
         return (this.domesticEnabled && $F(this.countryId) == 'US')
             || (this.internationalEnabled && $F(this.countryId) != 'US');
+    },
+
+    /**
+     * Override this.setupObservers in specific integrations to attach "this" to parent forms
+     */
+    setupObserversIfEnabled: function() {
+        if (this.domesticEnabled || this.internationalEnabled) {
+            this.setupObservers();
+        }
     },
 
     /**
