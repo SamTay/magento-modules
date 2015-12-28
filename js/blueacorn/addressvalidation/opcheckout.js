@@ -38,6 +38,9 @@ var OPAddressValidator = Class.create(AddressValidator, {
 
         if (this.requestInProgress) {
             checkout.setLoadWaiting(checkout.currentStep, this.requestInProgress);
+
+            // this is required to allow shipping.save request to subsequently run after validaton request
+            checkout.loadWaiting = false;
         } else {
             checkout.setLoadWaiting(false);
         }
