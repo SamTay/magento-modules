@@ -30,6 +30,22 @@ var ADAddressValidator = Class.create(AddressValidator, {
     },
 
     /**
+     * Override abstract toggleInProgress method to do DOM manipulation that is Account Dashboard specific
+     *
+     * @param $super
+     * @param toggle
+     */
+    toggleInProgress: function($super, toggle) {
+        $super(toggle);
+        var $button = $(this.parentForm).select('button[type="submit"]').first();
+        if (this.requestInProgress) {
+            $button.addClassName('disabled request-in-progress');
+        } else {
+            $button.removeClassName('disabled request-in-progress');
+        }
+    },
+
+    /**
      * Override so that "submit" action doesn't try to remove form,
      * because submitting post takes longer here, and since the action isn't ajax,
      * there's no reason to change what the page currently looks like.

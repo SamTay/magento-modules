@@ -28,6 +28,25 @@ var OPAddressValidator = Class.create(AddressValidator, {
     },
 
     /**
+     * Override abstract toggleInProgress method to do DOM manipulation that is OPC specific
+     *
+     * @param $super
+     * @param toggle
+     */
+    toggleInProgress: function($super, toggle) {
+        $super(toggle);
+
+        if (this.requestInProgress) {
+            checkout.setLoadWaiting(checkout.currentStep, this.requestInProgress);
+
+            // this is required to allow shipping.save request to subsequently run after validaton request
+            checkout.loadWaiting = false;
+        } else {
+            checkout.setLoadWaiting(false);
+        }
+    },
+
+    /**
      * Fill parent address form with values from addressJSON
      * Unset the possibly selected customer address ID from dropdown
      * @param addressJSON

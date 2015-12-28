@@ -92,10 +92,12 @@ var AddressValidator = Class.create({
      * @param failure
      */
     getValidatedAddress: function(success, failure) {
+        this.toggleInProgress(true);
         new Ajax.Request(this.url, {
             parameters: Form.serialize(this.parentForm),
             onSuccess: success,
-            onFailure: failure
+            onFailure: failure,
+            onComplete: this.toggleInProgress.bind(this)
         });
     },
 
@@ -347,5 +349,16 @@ var AddressValidator = Class.create({
     /**
      * Override in extended classes to handle injection
      */
-    setupObservers: function() {}
+    setupObservers: function() {},
+
+    /**
+     * Toggle requestInProgress (extend in child classes for specific dom manipulation required)
+     * @param toggle
+     */
+    toggleInProgress: function(toggle) {
+        if (typeof toggle !== "boolean") {
+            toggle = !this.requestInProgress;
+        }
+        this.requestInProgress = !!toggle;
+    }
 });
