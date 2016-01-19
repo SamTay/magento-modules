@@ -314,11 +314,6 @@ var AddressValidator = Class.create({
      */
     wrapperGenerator: function(wrapper) {
         return function ($super) {
-            // HALT if ba object doesn't exit
-            if (typeof ba === "undefined") {
-                console.log('Address Validation module depends on GP...');
-                return $super();
-            }
             // Varien form validation comes first
             var formValidator = new Validation(this.form);
             if (!formValidator.validate()) {
