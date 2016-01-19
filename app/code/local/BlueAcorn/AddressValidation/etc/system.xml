@@ -131,7 +131,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[This setting will also move the city/state fields before the zip code field.]]></comment>
+                            <comment><![CDATA[This setting will also move the zip code field before the city/state fields.]]></comment>
                         </city_state>
                         <skip_on_equivalent translate="label">
                             <label>Skip Validation for Equivalent Addresses</label>
@@ -193,7 +193,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <comment><![CDATA[This setting will also move the city/state fields before the zip code field.]]></comment>
+                            <comment><![CDATA[This setting will also move the zip code field before the city/state fields.]]></comment>
                         </city_state>
                         <skip_on_equivalent translate="label">
                             <label>Skip Validation for Equivalent Addresses</label>
