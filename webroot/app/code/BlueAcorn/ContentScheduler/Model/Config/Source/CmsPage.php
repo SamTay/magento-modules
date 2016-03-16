@@ -7,53 +7,46 @@
  */
 namespace BlueAcorn\ContentScheduler\Model\Config\Source;
 
-use Magento\Cms\Api\PageRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Data\OptionSourceInterface;
+use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
+use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 
 class CmsPage implements OptionSourceInterface
 {
     /**
-     * @var PageRepositoryInterface
+     * Page collection factory
+     *
+     * @var PageCollectionFactory
      */
-    protected $_pageRepository;
-
-    /**
-     * @var SearchCriteriaBuilder
-     */
-    protected $_searchCriteriaBuilder;
+    protected $_pageCollectionFactory;
 
     /**
      * Construct
      *
-     * @param PageRepositoryInterface $pageRepository
-     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param PageCollectionFactory $pageCollectionFactory
      */
-    public function __construct(
-        PageRepositoryInterface $pageRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder
-    )
+    public function __construct(PageCollectionFactory $pageCollectionFactory)
     {
-        $this->_pageRepository = $pageRepository;
-        $this->_searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->_pageCollectionFactory = $pageCollectionFactory;
     }
 
     /**
+     * Return array of ['value'=>$value, 'label'=>$label] pairs
+     * Option to exclude certain page (for `alternate` field)
+     *
      * @param bool $withEmpty
      * @param null|string|int $excludeId
      * @return array
      */
     public function toOptionArray($withEmpty = true, $excludeId = null)
     {
+        /** @var PageCollection $collection */
+        $collection = $this->_pageCollectionFactory->create();
         if ($excludeId) {
-            $this->_searchCriteriaBuilder->addFilter('page_id', $excludeId, 'neq');
+            $collection->addFieldToFilter('page_id', ['neq' => $excludeId]);
         }
-        $searchCriteria = $this->_searchCriteriaBuilder->create(); // Create resets data on the builder
-        $results = $this->_pageRepository->getList($searchCriteria);
-
         $options = [];
-        foreach($results->getItems() as $page) {
-            // CURRENT BUG IN MAGENTO: $page should be a PageInterface but instead is just an array
+        foreach($collection as $page) {
             $options[] = ['value' => $page->getId(), 'label' => $page->getTitle()];
         }
         if ($withEmpty) {
