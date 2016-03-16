@@ -7,104 +7,35 @@
  */
 namespace BlueAcorn\ContentScheduler\Observer\Adminhtml\CmsPage;
 
-use BlueAcorn\ContentScheduler\Model\Config\Source\CmsPage as CmsPageSource;
 use Magento\Framework\Event\Observer as EventObserver;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\AuthorizationInterface;
-use Magento\Framework\Registry;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use BlueAcorn\ContentScheduler\Helper\Adminhtml\Form as Helper;
 
-/** Observes adminhtml_cms_page_edit_tab_main_prepare_form */
+/**
+ * Class Form
+ * Observes adminhtml_cms_page_edit_tab_main_prepare_form
+ * Purpose: Inject new attributes into adminhtml form
+ * @package BlueAcorn\ContentScheduler\Observer\Adminhtml\CmsPage
+ */
 class Form implements ObserverInterface
 {
     /**
-     * @var AuthorizationInterface
+     * @var Helper
      */
-    protected $_authorization;
-
-    /**
-     * @var TimezoneInterface
-     */
-    protected $_localeDate;
-
-    /**
-     * @var CmsPageSource
-     */
-    protected $_alternateSource;
-
-    /**
-     * @var Registry
-     */
-    protected $_coreRegistry;
+    protected $_helper;
 
     /**
      * Form constructor.
-     * @param AuthorizationInterface $authorization
-     * @param TimezoneInterface $localeDate
-     * @param CmsPageSource $alternateSource
-     * @param Registry $registry
+     * @param Helper $helper
      */
-    public function __construct(
-        AuthorizationInterface $authorization,
-        TimezoneInterface $localeDate,
-        CmsPageSource $alternateSource,
-        Registry $registry
-    ) {
-        $this->_authorization = $authorization;
-        $this->_localeDate = $localeDate;
-        $this->_alternateSource = $alternateSource;
-        $this->_coreRegistry = $registry;
+    public function __construct(Helper $helper)
+    {
+        $this->_helper = $helper;
     }
 
     public function execute(EventObserver $observer)
     {
         $form = $observer->getEvent()->getForm();
-        $isElementDisabled = !$this->_authorization->isAllowed('Magento_Cms::save');
-        $dateFormat = $this->_localeDate->getDateFormat(\IntlDateFormatter::SHORT);
-        $timeFormat = $this->_localeDate->getTimeFormat(\IntlDateFormatter::SHORT);
-        /* @var $model \Magento\Cms\Model\Page */
-        $model = $this->_coreRegistry->registry('cms_page');
-
-        $scheduleFieldset = $form->addFieldset(
-            'schedule_fieldset',
-            ['legend' => __('Schedule'), 'class' => 'fieldset-wide', 'disabled' => $isElementDisabled]
-        );
-
-        $scheduleFieldset->addField(
-            'alternate',
-            'select',
-            [
-                'name' => 'alternate',
-                'label' => __('Alternate Page'),
-                'values' => $this->_alternateSource->toOptionArray(true, $model->getId()),
-                'disabled' => $isElementDisabled
-            ]
-        );
-
-        $scheduleFieldset->addField(
-            'alternate_start',
-            'date',
-            [
-                'name' => 'alternate_start',
-                'label' => __('Alternate Page Start'),
-                'date_format' => $dateFormat,
-                'time_format' => $timeFormat,
-                'disabled' => $isElementDisabled,
-                'class' => 'validate-date validate-date-range date-range-alternate-from'
-            ]
-        );
-
-        $scheduleFieldset->addField(
-            'alternate_end',
-            'date',
-            [
-                'name' => 'alternate_end',
-                'label' => __('Alternate Page End'),
-                'date_format' => $dateFormat,
-                'time_format' => $timeFormat,
-                'disabled' => $isElementDisabled,
-                'class' => 'validate-date validate-date-range date-range-alternate-to'
-            ]
-        );
+        $this->_helper->addScheduleFieldsetToPage($form);
     }
 }

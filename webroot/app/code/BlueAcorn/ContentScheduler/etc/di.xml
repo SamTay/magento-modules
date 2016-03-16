@@ -11,4 +11,7 @@
     <type name="Magento\Cms\Helper\Page">
         <plugin name="check_alternate_content" type="BlueAcorn\ContentScheduler\Plugin\Cms\Helper\Page"/>
     </type>
+    <type name="Magento\Cms\Block\Adminhtml\Block\Edit\Form">
+        <plugin name="scheduler_form_fields" type="BlueAcorn\ContentScheduler\Plugin\Adminhtml\CmsBlock\Form"/>
+    </type>
 </config>

@@ -13,6 +13,11 @@ use Magento\Cms\Model\Page as PageModel;
 use Magento\Framework\App\Action\Action;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * Class Page
+ * Purpose: Swap CMS Page content to alternate
+ * @package BlueAcorn\ContentScheduler\Plugin\Cms\Helper
+ */
 class Page
 {
     /**
