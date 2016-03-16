@@ -11,6 +11,7 @@ use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
 use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 
+/** TODO: When Magento fixes CMS data implementations, revert commit to use interfaces/repositories/etc. */
 class CmsPage implements OptionSourceInterface
 {
     /**

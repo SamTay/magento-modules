@@ -14,6 +14,7 @@ use Magento\Framework\AuthorizationInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
+/** Observes adminhtml_cms_page_edit_tab_main_prepare_form */
 class Form implements ObserverInterface
 {
     /**
@@ -35,6 +36,7 @@ class Form implements ObserverInterface
      * @var Registry
      */
     protected $_coreRegistry;
+
     /**
      * Form constructor.
      * @param AuthorizationInterface $authorization
