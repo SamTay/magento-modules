@@ -1,6 +1,21 @@
 # Content Scheduler
 Blue Acorn module for scheduling alternate CMS blocks and pages
 
+### Installation
+```
+composer config repositories.blueacorninc/ba-content-scheduler-m2 vcs git@github.com:blueacorninc/ba-content-scheduler-m2.git
+composer require blueacorn/content-scheduler:dev-master
+bin/magento setup:upgrade && bin/magento cache:flush
+```
+
+**or**
+
+```
+git clone git@github.com:blueacorninc/ba-content-scheduler-m2.git app/code/BlueAcorn/ContentScheduler
+bin/magento module:enable BlueAcorn_ContentScheduler
+bin/magento setup:upgrade && bin/magento cache:flush
+```
+
 ### Version 1.0.0
 - Current version 1.0.0 is the first pass at this module on M2
 
