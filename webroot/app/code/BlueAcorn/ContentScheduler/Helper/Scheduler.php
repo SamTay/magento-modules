@@ -94,12 +94,30 @@ class Scheduler extends AbstractHelper
     /**
      * Get scheduled alternate CMS page id
      *
-     * @param PageModel $page
+     * @param int|string|PageModel $page
      * @return int
      */
-    public function getScheduledPageId(PageModel $page)
+    public function getScheduledPageId($page)
     {
+        if (!$page instanceof PageModel) {
+            $page = $this->_pageFactory->create()->load($page);
+        }
         return $this->getScheduledContent($page)->getId();
+    }
+
+    /**
+     * Get scheduled alternate CMS block id
+     *
+     * @param int|string|BlockModel $block
+     * @return int
+     * @throws Exception
+     */
+    public function getScheduledBlockId($block)
+    {
+        if (!$block instanceof BlockModel) {
+            $block = $this->_blockFactory->create()->load($block);
+        }
+        return $this->getScheduledContent($block)->getId();
     }
 
     /**
