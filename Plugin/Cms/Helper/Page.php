@@ -53,7 +53,7 @@ class Page
      * @param PageHelper $subject
      * @param Action $action
      * @param null|int|string $pageId
-     * @return bool
+     * @return array|null
      */
     public function beforePrepareResultPage(
         PageHelper $subject,
