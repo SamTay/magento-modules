@@ -15,7 +15,6 @@ use BlueAcorn\ContentScheduler\Helper\Adminhtml\Form as Helper;
  * Class Form
  * Observes adminhtml_cms_page_edit_tab_main_prepare_form
  * Purpose: Inject new attributes into adminhtml form
- * @package BlueAcorn\ContentScheduler\Observer\Adminhtml\CmsPage
  */
 class Form implements ObserverInterface
 {
@@ -33,6 +32,10 @@ class Form implements ObserverInterface
         $this->_helper = $helper;
     }
 
+    /**
+     * Add schedule fieldset to cms page edit
+     * @param EventObserver $observer
+     */
     public function execute(EventObserver $observer)
     {
         $form = $observer->getEvent()->getForm();

@@ -13,9 +13,14 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use BlueAcorn\ContentScheduler\Model\Config\Source\Alternate\Page as AlternatePageSource;
 use BlueAcorn\ContentScheduler\Model\Config\Source\Alternate\Block as AlternateBlockSource;
 
+/**
+ * Class Form
+ * Helper to add scheduler fields to block & page admin forms
+ */
 class Form
 {
     const FIELDSET_ID = 'schedule_fieldset';
+
     /**
      * @var AuthorizationInterface
      */
@@ -69,6 +74,7 @@ class Form
 
     /**
      * Add schedule fieldset to adminhtml cms page form
+     *
      * @param \Magento\Framework\Data\Form $form
      * @return Form
      * @throws Exception
@@ -80,6 +86,7 @@ class Form
 
     /**
      * Add schedule fieldset to adminhtml cms block form
+     *
      * @param \Magento\Framework\Data\Form $form
      * @return Form
      * @throws Exception
@@ -90,8 +97,10 @@ class Form
     }
 
     /**
+     * Add schedule fieldset to $form for either block/page
+     *
      * @param \Magento\Framework\Data\Form $form
-     * @param $entityType
+     * @param string $entityType ('page'|'block')
      * @return $this
      * @throws Exception
      */

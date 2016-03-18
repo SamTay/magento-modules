@@ -14,7 +14,6 @@ use Magento\Framework\Registry;
  * Class Form
  * Plugin for \Magento\Cms\Block\Adminhtml\Block\Edit\Form
  * Purpose: Inject new attributes into adminhtml form
- * @package BlueAcorn\ContentScheduler\Plugin\Adminhtml\CmsBlock
  */
 class Form
 {

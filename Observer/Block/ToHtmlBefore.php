@@ -16,7 +16,6 @@ use BlueAcorn\ContentScheduler\Helper\Scheduler;
  * Class ToHtmlBefore
  * Observes view_block_abstract_to_html_before
  * Purpose: Swap CMS block content to alternate
- * @package BlueAcorn\ContentScheduler\Observer\Block
  */
 class ToHtmlBefore implements ObserverInterface
 {

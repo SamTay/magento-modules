@@ -9,7 +9,11 @@ namespace BlueAcorn\ContentScheduler\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-/** TODO: When Magento fixes CMS data implementations, revert commit to use interfaces/repositories/etc. */
+/**
+ * Class Alternate
+ * Source model for alternate cms entities
+ * TODO: When Magento fixes CMS data implementations, revert commit to use interfaces/repositories/etc.
+ */
 abstract class Alternate implements OptionSourceInterface
 {
     /**

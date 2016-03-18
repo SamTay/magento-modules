@@ -10,6 +10,11 @@ namespace BlueAcorn\ContentScheduler\Model\Config\Source\Alternate;
 use BlueAcorn\ContentScheduler\Model\Config\Source\Alternate;
 use Magento\Cms\Model\ResourceModel\Block\CollectionFactory as BlockCollectionFactory;
 
+/**
+ * Class Block
+ * Source model for alternate block entities
+ * Note we can remove these block/page classes in favor of virtual types if desired
+ */
 class Block extends Alternate
 {
     /**

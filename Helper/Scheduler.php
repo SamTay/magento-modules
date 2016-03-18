@@ -15,6 +15,10 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
+/**
+ * Class Scheduler
+ * Helper to get scheduled alternate content
+ */
 class Scheduler extends AbstractHelper
 {
     /**
