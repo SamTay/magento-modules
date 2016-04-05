@@ -113,7 +113,8 @@ class Form
         $dateFormat = $this->_localeDate->getDateFormat(\IntlDateFormatter::SHORT);
         $timeFormat = $this->_localeDate->getTimeFormat(\IntlDateFormatter::SHORT);
         $model = $this->_coreRegistry->registry('cms_' . $entityType);
-        $alternateSource = '_alternate' . ucfirst($entityType) . 'Source';
+        $entityName = ucfirst($entityType);
+        $alternateSource = '_alternate' . $entityName . 'Source';
 
         $scheduleFieldset = $form->addFieldset(
             self::FIELDSET_ID,
@@ -125,7 +126,7 @@ class Form
             'select',
             [
                 'name' => 'alternate',
-                'label' => __('Alternate Page'),
+                'label' => __('Alternate %1', $entityName),
                 'values' => $this->{$alternateSource}->toOptionArray(true, $model->getId()),
                 'disabled' => $isElementDisabled
             ]
@@ -136,7 +137,7 @@ class Form
             'date',
             [
                 'name' => 'alternate_start',
-                'label' => __('Alternate Page Start'),
+                'label' => __('Alternate %1 Start', $entityName),
                 'date_format' => $dateFormat,
                 'time_format' => $timeFormat,
                 'disabled' => $isElementDisabled,
@@ -149,7 +150,7 @@ class Form
             'date',
             [
                 'name' => 'alternate_end',
-                'label' => __('Alternate Page End'),
+                'label' => __('Alternate %1 End', $entityName),
                 'date_format' => $dateFormat,
                 'time_format' => $timeFormat,
                 'disabled' => $isElementDisabled,
