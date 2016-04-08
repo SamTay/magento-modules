@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package     BlueAcorn\ContentPublisher
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="cms_page_save_before">
+        <observer name="check_publish_dates" instance="BlueAcorn\ContentPublisher\Observer\CheckPublishDates" />
+    </event>
+    <event name="catalog_product_save_before">
+        <observer name="check_publish_dates" instance="BlueAcorn\ContentPublisher\Observer\CheckPublishDates" />
+    </event>
+</config>

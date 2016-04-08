@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package     BlueAcorn\ContentPublisher
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="adminhtml_cms_page_edit_tab_main_prepare_form">
+        <observer name="publisher_form_fields" instance="BlueAcorn\ContentPublisher\Observer\Adminhtml\CmsPage\Form" />
+    </event>
+    <event name="catalog_product_validate_before">
+        <observer name="setStartDateMaxValue" instance="BlueAcorn\ContentPublisher\Observer\Adminhtml\Product\SetStartDateMaxValue"/>
+    </event>
+</config>
