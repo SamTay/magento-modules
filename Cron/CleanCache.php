@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\ContentPublisher\Observer;
+namespace BlueAcorn\ContentPublisher\Cron;
 
 use BlueAcorn\ContentPublisher\Helper\Publisher;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
