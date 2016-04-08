@@ -72,8 +72,8 @@ class Publisher extends AbstractHelper
         $fromTimestamp = strtotime($from);
         $toTimestamp = strtotime($to);
 
-        if (!$from || $fromTimestamp <= $scopeTimestamp
-            && !$to || $scopeTimestamp <= $toTimestamp
+        if ((!$from || $fromTimestamp <= $scopeTimestamp)
+            && (!$to || $scopeTimestamp <= $toTimestamp)
         ) {
             return true;
         }
