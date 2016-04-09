@@ -81,7 +81,7 @@ class Scheduler extends AbstractHelper
         $alternate = null;
         $alternateId = $cmsEntity->getAlternate();
         $start = $this->_localeDate->scopeDate(null, $cmsEntity->getAlternateStart(), true)->getTimestamp();
-        $end = $this->_localeDate->scopeDate(null, $cmsEntity->getAlternateEnd(), true)->getTimeStamp();
+        $end = $this->_localeDate->scopeDate(null, $cmsEntity->getAlternateEnd(), true)->getTimestamp();
         $now = $this->_localeDate->scopeDate(null, null, true)->getTimestamp();
         if ($alternateId
             && $start
