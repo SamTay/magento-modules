@@ -141,6 +141,7 @@ class Form
                 'date_format' => $dateFormat,
                 'time_format' => $timeFormat,
                 'disabled' => $isElementDisabled,
+                'style' => $entityType == 'block' ? 'margin-right:40px;height:33px;width:160px;' : '',
                 'class' => 'validate-date validate-date-range date-range-alternate-from',
                 'note' => __('The cache invalidation that allows the alternate content to start may take up to five minutes.'
                     . ' For best results, use times at five minute intervals such as :00, :05, :10, etc.')
@@ -156,6 +157,7 @@ class Form
                 'date_format' => $dateFormat,
                 'time_format' => $timeFormat,
                 'disabled' => $isElementDisabled,
+                'style' => $entityType == 'block' ? 'margin-right:40px;height:33px;width:160px;' : '',
                 'class' => 'validate-date validate-date-range date-range-alternate-to',
                 'note' => __('The cache invalidation that allows the alternate content to stop may take up to five minutes.'
                     . ' For best results, use times at five minute intervals such as :00, :05, :10, etc.')
