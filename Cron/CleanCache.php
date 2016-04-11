@@ -7,7 +7,6 @@
  */
 namespace BlueAcorn\ContentPublisher\Cron;
 
-use BlueAcorn\ContentPublisher\Helper\Publisher;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
@@ -90,11 +89,10 @@ class CleanCache
         // M2 seems to not handle the addFieldToFilter compatibility very well
         if ($collection instanceof \Magento\Eav\Model\Entity\Collection\AbstractCollection) {
             $collection
-                ->addAttributeToFilter(
-                    ['attribute' => 'publish_start', 'date' => true, 'from' => $lastRefresh, 'to' => $now]
-                )->addAttributeToFilter(
+                ->addAttributeToFilter([
+                    ['attribute' => 'publish_start', 'date' => true, 'from' => $lastRefresh, 'to' => $now],
                     ['attribute' => 'publish_end', 'date' => true, 'from' => $lastRefresh, 'to' => $now]
-                );
+                ]);
         } else {
             $collection->addFieldToFilter(
                 ['publish_start', 'publish_end'],
