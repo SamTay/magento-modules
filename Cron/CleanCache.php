@@ -24,7 +24,7 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 class CleanCache
 {
     const REFRESH_RATE_MINUTES = 5;
-    const REFRESH_BUFFER_SECONDS = 30;
+    const REFRESH_BUFFER_SECONDS = 55;
     const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
