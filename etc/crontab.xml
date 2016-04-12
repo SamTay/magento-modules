@@ -8,7 +8,7 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
-    <group id="default">
+    <group id="index">
         <job name="check_publisher_status" instance="BlueAcorn\ContentPublisher\Cron\CleanCache" method="execute">
             <schedule>*/5 * * * *</schedule>
         </job>
