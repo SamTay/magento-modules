@@ -7,6 +7,8 @@
  */
 namespace BlueAcorn\ContentScheduler\Cron;
 
+use Magento\Cms\Model\Page;
+use Magento\Cms\Model\Block;
 use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 use Magento\Cms\Model\ResourceModel\Block\CollectionFactory as BlockCollectionFactory;
 use Magento\Cms\Model\PageFactory;
@@ -15,6 +17,7 @@ use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
 use Magento\Cms\Model\ResourceModel\Block\Collection as BlockCollection;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Event\ManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class CleanCmsCache
@@ -23,7 +26,7 @@ use Magento\Framework\Event\ManagerInterface;
 class CleanCmsCache
 {
     const REFRESH_RATE_MINUTES = 5;
-    const REFRESH_BUFFER_SECONDS = 30;
+    const REFRESH_BUFFER_SECONDS = 55;
     const DATE_FORMAT = 'Y-m-d H:i:s';
 
     /**
@@ -57,6 +60,17 @@ class CleanCmsCache
     protected $_blockFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $_logger;
+
+    /**
+     * Flag to start debugging or not
+     * @var bool
+     */
+    protected $_debugMode = false;
+
+    /**
      * InvalidatePageCache constructor.
      * @param PageCollectionFactory $pageCollectionFactory
      * @param BlockCollectionFactory $blockCollectionFactory
@@ -64,6 +78,7 @@ class CleanCmsCache
      * @param ManagerInterface $manager
      * @param PageFactory $pageFactory
      * @param BlockFactory $blockFactory
+     * @param LoggerInterface $logger
      */
     public function __construct(
         PageCollectionFactory $pageCollectionFactory,
@@ -71,7 +86,9 @@ class CleanCmsCache
         TimezoneInterface $localeDate,
         ManagerInterface $manager,
         PageFactory $pageFactory,
-        BlockFactory $blockFactory
+        BlockFactory $blockFactory,
+        LoggerInterface $logger
+
     ) {
         $this->_pageCollectionFactory = $pageCollectionFactory;
         $this->_blockCollectionFactory = $blockCollectionFactory;
@@ -79,6 +96,7 @@ class CleanCmsCache
         $this->_eventManager = $manager;
         $this->_pageFactory = $pageFactory;
         $this->_blockFactory = $blockFactory;
+        $this->_logger = $logger;
     }
 
     /**
@@ -86,12 +104,14 @@ class CleanCmsCache
      */
     public function execute()
     {
+        $this->_debug('Starting cache cleaning for scheduler...');
         $invalidCacheEntities = [];
         foreach (['_page', '_block'] as $entityPrefix) {
             /** @var PageCollection|BlockCollection $collection */
             $collection = $this->{$entityPrefix . 'CollectionFactory'}->create();
             $this->_filterRecentAlternates($collection);
             foreach($collection as $entity) {
+                /** @var Page|Block $entity */
                 $invalidCacheEntities[] = $entity;
                 // If content is expiring, flush cache on the alternate object as well
                 if ($entity->getAlternateEnd() <= $this->_getNow()) {
@@ -105,8 +125,11 @@ class CleanCmsCache
         }
 
         foreach($invalidCacheEntities as $entity) {
+            $this->_debug(__("Cleaning cache for %1 with id=%2", $entity::CACHE_TAG, $entity->getId()));
             $this->_eventManager->dispatch('clean_cache_by_tags', ['object' => $entity]);
         }
+
+        $this->_debug('Done cache cleaning for scheduler');
     }
 
     /**
@@ -156,5 +179,17 @@ class CleanCmsCache
             . 'S'
         );
         return $this->_localeDate->date()->sub($refreshInterval)->format(self::DATE_FORMAT);
+    }
+
+    /**
+     * Log $msg if in debug mode
+     * @param string $msg
+     * @param array $context
+     */
+    protected function _debug($msg, array $context = [])
+    {
+        if ($this->_debugMode) {
+            $this->_logger->info($msg); // For some reason $_logger->debug is not working
+        }
     }
 }
