@@ -173,7 +173,7 @@ class CleanCmsCache
     protected function _getLastRefresh()
     {
         $refreshInterval = new \DateInterval('PT'
-            . self::REFRESH_RATE_MINUTES
+            . (2 * self::REFRESH_RATE_MINUTES) // Grab the past two windows in case of cronjob failure
             . 'M'
             . self::REFRESH_BUFFER_SECONDS
             . 'S'
