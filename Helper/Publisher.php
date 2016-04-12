@@ -27,16 +27,23 @@ class Publisher extends AbstractHelper
     protected $_localeDate;
 
     /**
-     * Publisher constructor.
+     * @var Debug
+     */
+    protected $_debug;
+
+    /**
      * @param TimezoneInterface $localeDate
+     * @param Debug $debug
      * @param Context $context
      */
     public function __construct(
         TimezoneInterface $localeDate,
+        Debug $debug,
         Context $context
     ) {
         parent::__construct($context);
         $this->_localeDate = $localeDate;
+        $this->_debug = $debug;
     }
 
     /**
@@ -72,12 +79,21 @@ class Publisher extends AbstractHelper
         $fromTimestamp = strtotime($from);
         $toTimestamp = strtotime($to);
 
+        $this->_debug->log("From: $fromTimestamp, Now: $scopeTimestamp, To: $toTimestamp");
+        foreach(['scope', 'from', 'to'] as $var) {
+            $date = $this->_localeDate->date(${$var . 'Timestamp'});
+            ${$var . 'Formatted'} = $this->_localeDate->formatDateTime($date);
+        }
+        $this->_debug->log("From: $fromFormatted, Now: $scopeFormatted, To: $toFormatted");
+
         if ((!$from || $fromTimestamp <= $scopeTimestamp)
             && (!$to || $scopeTimestamp <= $toTimestamp)
         ) {
+            $this->_debug->log("Inside publishing interval");
             return true;
         }
 
+        $this->_debug->log("Outside publishing interval");
         return false;
     }
 }

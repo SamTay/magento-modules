@@ -12,6 +12,7 @@ use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use BlueAcorn\ContentPublisher\Helper\Debug;
 
 /**
  * Class CleanCache
@@ -43,18 +44,26 @@ class CleanCache
     protected $_localeDate;
 
     /**
+     * @var Debug
+     */
+    protected $_debug;
+
+    /**
      * @param PageCollectionFactory $pageCollectionFactory
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $localeDate
+     * @param Debug $debug
      */
     public function __construct(
         PageCollectionFactory $pageCollectionFactory,
         ProductCollectionFactory $productCollectionFactory,
-        TimezoneInterface $localeDate
+        TimezoneInterface $localeDate,
+        Debug $debug
     ) {
         $this->_pageCollectionFactory = $pageCollectionFactory;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_localeDate = $localeDate;
+        $this->_debug = $debug;
     }
 
     /**
@@ -62,17 +71,23 @@ class CleanCache
      */
     public function execute()
     {
+        $this->_debug->log('Starting cache cleaning for publisher...');
         foreach (['_page', '_product'] as $entityPrefix) {
             /** @var PageCollection|BlockCollection $collection */
             $collection = $this->{$entityPrefix . 'CollectionFactory'}->create();
             $this->_filterRecent($collection);
             foreach($collection as $entity) {
+                /** @var \Magento\Framework\Model\AbstractModel $entity */
+                $this->_debug->log(__("Cleaning cache for %1 with id=%2", $entity::CACHE_TAG, $entity->getId()));
+                $this->_debug->log(__("Classname: %1", get_class($entity)));
                 // Status will be handled on _before_save events
                 // Full save will ensure hooks into status updates are executed and that cache is cleaned
-                /** @var \Magento\Framework\Model\AbstractModel $entity */
-                $entity->load($entity->getId())->save();
+                // setHasDataChanges doesn't return $this **facepalm**
+                $entity->load($entity->getId())->setHasDataChanges(true);
+                $entity->save();
             }
         }
+        $this->_debug->log('Done cache cleaning for publisher');
     }
 
     /**
