@@ -118,7 +118,7 @@ class Form
 
         $scheduleFieldset = $form->addFieldset(
             self::FIELDSET_ID,
-            ['legend' => __('Schedule'), 'class' => 'fieldset-wide', 'disabled' => $isElementDisabled]
+            ['legend' => __('Scheduler'), 'class' => 'fieldset-wide', 'disabled' => $isElementDisabled]
         );
 
         $scheduleFieldset->addField(
