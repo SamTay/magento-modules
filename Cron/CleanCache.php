@@ -11,8 +11,14 @@ use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductColl
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Cms\Model\ResourceModel\Page\CollectionFactory as PageCollectionFactory;
 use Magento\Cms\Model\ResourceModel\Page\Collection as PageCollection;
+use Magento\Cms\Model\PageFactory;
+use Magento\Cms\Helper\Page as PageHelper;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface as StoreScopeInterface;
+use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use BlueAcorn\ContentPublisher\Helper\Debug;
+use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Class CleanCache
@@ -44,26 +50,58 @@ class CleanCache
     protected $_localeDate;
 
     /**
+     * @var EventManagerInterface
+     */
+    protected $_eventManager;
+
+    /**
      * @var Debug
      */
     protected $_debug;
 
     /**
+     * @var PageFactory
+     */
+    protected $_pageFactory;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $_scopeConfigInterface;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    protected $_storeManager;
+
+    /**
      * @param PageCollectionFactory $pageCollectionFactory
      * @param ProductCollectionFactory $productCollectionFactory
      * @param TimezoneInterface $localeDate
+     * @param EventManagerInterface $eventManager
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
      * @param Debug $debug
+     * @param PageFactory $pageFactory
      */
     public function __construct(
         PageCollectionFactory $pageCollectionFactory,
         ProductCollectionFactory $productCollectionFactory,
         TimezoneInterface $localeDate,
-        Debug $debug
+        EventManagerInterface $eventManager,
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager,
+        Debug $debug,
+        PageFactory $pageFactory
     ) {
         $this->_pageCollectionFactory = $pageCollectionFactory;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_localeDate = $localeDate;
+        $this->_eventManager = $eventManager;
+        $this->_scopeConfig = $scopeConfig;
+        $this->_storeManager = $storeManager;
         $this->_debug = $debug;
+        $this->_pageFactory = $pageFactory;
     }
 
     /**
@@ -72,11 +110,13 @@ class CleanCache
     public function execute()
     {
         $this->_debug->log('Starting cache cleaning for publisher...');
+        $need404Refresh = false;
         foreach (['_page', '_product'] as $entityPrefix) {
             /** @var PageCollection|BlockCollection $collection */
             $collection = $this->{$entityPrefix . 'CollectionFactory'}->create();
             $this->_filterRecent($collection);
             foreach($collection as $entity) {
+                $need404Refresh = true;
                 /** @var \Magento\Framework\Model\AbstractModel $entity */
                 $this->_debug->log(__("Cleaning cache for %1 with id=%2", $entity::CACHE_TAG, $entity->getId()));
                 $this->_debug->log(__("Classname: %1", get_class($entity)));
@@ -87,7 +127,22 @@ class CleanCache
                 $entity->save();
             }
         }
+        // In case things are being enabled, cover all bases and clean cache on 404 page as well
+        if ($need404Refresh) {
+            $this->cleanNoRouteCache();
+        }
         $this->_debug->log('Done cache cleaning for publisher');
+    }
+
+    /**
+     * Clean no route cache
+     */
+    public function cleanNoRouteCache()
+    {
+        foreach($this->_getNoRoutePageIds() as $pageId) {
+            $pageObject = $this->_pageFactory->create()->load($pageId);
+            $this->_eventManager->dispatch('clean_cache_by_tags', ['object' => $pageObject]);
+        }
     }
 
     /**
@@ -142,5 +197,25 @@ class CleanCache
             . 'S'
         );
         return $this->_localeDate->date()->sub($refreshInterval)->format(self::DATE_FORMAT);
+    }
+
+    /**
+     * Get all page IDs set as no route page across all stores' configuration
+     *
+     * @return array
+     */
+    protected function _getNoRoutePageIds()
+    {
+        $noRoutePageIds = [];
+        $storeIds = array_keys($this->_storeManager->getStores());
+        foreach ($storeIds as $storeId) {
+            $noRoutePageIds[] = $this->_scopeConfig->getValue(
+                PageHelper::XML_PATH_NO_ROUTE_PAGE,
+                StoreScopeInterface::SCOPE_STORE,
+                $storeId
+            );
+        }
+
+        return array_unique($noRoutePageIds);
     }
 }
