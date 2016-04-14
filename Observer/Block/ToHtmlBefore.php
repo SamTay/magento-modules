@@ -30,6 +30,15 @@ class ToHtmlBefore implements ObserverInterface
     protected $_block;
 
     /**
+     * Block types needing content swap
+     * @var array
+     */
+    protected $_blockTypes = [
+        'Magento\Cms\Block\Widget\Block',
+        'Magento\Cms\Block\Block'
+    ];
+
+    /**
      * Form constructor.
      * @param Scheduler $scheduler
      * @param BlockModel $block
@@ -49,7 +58,7 @@ class ToHtmlBefore implements ObserverInterface
     public function execute(EventObserver $observer)
     {
         $block = $observer->getEvent()->getBlock();
-        if ($block->getType() == 'Magento\Cms\Block\Block') {
+        if (in_array($block->getType(), $this->_blockTypes)) {
             $block->setBlockId($this->_scheduler->getScheduledBlockId($block->getBlockId()));
         }
     }
