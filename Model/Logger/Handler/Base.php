@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\Core\Model\Logger\Handler;
 
+use Magento\Framework\Filesystem\DriverInterface;
 use Monolog\Logger;
 
 class Base extends \Magento\Framework\Logger\Handler\Base
