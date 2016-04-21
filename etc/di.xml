@@ -22,15 +22,35 @@
             </argument>
         </arguments>
     </type>
-    <!-- Example for external modules -->
+    <!-- ********************** Example for external modules  **********************
 
-    <!-- SAM thinking out loud: it seems as if you can just have an interface handler and each module can specify the filename argument
-    that THEY need via a DI preference. However these argument preferences are GLOBAL, thus we could never have two modules simultaneously
-    logging to different files. Instead, we need virtualTypes. I just need the way that minimizes the necessary code to implement extra ones -->
+    To create a custom logger for the content publisher module,
+    the following would be added to that module's di.xml:
 
-    <virtualType name="BlueAcorn\AwesomeFeature\Logger">
+    <virtualType name="BlueAcornContentPublisherLogger" type="BlueAcorn\Core\Model\Logger">
         <arguments>
-            <argument name=""></argument>
+            <argument name="name" xsi:type="string">BlueAcorn Content Publisher Logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="base" xsi:type="object">BlueAcornContentSchedulerLoggerHandler</item>
+            </argument>
         </arguments>
     </virtualType>
+    <virtualType name="BlueAcornContentSchedulerLoggerHandler" type="BlueAcorn\Core\Model\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/ba_scheduler.log</argument>
+        </arguments>
+    </virtualType>
+    <type name="BlueAcorn\ContentPublisher\Helper\Debug">
+        <arguments>
+            <argument name="logger" xsi:type="object">BlueAcornContentPublisherLogger</argument>
+        </arguments>
+    </type>
+
+    The two 'virtualType' elements create the object that can log to an arbitrary file name
+    (the one given in the handler virtualType argument). The last 'type' element injects the logger into whichever
+    class needs it. This element will need to be duplicated for any class that explicitly uses the logger object. To
+    avoid this, you can copy the pattern from the ContentPublisher, which is to have a single Helper\Debug class that
+    encapsulates logging for the entire module.
+
+    **************************************************************************** -->
 </config>
