@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @package     BlueAcorn\Core
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="BlueAcorn\Core\Model\Logger\Handler\Base">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+            <argument name="fileName" xsi:type="string">/var/log/ba.log</argument>
+        </arguments>
+    </type>
+    <type name="BlueAcorn\Core\Model\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">BlueAcorn Logger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="base" xsi:type="object">BlueAcorn\Core\Model\Logger\Handler\Base</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- Example for external modules -->
+
+    <!-- SAM thinking out loud: it seems as if you can just have an interface handler and each module can specify the filename argument
+    that THEY need via a DI preference. However these argument preferences are GLOBAL, thus we could never have two modules simultaneously
+    logging to different files. Instead, we need virtualTypes. I just need the way that minimizes the necessary code to implement extra ones -->
+
+    <virtualType name="BlueAcorn\AwesomeFeature\Logger">
+        <arguments>
+            <argument name=""></argument>
+        </arguments>
+    </virtualType>
+</config>
