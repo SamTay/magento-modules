@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn\AmqpShipping
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
+    <!-- Might only need one route for create & update -->
+    <!-- TODO: Possiblly override amqp publisher/exchange in di.xml to use custom one that allows exchange->exchange topology -->
+
+    <!-- Publishers & Topics -->
+    <publisher name="shipments" connection="amqp" exchange="shipments"/>
+    <topic publisher="shipments" name="external.shipment.create" schema="Magento\Sales\Api\Data\ShipmentInterface" />
+    <topic publisher="shipments" name="external.shipment.update" schema="Magento\Sales\Api\Data\ShipmentInterface" />
+
+    <!-- Consumers & Bindings -->
+    <consumer name="shipmentCreatedListener" queue="shipment_create_queue" connection="amqp" class="BlueAcorn\AmqpShipping\Model\Processor" method="processMessage"/>
+    <consumer name="shipmentUpdatedListener" queue="shipment_update_queue" connection="amqp" class="BlueAcorn\AmqpShipping\Model\Processor" method="processMessage"/>
+    <bind queue="shipment_create_queue" exchange="shipments" topic="external.shipment.create" />
+    <bind queue="shipment_update_queue" exchange="shipments" topic="external.shipment.update" />
+</config>

@@ -1,0 +1,15 @@
+{
+	"name": "blueacorn/amqp-integrations",
+	"description": "Amqp Integrations",
+	"type": "magento2-module",
+	"version": "1.0.0",
+	"require": {
+		"magento/module-amqp": "100.0.*"
+	},
+	"autoload": {
+		"files": ["registration.php"],
+		"psr-4": {
+			"BlueAcorn\\AmqpShipping\\": "Shipping/"
+		}
+	}
+}
