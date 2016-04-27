@@ -1,5 +1,6 @@
 # Amqp Integrations Conglomerate
-Blue Acorn conglomerate of modules for AMQP intgrations
+Blue Acorn conglomerate of modules for AMQP integrations. Use the added console command ``queue:topology:install`` to
+set up rabbitMQ per your configuration.
 
 ### Installation
 ```
@@ -7,6 +8,9 @@ composer config repositories.blueacorn/amqp-integrations git git@github.com:blue
 composer require blueacorn/amqp-integrations:dev-master
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
+
+Note, if any of the integrations are unnecessary, simply use ``bin/magento module:disable BlueAcorn_AmqpModule`` before
+issuing the ``setup:upgrade`` command.
 
 ### Version 1.0.0
 - Current version 1.0.0 is the first pass at this module on M2
