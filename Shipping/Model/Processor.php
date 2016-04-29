@@ -31,7 +31,6 @@ class Processor
      */
     public function processMessage(ShipmentInterface $message)
     {
-        $this->logger->debug('Hit AmqpShiping Processor !');
-        $this->logger->debug(var_export($message, true));
+        $this->logger->info('Hit AmqpShiping Processor: increment_id = ' . $message->getIncrementId());
     }
 }
