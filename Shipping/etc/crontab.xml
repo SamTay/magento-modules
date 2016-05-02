@@ -7,10 +7,10 @@
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="amqp">
-        <job name="consumerShipmentCreatedListener" instance="Magento\MessageQueue\Model\ConsumerRunner" method="shipmentCreatedListener">
+        <job name="consumerShipmentCreatedListener" instance="BlueAcorn\AmqpBase\Model\ConsumerRunner" method="shipmentCreatedListener">
             <schedule>*/5 * * * *</schedule>
         </job>
-        <job name="consumerShipmentUpdatedListener" instance="Magento\MessageQueue\Model\ConsumerRunner" method="shipmentUpdatedListener">
+        <job name="consumerShipmentUpdatedListener" instance="BlueAcorn\AmqpBase\Model\ConsumerRunner" method="shipmentUpdatedListener">
             <schedule>*/5 * * * *</schedule>
         </job>
     </group>
