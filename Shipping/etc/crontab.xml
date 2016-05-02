@@ -6,9 +6,9 @@
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
-    <group id="index">
+    <group id="amqp">
         <job name="consumerShipmentCreatedListener" instance="Magento\MessageQueue\Model\ConsumerRunner" method="shipmentCreatedListener">
-            <schedule>* * * * *</schedule>
+            <schedule>*/5 * * * *</schedule>
         </job>
         <job name="consumerShipmentUpdatedListener" instance="Magento\MessageQueue\Model\ConsumerRunner" method="shipmentUpdatedListener">
             <schedule>*/5 * * * *</schedule>
