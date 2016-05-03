@@ -49,5 +49,4 @@ or the submodules of this repository.
 
 ### Development Progress
 Look in the issues for new features to build or bugs to squash.
-- Add amqp cron group to base module
 
