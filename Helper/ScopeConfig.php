@@ -8,6 +8,7 @@
 namespace BlueAcorn\Core\Helper;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
 
 /**
  * Class ScopeConfig
@@ -16,23 +17,10 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
  * @method mixed getValue($path, $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeCode = null)
  * @method bool isSetFlag($path, $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, $scopeCode = null)
  */
-class ScopeConfig
+class ScopeConfig extends AbstractHelper
 {
     /**
-     * @var ScopeConfigInterface
-     */
-    protected $_scopeConfig;
-
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
-        $this->_scopeConfig = $scopeConfig;
-    }
-
-    /**
-     * Forward methods to $_scopeConfig
+     * Forward methods to $scopeConfig
      *
      * @param $method
      * @param $arguments
@@ -41,8 +29,8 @@ class ScopeConfig
      */
     public function __call($method, $arguments)
     {
-        if (method_exists($this->_scopeConfig, $method)) {
-            return call_user_func_array([$this->_scopeConfig, $method], $arguments);
+        if (is_callable([$this->scopeConfig, $method])) {
+            return call_user_func_array([$this->scopeConfig, $method], $arguments);
         }
         throw new \Magento\Framework\Exception\LocalizedException(
             new \Magento\Framework\Phrase('Invalid method %1::%2(%3)', [get_class($this), $method, print_r($arguments, 1)])
