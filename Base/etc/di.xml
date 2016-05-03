@@ -13,4 +13,28 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\MessageQueue\PublisherFactory">
+        <arguments>
+            <argument name="publishers" xsi:type="array">
+                <item name="amqp" xsi:type="array">
+                    <item name="type" xsi:type="object">BlueAcorn\AmqpBase\Model\Publisher</item>
+                    <item name="connectionName" xsi:type="string">amqp</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\MessageQueue\ExchangeRepository">
+        <arguments>
+            <argument name="exchanges" xsi:type="array">
+                <item name="amqp" xsi:type="string">BlueAcorn\AmqpBase\Model\Exchange</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="BlueAcorn\AmqpBase\Model\Publisher">
+        <arguments>
+            <argument name="defaultMessageProperties" xsi:type="array">
+                <item name="delivery_mode" xsi:type="number">2</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
