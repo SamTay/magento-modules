@@ -101,6 +101,8 @@ class Rpc
         $channel->basic_consume($callbackQueue, '', false, false, false, false, $convertedCallback);
 
         // Publish message
+        // May want to revisit this later on to see if we should inject the mqf message encoder (which encodes
+        // entire class/interface structures based on getter/setter schema)
         $encodedMessage = $this->jsonEncoder->encode($data);
         $this->publisher->publish($topicName, $encodedMessage,
             [
