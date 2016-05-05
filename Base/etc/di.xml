@@ -37,4 +37,10 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Config\Model\Config\Structure\Converter">
+        <plugin name="consumer_config_structure_converter_plugin" type="BlueAcorn\AmqpBase\Plugin\System\Config\Structure\Converter" />
+    </type>
+    <type name="Magento\Framework\App\Config\Initial\Converter">
+        <plugin name="consumer_config_initial_converter_plugin" type="BlueAcorn\AmqpBase\Plugin\System\Config\Initial\Converter" />
+    </type>
 </config>

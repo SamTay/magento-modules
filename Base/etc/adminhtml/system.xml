@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/AmqpBase
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="ba_amqp" translate="label" sortOrder="300" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>AMQP Configuration</label>
+            <tab>blueacorn</tab>
+            <resource>BlueAcorn_AmqpBase::configuration</resource>
+            <group id="consumers" translate="label comment" type="text" sortOrder="200" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Consumer Configuration</label>
+                <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>General Settings</label>
+                    <!--<field id="spin_up_schedule" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">-->
+                        <!--<label>Cron schedule to ensure number correct number of daemons</label>-->
+                        <!--<validate>validate-cron</validate>-->
+                    <!--</field>-->
+                </group>
+                <group id="template" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Consumer: </label>
+                    <field id="daemon_count" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Number of daemon instances to run</label>
+                        <validate>validate-number validate-zero-or-greater</validate>
+                    </field>
+                    <field id="email_recipients" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Email recipients for error alerts</label>
+                        <!-- TODO: Need custom validation on comma separated emails -->
+                        <comment><![CDATA[Enter a comma-separated list of emails, e.g. "john@doe.com,jane@doe.com"]]></comment>
+                    </field>
+                    <field id="email_subject" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Email subject</label>
+                    </field>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>
