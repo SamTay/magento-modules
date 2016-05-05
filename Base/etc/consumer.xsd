@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/*
+ * @package     BlueAcorn/AmqpBase
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:include schemaLocation="urn:magento:framework-message-queue:etc/queue_base.xsd" />
+
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="consumer" type="consumer" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="uniqueConsumerName">
+            <xs:annotation>
+                <xs:documentation>
+                    Consumer name must be unique.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:selector xpath="consumer"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+
+    <xs:complexType name="consumer">
+        <xs:sequence>
+            <xs:element name="daemon_count" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="email_recipients" type="stringNoWhiteSpace" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="email_subject" type="xs:normalizedString" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="consumerNameType" use="required" />
+    </xs:complexType>
+
+    <xs:simpleType name="stringNoWhiteSpace">
+        <xs:annotation>
+            <xs:documentation>
+                No whitespace allowed.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[^\s]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

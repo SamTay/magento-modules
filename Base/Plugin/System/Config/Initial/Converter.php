@@ -7,35 +7,26 @@
  */
 namespace BlueAcorn\AmqpBase\Plugin\System\Config\Initial;
 
+use BlueAcorn\AmqpBase\Model\Consumer\Config\Data as ConsumerConfig;
 use BlueAcorn\AmqpBase\Plugin\System\Config\Structure\Converter as StructureConverter;
-
 /**
  * Class Converter
  * Plugin that sets up default values for each consumer system configuration group
  */
 class Converter
 {
-    // TODO: Remove this in favor of defaults per consumer via consumer.xml file
-    const DEFAULT_DAEMON_COUNT = 0;
-    const DEFAULT_EMAIL_RECIPIENTS = '';
-    const DEFAULT_EMAIL_SUBJECT = '';
-
-    const DAEMON_COUNT_FIELD = 'daemon_count';
-    const EMAIL_RECIPIENTS_FIELD = 'email_recipients';
-    const EMAIL_SUBJECT_FIELD = 'email_subject';
-
     /**
-     * @var StructureConverter
+     * @var ConsumerConfig
      */
-    protected $structureConverter;
+    protected $consumerConfig;
 
     /**
      * Converter constructor.
-     * @param StructureConverter $structureConverter
+     * @param ConsumerConfig $consumerConfig
      */
-    public function __construct(StructureConverter $structureConverter)
+    public function __construct(ConsumerConfig $consumerConfig)
     {
-        $this->structureConverter = $structureConverter;
+        $this->consumerConfig = $consumerConfig;
     }
 
     /**
@@ -49,28 +40,9 @@ class Converter
      */
     public function afterConvert(\Magento\Framework\App\Config\Initial\Converter $subject, array $result)
     {
-        // TODO: Put these into a consumer.xml file for default value specification
         if (isset($result['data']['default'][StructureConverter::SECTION])) {
-            $result['data']['default'][StructureConverter::SECTION][StructureConverter::GROUP] = $this->getDefaultValues();
+            $result['data']['default'][StructureConverter::SECTION][StructureConverter::GROUP] = $this->consumerConfig->get();
         }
         return $result;
-    }
-
-    /**
-     * Return default values specified by class constants
-     * TODO: Remove this method and rely on consumer.xml files
-     * @return array
-     */
-    protected function getDefaultValues()
-    {
-        $consumers = $this->structureConverter->getConsumerList();
-        array_walk($consumers, function(&$value) {
-            $value = [
-                self::DAEMON_COUNT_FIELD => self::DEFAULT_DAEMON_COUNT,
-                self::EMAIL_RECIPIENTS_FIELD => self::DEFAULT_EMAIL_RECIPIENTS,
-                self::EMAIL_SUBJECT_FIELD => self::DEFAULT_EMAIL_SUBJECT,
-            ];
-        });
-        return $consumers;
     }
 }

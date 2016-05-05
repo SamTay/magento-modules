@@ -75,7 +75,7 @@ class Converter
      *
      * @return array
      */
-    public function getConsumerList()
+    protected function getConsumerList()
     {
         $list = [];
         $consumers = $this->queueConfig->get(QueueConverter::CONSUMERS, []);
@@ -94,7 +94,7 @@ class Converter
      * @param string $camelCase
      * @return string
      */
-    public function camelCaseToLabel($camelCase)
+    protected function camelCaseToLabel($camelCase)
     {
         $snakeCase = SimpleDataObjectConverter::camelCaseToSnakeCase($camelCase);
         return ucwords(str_replace('_', ' ', $snakeCase));
