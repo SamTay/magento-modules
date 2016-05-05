@@ -10,6 +10,7 @@ namespace BlueAcorn\AmqpBase\Plugin\System\Config\Structure;
 use Magento\Framework\Api\SimpleDataObjectConverter;
 use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConverter;
+use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerHelper;
 
 /**
  * Class Converter
@@ -17,8 +18,8 @@ use Magento\Framework\MessageQueue\Config\Converter as QueueConverter;
  */
 class Converter
 {
-    const SECTION = 'ba_amqp';
-    const GROUP = 'consumers';
+    const SECTION = ConsumerHelper::SECTION;
+    const GROUP = ConsumerHelper::GROUP;
     const GROUP_TEMPLATE = 'template';
 
     /**

@@ -21,10 +21,6 @@ class Converter implements ConverterInterface
      */
     const NAME_ATTRIBUTE = 'name';
 
-    const DAEMON_COUNT = 'daemon_count';
-    const EMAIL_RECIPIENTS = 'email_recipients';
-    const EMAIL_SUBJECT = 'email_subject';
-
     /**
      * @var QueueConfig
      */
