@@ -40,9 +40,7 @@ class Converter
      */
     public function afterConvert(\Magento\Framework\App\Config\Initial\Converter $subject, array $result)
     {
-        if (isset($result['data']['default'][StructureConverter::SECTION])) {
-            $result['data']['default'][StructureConverter::SECTION][StructureConverter::GROUP] = $this->consumerConfig->get();
-        }
+        $result['data']['default'][StructureConverter::SECTION][StructureConverter::GROUP] = $this->consumerConfig->get();
         return $result;
     }
 }
