@@ -97,6 +97,7 @@ class Rpc
 
         // Set up callback queue and consumer
         $channel = $this->amqpConfig->getChannel();
+        // TODO: constants for all of these booleans !!
         $callbackQueue = $channel->queue_declare('', false, false, true, false)[0];
         $channel->basic_consume($callbackQueue, '', false, false, false, false, $convertedCallback);
 

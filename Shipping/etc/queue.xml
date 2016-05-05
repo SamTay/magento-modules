@@ -7,7 +7,6 @@
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
     <!-- Might only need one route for create & update -->
-    <!-- TODO: Possiblly override amqp publisher/exchange in di.xml to use custom one that allows exchange->exchange topology -->
 
     <!-- Publishers & Topics -->
     <publisher name="shipments" connection="amqp" exchange="shipments"/>
