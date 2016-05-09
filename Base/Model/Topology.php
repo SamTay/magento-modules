@@ -117,6 +117,8 @@ class Topology
 
     /**
      * Get number of consumers currently subscribed to queue
+     * TODO: Investigate passive queue declaration to check for existence. May or may not close connection
+     * on IO exception, but could be a cleaner solution than this
      *
      * @param $queueName
      * @return int
