@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Magento\Framework\MessageQueue\ConsumerFactory;
+use BlueAcorn\AmqpBase\Model\Consumer\Daemonizer;
 
 /**
  * Command for starting MessageQueue consumers.
@@ -41,6 +42,11 @@ class StartConsumerCommand extends Command
     protected $shell;
 
     /**
+     * @var Daemonizer
+     */
+    protected $daemonizer;
+
+    /**
      * {@inheritdoc}
      *
      * @param ConsumerFactory $consumerFactory
@@ -49,10 +55,12 @@ class StartConsumerCommand extends Command
     public function __construct(
         ConsumerFactory $consumerFactory,
         Parallelizer $shell,
+        Daemonizer $daemonizer,
         $name = null
     ) {
         $this->consumerFactory = $consumerFactory;
         $this->shell = $shell;
+        $this->daemonizer = $daemonizer;
         parent::__construct($name);
     }
 
@@ -82,6 +90,20 @@ class StartConsumerCommand extends Command
 
         // Default to 1 daemon on empty/invalid input
         $daemonCount = $daemonCount >= 1 ? $daemonCount : 1;
+        if (!$this->daemonizer->canCreateDaemons($consumerName, $daemonCount)) {
+            $output->writeln(
+                '<error>'
+                . 'The number of requested additional daemons would exceed limit of ' . Daemonizer::MAX_DAEMON_COUNT
+                . '</error>'
+            );
+            $output->writeln(
+                '<comment>'
+                . 'You can add ' . $this->daemonizer->getMaximumAdditionalDaemonCount($consumerName)
+                . ' more daemon instances.'
+                . '</comment>'
+            );
+            return;
+        }
         for($i=0; $i<$daemonCount; $i++) {
             $this->shell->execute(
                 'php %s %s %s --%s=%s=1',

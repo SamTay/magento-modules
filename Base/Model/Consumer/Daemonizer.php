@@ -15,6 +15,8 @@ use Magento\Framework\MessageQueue\Config\Converter as QueueConverter;
 
 class Daemonizer
 {
+    const MAX_DAEMON_COUNT = 20;
+
     /**
      * @var Topology
      */
@@ -59,6 +61,28 @@ class Daemonizer
         return $this->topology->getConsumerCount($queueName);
     }
 
+    /**
+     * Check if additional daemon count will exceed maximum
+     *
+     * @param $consumerName
+     * @param $additional
+     * @return false
+     */
+    public function canCreateDaemons($consumerName, $additional)
+    {
+        return $additional <= $this->getMaximumAdditionalDaemonCount($consumerName);
+    }
+
+    /**
+     * Get the maximum number of additional daemons possible (limited by constant MAX_DAEMON_COUNT)
+     *
+     * @param $consumerName
+     * @return int
+     */
+    public function getMaximumAdditionalDaemonCount($consumerName)
+    {
+        return self::MAX_DAEMON_COUNT - $this->getCurrentDaemonCount($consumerName);
+    }
     /**
      * Get queue name from consumer name
      *
