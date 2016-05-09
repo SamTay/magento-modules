@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\AmqpBase\Model;
 
+use BlueAcorn\AmqpBase\Helper\Logger;
 use Magento\Amqp\Model\Config as AmqpConfig;
 use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
@@ -56,7 +57,7 @@ class Topology
     protected $queueConfigData;
 
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var Logger
      */
     protected $logger;
 
@@ -65,12 +66,12 @@ class Topology
      *
      * @param AmqpConfig $amqpConfig
      * @param QueueConfig $queueConfig
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param Logger $logger
      */
     public function __construct(
         AmqpConfig $amqpConfig,
         QueueConfig $queueConfig,
-        \Psr\Log\LoggerInterface $logger
+        Logger $logger
     ) {
         $this->amqpConfig = $amqpConfig;
         $this->queueConfig = $queueConfig;

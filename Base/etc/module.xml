@@ -9,6 +9,7 @@
     <module name="BlueAcorn_AmqpBase" setup_version="1.0.0">
         <sequence>
             <module name="Magento_Amqp" />
+            <module name="BlueAcorn_Core" />
         </sequence>
     </module>
 </config>
