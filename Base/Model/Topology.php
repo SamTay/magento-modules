@@ -11,6 +11,7 @@ use BlueAcorn\AmqpBase\Helper\Logger;
 use Magento\Amqp\Model\Config as AmqpConfig;
 use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
+use PhpAmqpLib\Exception\AMQPInvalidArgumentException;
 
 /**
  * Class Topology creates topology for Amqp messaging
@@ -115,14 +116,31 @@ class Topology
     }
 
     /**
+     * Get number of consumers currently subscribed to queue
+     *
+     * @param $queueName
+     * @return int
+     */
+    public function getConsumerCount($queueName)
+    {
+        if (!$this->isValidQueueName($queueName)) {
+            throw new AMQPInvalidArgumentException(
+                sprintf('The queue %s has not been properly declared in queue.xml.', $queueName)
+            );
+        }
+        list(,,$consumerCount) = $this->declareQueue($queueName);
+        return (int)$consumerCount;
+    }
+
+    /**
      * Declare Amqp Queue
      *
      * @param string $queueName
-     * @return void
+     * @return string[]
      */
     protected function declareQueue($queueName)
     {
-        $this->getChannel()->queue_declare($queueName, self::IS_PASSIVE, self::IS_DURABLE, self::IS_EXCLUSIVE, self::IS_AUTO_DELETE);
+        return $this->getChannel()->queue_declare($queueName, self::IS_PASSIVE, self::IS_DURABLE, self::IS_EXCLUSIVE, self::IS_AUTO_DELETE);
     }
 
     /**
@@ -212,5 +230,17 @@ class Topology
             $this->queueConfigData = $this->queueConfig->get();
         }
         return $this->queueConfigData;
+    }
+
+    /**
+     * Check if queueName exists in configuration
+     *
+     * @param $queueName
+     * @return bool
+     */
+    public function isValidQueueName($queueName)
+    {
+        $availableQueues = $this->getQueuesList(self::AMQP_CONNECTION);
+        return in_array($queueName, $availableQueues);
     }
 }
