@@ -15,14 +15,9 @@
             </argument>
         </arguments>
     </type>
-    <virtualType name="shellBackground" type="Magento\Framework\Shell">
+    <type name="BlueAcorn\AmqpBase\Model\Shell\CommandRendererBackground">
         <arguments>
-            <argument name="commandRenderer" xsi:type="object">Magento\Framework\Shell\CommandRendererBackground</argument>
-        </arguments>
-    </virtualType>
-    <type name="BlueAcorn\AmqpBase\Console\StartConsumerCommand">
-        <arguments>
-            <argument name="shell" xsi:type="object">shellBackground</argument>
+            <argument name="pipeDestination" xsi:type="string">/var/log/ba_amqp_command.log</argument>
         </arguments>
     </type>
     <type name="Magento\Framework\MessageQueue\PublisherFactory">

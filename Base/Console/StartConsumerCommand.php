@@ -7,9 +7,8 @@
  */
 namespace BlueAcorn\AmqpBase\Console;
 
-use Magento\Framework\Console\Cli;
 use Magento\Framework\Shell\ComplexParameter;
-use Magento\Framework\ShellInterface;
+use BlueAcorn\AmqpBase\Model\Shell\Parallelizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,7 +36,7 @@ class StartConsumerCommand extends Command
     protected $consumerFactory;
 
     /**
-     * @var ShellInterface
+     * @var Parallelizer
      */
     protected $shell;
 
@@ -45,11 +44,11 @@ class StartConsumerCommand extends Command
      * {@inheritdoc}
      *
      * @param ConsumerFactory $consumerFactory
-     * @param ShellInterface $shell
+     * @param Parallelizer $shell
      */
     public function __construct(
         ConsumerFactory $consumerFactory,
-        ShellInterface $shell,
+        Parallelizer $shell,
         $name = null
     ) {
         $this->consumerFactory = $consumerFactory;
