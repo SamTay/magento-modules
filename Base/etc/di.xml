@@ -6,10 +6,29 @@
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\MessageQueue\Console\StartConsumerCommand" type="BlueAcorn\AmqpBase\Console\StartConsumerCommand"/>
+    <preference for="Magento\Amqp\Model\Topology" type="BlueAcorn\AmqpBase\Model\Topology"/>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="installTopologyCommand" xsi:type="object">BlueAcorn\AmqpBase\Console\InstallTopologyCommand</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="shellBackground" type="Magento\Framework\Shell">
+        <arguments>
+            <argument name="commandRenderer" xsi:type="object">Magento\Framework\Shell\CommandRendererBackground</argument>
+        </arguments>
+    </virtualType>
+    <type name="BlueAcorn\AmqpBase\Console\StartConsumerCommand">
+        <arguments>
+            <argument name="shell" xsi:type="object">shellBackground</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\MessageQueue\QueueRepository">
+        <arguments>
+            <argument name="queues" xsi:type="array">
+                <item name="amqp" xsi:type="string">BlueAcorn\AmqpBase\Model\Queue</item>
             </argument>
         </arguments>
     </type>
