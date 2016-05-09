@@ -25,13 +25,6 @@
             <argument name="shell" xsi:type="object">shellBackground</argument>
         </arguments>
     </type>
-    <type name="Magento\Framework\MessageQueue\QueueRepository">
-        <arguments>
-            <argument name="queues" xsi:type="array">
-                <item name="amqp" xsi:type="string">BlueAcorn\AmqpBase\Model\Queue</item>
-            </argument>
-        </arguments>
-    </type>
     <type name="Magento\Framework\MessageQueue\PublisherFactory">
         <arguments>
             <argument name="publishers" xsi:type="array">
