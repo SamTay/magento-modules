@@ -40,7 +40,7 @@ class InstallTopologyCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->topology->install();
-        $output->writeln('Topology installation complete. Check the logs for troubleshooting.');
+        $output->writeln('<info>Topology installation complete. Check the logs for troubleshooting.</info>');
     }
 
     /**

@@ -76,7 +76,7 @@ class StartConsumerCommand extends Command
         // If running a fixed, terminating consumer, process limited messages and return
         if ($numberOfMessages) {
             $consumer->process($numberOfMessages);
-            $output->writeln('Started consumer that will terminate after ' . $numberOfMessages . ' messages.');
+            $output->writeln('<info>Started consumer that will terminate after ' . $numberOfMessages . ' messages.</info>');
             return;
         }
 
@@ -94,7 +94,7 @@ class StartConsumerCommand extends Command
                 ]
             );
         }
-        $output->writeln('Started ' . $daemonCount . ' daemon consumer instances.');
+        $output->writeln('<info>Started ' . $daemonCount . ' daemon consumer instances.</info>');
     }
 
     /**
