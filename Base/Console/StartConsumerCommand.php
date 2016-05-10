@@ -51,6 +51,7 @@ class StartConsumerCommand extends Command
      *
      * @param ConsumerFactory $consumerFactory
      * @param Parallelizer $shell
+     * @param Daemonizer $daemonizer
      */
     public function __construct(
         ConsumerFactory $consumerFactory,
