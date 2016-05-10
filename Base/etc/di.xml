@@ -37,6 +37,16 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\MessageQueue\ConsumerFactory">
+        <arguments>
+            <argument name="consumers" xsi:type="array">
+                <item name="amqp" xsi:type="array">
+                    <item name="type" xsi:type="string">BlueAcorn\AmqpBase\Model\Consumer</item>
+                    <item name="connectionName" xsi:type="string">amqp</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
     <type name="BlueAcorn\AmqpBase\Model\Publisher">
         <arguments>
             <argument name="defaultMessageProperties" xsi:type="array">
