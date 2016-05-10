@@ -23,9 +23,9 @@ class Config extends AbstractHelper
     const SECTION = 'ba_amqp';
     const GROUP = 'consumers';
 
-    const DAEMON_COUNT = 'daemon_count';
-    const EMAIL_RECIPIENTS = 'email_recipients';
-    const EMAIL_SUBJECT = 'email_subject';
+    const FIELD_DAEMON_COUNT = 'daemon_count';
+    const FIELD_EMAIL_RECIPIENTS = 'email_recipients';
+    const FIELD_EMAIL_SUBJECT = 'email_subject';
 
     const DEFAULT_DAEMON_COUNT = 0;
     const DEFAULT_EMAIL_RECIPIENTS = [];
@@ -49,7 +49,7 @@ class Config extends AbstractHelper
      */
     public function getDaemonCount($consumerName)
     {
-        return $this->getConsumerConfig($consumerName)[self::DAEMON_COUNT];
+        return $this->getConsumerConfig($consumerName)[self::FIELD_DAEMON_COUNT];
     }
 
     /**
@@ -60,7 +60,7 @@ class Config extends AbstractHelper
      */
     public function getEmailRecipients($consumerName)
     {
-        return $this->getConsumerConfig($consumerName)[self::EMAIL_RECIPIENTS];
+        return $this->getConsumerConfig($consumerName)[self::FIELD_EMAIL_RECIPIENTS];
     }
 
     /**
@@ -71,7 +71,7 @@ class Config extends AbstractHelper
      */
     public function getEmailSubject($consumerName)
     {
-        return $this->getConsumerConfig($consumerName)[self::EMAIL_SUBJECT];
+        return $this->getConsumerConfig($consumerName)[self::FIELD_EMAIL_SUBJECT];
     }
 
     /**
@@ -86,7 +86,7 @@ class Config extends AbstractHelper
             $this->config = $this->scopeConfig->getValue(self::SECTION . '/' . self::GROUP);
             foreach($this->config as $name => &$config) {
                 $config = array_replace($this->getDefaultFields(), $config);
-                $this->parseEmailRecipients($config[self::EMAIL_RECIPIENTS]);
+                $this->parseEmailRecipients($config[self::FIELD_EMAIL_RECIPIENTS]);
             }
             unset($config); // Manually unsetting so nothing ends up referencing the property pointer
         }
@@ -104,9 +104,16 @@ class Config extends AbstractHelper
     protected function getDefaultFields()
     {
         if (!$this->defaults) {
-            foreach(['DAEMON_COUNT', 'EMAIL_RECIPIENTS', 'EMAIL_SUBJECT'] as $fieldConst) {
-                $defaultConst = 'DEFAULT_' . $fieldConst;
-                $this->defaults[self::$fieldConst] = self::$defaultConst;
+            $reflectionClass = new \ReflectionClass($this);
+            $constants = $reflectionClass->getConstants();
+            foreach($constants as $fieldName => $fieldId) {
+                if (strpos($fieldName, 'FIELD_') === 0) {
+                    $field = substr($fieldName, 6);
+                    $defaultFieldName = 'DEFAULT_' . $field;
+                    if (array_key_exists($defaultFieldName, $constants)) {
+                        $this->defaults[$fieldId] = $constants[$defaultFieldName];
+                    }
+                }
             }
         }
 

@@ -20,11 +20,6 @@ class Config
     const AMQP_CONNECTION = 'amqp';
 
     /**
-     * @var AmqpConfig
-     */
-    protected $amqpConfig;
-
-    /**
      * @var QueueConfig
      */
     protected $queueConfig;
@@ -42,16 +37,13 @@ class Config
     /**
      * Initialize dependencies
      *
-     * @param AmqpConfig $amqpConfig
      * @param QueueConfig $queueConfig
      * @param Logger $logger
      */
     public function __construct(
-        AmqpConfig $amqpConfig,
         QueueConfig $queueConfig,
         Logger $logger
     ) {
-        $this->amqpConfig = $amqpConfig;
         $this->queueConfig = $queueConfig;
         $this->logger = $logger;
     }
