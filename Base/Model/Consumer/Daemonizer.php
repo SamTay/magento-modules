@@ -7,11 +7,16 @@
  */
 namespace BlueAcorn\AmqpBase\Model\Consumer;
 
+use BlueAcorn\AmqpBase\Model\Consumer;
+use BlueAcorn\AmqpBase\Model\Shell\Parallelizer;
 use BlueAcorn\AmqpBase\Model\Topology;
 use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
+use BlueAcorn\AmqpBase\Console\StartConsumerCommand;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConverter;
+use Magento\Framework\MessageQueue\PublisherFactory;
+use Magento\Framework\Phrase;
 
 class Daemonizer
 {
@@ -33,19 +38,67 @@ class Daemonizer
     protected $consumerConfig;
 
     /**
+     * @var PublisherFactory
+     */
+    protected $publisherFactory;
+
+    /**
+     * @var Parallelizer
+     */
+    protected $shell;
+
+    /**
      * Daemonizer constructor.
      * @param Topology $topology
      * @param QueueConfig $queueConfig
      * @param ConsumerConfig $consumerConfig
+     * @param PublisherFactory $publisherFactory
+     * @param Parallelizer $shell
      */
     public function __construct(
         Topology $topology,
         QueueConfig $queueConfig,
-        ConsumerConfig $consumerConfig
+        ConsumerConfig $consumerConfig,
+        PublisherFactory $publisherFactory,
+        Parallelizer $shell
     ) {
         $this->topology = $topology;
         $this->queueConfig = $queueConfig;
         $this->consumerConfig = $consumerConfig;
+        $this->publisherFactory = $publisherFactory;
+        $this->shell = $shell;
+    }
+
+    /**
+     * Adds extra daemons for a consumer
+     *
+     * @param $consumerName
+     * @param $count
+     * @throws LocalizedException
+     */
+    public function addDaemons($consumerName, $count)
+    {
+        $count = (int)$count >= 0 ? (int)$count : 0;
+        if (!$this->canCreateDaemons($consumerName, $count)) {
+            throw new LocalizedException(new Phrase('Requested daemon count exceeds maximum limit'));
+        }
+        for($i=0; $i<$count; $i++) {
+            $this->spawnConsumer($consumerName);
+        }
+    }
+
+    /**
+     * Removes daemons for a consumer
+     *
+     * @param $consumerName
+     * @param $count
+     */
+    public function removeDaemons($consumerName, $count)
+    {
+        $count = min((int)$count, $this->getCurrentDaemonCount($consumerName));
+        for($i=0; $i<$count; $i++) {
+            $this->truncateConsumer($consumerName);
+        }
     }
 
     /**
@@ -83,6 +136,7 @@ class Daemonizer
     {
         return self::MAX_DAEMON_COUNT - $this->getCurrentDaemonCount($consumerName);
     }
+
     /**
      * Get queue name from consumer name
      *
@@ -99,9 +153,76 @@ class Daemonizer
         ]);
         $queueName = $this->queueConfig->get($path);
         if (!$queueName) {
-            throw new LocalizedException(sprintf('No queue specified for consumer %s', $consumerName));
+            throw new LocalizedException(
+                new Phrase('No queue specified for consumer %name', ['name' => $consumerName])
+            );
         }
 
         return $queueName;
+    }
+
+    /**
+     * Truncates consumer daemon count (i.e., removes a single consumer daemon)
+     *
+     * @param $consumerName
+     * @throws LocalizedException
+     */
+    protected function truncateConsumer($consumerName)
+    {
+        $topic = $this->getTopicFromConsumer($consumerName);
+        $publisher = $this->publisherFactory->create($topic);
+        $publisher->publish($topic, [Consumer::SHUTDOWN_PROTOCOL => true]);
+    }
+
+    /**
+     * Spawns consumer in a parallel background process
+     *
+     * @param $consumerName
+     * @throws LocalizedException
+     */
+    protected function spawnConsumer($consumerName)
+    {
+        $this->shell->execute(
+            'php %s %s %s --%s=%s=1',
+            [
+                BP . '/bin/magento',
+                StartConsumerCommand::COMMAND_QUEUE_CONSUMERS_START,
+                $consumerName,
+                StartConsumerCommand::OPTION_INTERNAL_PARAMS,
+                StartConsumerCommand::STANDALONE_PROCESS_FLAG
+            ]
+        );
+    }
+
+    /**
+     * Get topic from consumer name
+     *
+     * @param $consumerName
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function getTopicFromConsumer($consumerName)
+    {
+        $queueName = $this->getQueueByConsumer($consumerName);
+        return $this->getTopicFromQueue($queueName);
+    }
+
+    /**
+     * Get topic from queue name
+     *
+     * @param $queueName
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function getTopicFromQueue($queueName)
+    {
+        $topic = null;
+        foreach($this->queueConfig->get(QueueConverter::BINDS) as $bind) {
+            if ($bind[QueueConverter::BIND_QUEUE] == $queueName) {
+                return $bind[QueueConverter::BIND_TOPIC];
+            }
+        }
+
+        throw new LocalizedException(new Phrase('Queue %name has no topic binds', ['name' => $queueName]));
     }
 }
