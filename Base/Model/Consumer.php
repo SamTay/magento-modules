@@ -18,6 +18,7 @@ use Magento\Framework\MessageQueue\QueueRepository;
 use Magento\Framework\Phrase;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
 use Magento\Framework\App\ResourceConnection;
+use BlueAcorn\AmqpBase\Helper\Logger;
 
 /**
  * A MessageQueue Consumer to handle receiving a message.
@@ -61,23 +62,31 @@ class Consumer implements ConsumerInterface
     protected $shutdownFlag;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * Initialize dependencies.
      *
      * @param QueueConfig $messageQueueConfig
      * @param MessageEncoder $messageEncoder
      * @param QueueRepository $queueRepository
+     * @param Logger $logger
      * @param ResourceConnection $resource
      */
     public function __construct(
         QueueConfig $messageQueueConfig,
         MessageEncoder $messageEncoder,
         QueueRepository $queueRepository,
+        Logger $logger,
         ResourceConnection $resource
     ) {
         $this->messageQueueConfig = $messageQueueConfig;
         $this->messageEncoder = $messageEncoder;
         $this->queueRepository = $queueRepository;
         $this->resource = $resource;
+        $this->logger = $logger;
     }
 
     /**
@@ -120,6 +129,7 @@ class Consumer implements ConsumerInterface
         if (isset($decodedMessage)) {
             // If message decoded to SHUTDOWN, set property fag and skip normal callback procedure
             if ($decodedMessage === self::SHUTDOWN_PROTOCOL) {
+                $this->logger->debug('Shutdown protocol found');
                 $this->shutdownFlag = true;
                 return;
             }
@@ -163,6 +173,7 @@ class Consumer implements ConsumerInterface
      */
     protected function runDaemonMode(QueueInterface $queue)
     {
+        $this->logger->debug('Starting daemon mode...');
         $callback = $this->getTransactionCallback($queue);
 
         $queue->subscribe($callback);
@@ -212,6 +223,7 @@ class Consumer implements ConsumerInterface
      */
     protected function shutdown()
     {
+        $this->logger->debug('Shutting down now');
         exit(0);
     }
 }
