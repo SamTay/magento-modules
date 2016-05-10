@@ -13,6 +13,7 @@ use Magento\Framework\MessageQueue\ConnectionLostException;
 use Magento\Framework\MessageQueue\ConsumerConfigurationInterface;
 use Magento\Framework\MessageQueue\EnvelopeInterface;
 use Magento\Framework\MessageQueue\QueueInterface;
+use Magento\Framework\MessageQueue\ConsumerInterface;
 use Magento\Framework\MessageQueue\QueueRepository;
 use Magento\Framework\Phrase;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
