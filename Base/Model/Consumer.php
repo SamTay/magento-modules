@@ -5,18 +5,17 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\AmqpBase\Model\Consumer;
+namespace BlueAcorn\AmqpBase\Model;
 
-use Magento\Framework\MessageQueue\Config\Data as MessageQueueConfig;
+use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\MessageQueue\ConnectionLostException;
 use Magento\Framework\MessageQueue\ConsumerConfigurationInterface;
 use Magento\Framework\MessageQueue\EnvelopeInterface;
-use Magento\Framework\MessageQueue\MessageEncoder;
 use Magento\Framework\MessageQueue\QueueInterface;
 use Magento\Framework\MessageQueue\QueueRepository;
 use Magento\Framework\Phrase;
-use Magento\Framework\MessageQueue\Config\Converter as MessageQueueConfigConverter;
+use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
 use Magento\Framework\App\ResourceConnection;
 
 /**
@@ -26,7 +25,12 @@ use Magento\Framework\App\ResourceConnection;
 class Consumer implements ConsumerInterface
 {
     /**
-     * @var MessageQueueConfig
+     * If protocol found within message, exit this consumer
+     */
+    const SHUTDOWN_PROTOCOL = 'CONSUMER_SHUTDOWN';
+
+    /**
+     * @var QueueConfig
      */
     protected $messageQueueConfig;
 
@@ -53,18 +57,18 @@ class Consumer implements ConsumerInterface
     /**
      * @var bool
      */
-    protected $shutdown;
+    protected $shutdownFlag;
 
     /**
      * Initialize dependencies.
      *
-     * @param MessageQueueConfig $messageQueueConfig
+     * @param QueueConfig $messageQueueConfig
      * @param MessageEncoder $messageEncoder
      * @param QueueRepository $queueRepository
      * @param ResourceConnection $resource
      */
     public function __construct(
-        MessageQueueConfig $messageQueueConfig,
+        QueueConfig $messageQueueConfig,
         MessageEncoder $messageEncoder,
         QueueRepository $queueRepository,
         ResourceConnection $resource
@@ -113,8 +117,13 @@ class Consumer implements ConsumerInterface
         $decodedMessage = $this->messageEncoder->decode($topicName, $message->getBody());
 
         if (isset($decodedMessage)) {
+            // If message decoded to SHUTDOWN, set property fag and skip normal callback procedure
+            if ($decodedMessage === self::SHUTDOWN_PROTOCOL) {
+                $this->shutdownFlag = true;
+                return;
+            }
             $messageSchemaType = $this->messageQueueConfig->getMessageSchemaType($topicName);
-            if ($messageSchemaType == MessageQueueConfigConverter::TOPIC_SCHEMA_TYPE_METHOD) {
+            if ($messageSchemaType == QueueConfigConverter::TOPIC_SCHEMA_TYPE_METHOD) {
                 call_user_func_array($callback, $decodedMessage);
             } else {
                 call_user_func($callback, $decodedMessage);
@@ -184,6 +193,9 @@ class Consumer implements ConsumerInterface
                 $this->dispatchMessage($message);
                 $queue->acknowledge($message);
                 $this->resource->getConnection()->commit();
+                if ($this->shutdownFlag) {
+                    $this->shutdown();
+                }
             } catch (ConnectionLostException $e) {
                 $this->resource->getConnection()->rollBack();
             } catch (\Exception $e) {
@@ -191,5 +203,14 @@ class Consumer implements ConsumerInterface
                 $queue->reject($message);
             }
         };
+    }
+
+    /**
+     * Shuts down this consumer process
+     * TODO: See if we should use a channel::basic_cancel before exiting!
+     */
+    protected function shutdown()
+    {
+        exit(0);
     }
 }
