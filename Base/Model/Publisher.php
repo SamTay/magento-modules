@@ -39,23 +39,31 @@ class Publisher implements PublisherInterface
     protected $defaultMessageProperties;
 
     /**
+     * @var MessageEncoder
+     */
+    protected $messageEncoder;
+
+    /**
      * Initialize dependencies.
      *
      * @param ExchangeRepository $exchangeRepository
      * @param EnvelopeFactory $envelopeFactory
      * @param MessageQueueConfig $messageQueueConfig
+     * @param MessageEncoder $messageEncoder
      * @param array $defaultMessageProperties
      */
     public function __construct(
         ExchangeRepository $exchangeRepository,
         EnvelopeFactory $envelopeFactory,
         MessageQueueConfig $messageQueueConfig,
+        MessageEncoder $messageEncoder,
         array $defaultMessageProperties
     ) {
         $this->exchangeRepository = $exchangeRepository;
         $this->envelopeFactory = $envelopeFactory;
         $this->messageQueueConfig = $messageQueueConfig;
         $this->defaultMessageProperties = $defaultMessageProperties;
+        $this->messageEncoder = $messageEncoder;
     }
 
     /**
@@ -69,7 +77,8 @@ class Publisher implements PublisherInterface
     public function publish($topicName, $data, array $properties = [])
     {
         $properties = array_merge($this->defaultMessageProperties, $properties);
-        $envelope = $this->envelopeFactory->create(['body' => $data, 'properties' => $properties]);
+        $body = is_string($data) ? $data : $this->messageEncoder->encode($topicName, $data);
+        $envelope = $this->envelopeFactory->create(['body' => $body, 'properties' => $properties]);
         $connectionName = $this->messageQueueConfig->getConnectionByTopic($topicName);
         $exchange = $this->exchangeRepository->getByConnectionName($connectionName);
         $exchange->enqueue($topicName, $envelope);

@@ -69,6 +69,34 @@ class Daemonizer
     }
 
     /**
+     * Start all consumers according to configured daemon counts
+     * Optionally disallow truncating daemons
+     *
+     * @param bool $noTruncate
+     * @throws LocalizedException
+     */
+    public function startAllConsumers($noTruncate = false)
+    {
+        foreach($this->queueConfig->getConsumersList() as $consumerName) {
+            $configuredDaemonCount = $this->consumerConfig->getDaemonCount($consumerName);
+            $currentDaemonCount = $this->getCurrentDaemonCount($consumerName);
+
+            $diff = $configuredDaemonCount - $currentDaemonCount;
+            switch(true) {
+                case ($diff > 0):
+                    $this->addDaemons($consumerName, $diff);
+                    break;
+                case ($diff < 0):
+                    $noTruncate || $this->removeDaemons($consumerName, abs($diff));
+                    break;
+                default:
+                    // No action necessary
+                    break;
+            }
+        }
+    }
+
+    /**
      * Adds extra daemons for a consumer
      *
      * @param $consumerName
@@ -117,11 +145,11 @@ class Daemonizer
          * It is a very particular use case that the declaration returns a count of consumers, so I am
          * explicitly breaking OOO to leverage that return value.
          */
-        $declareAccessor = function($queueName) {
+        $getConsumerCount = function($queueName) {
             list(,,$consumerCount) = $this->declareQueue($queueName);
             return $consumerCount;
         };
-        $declareAccessor->bindTo($this->topology, get_class($this->topology));
+        $declareAccessor = \Closure::bind($getConsumerCount, $this->topology, $this->topology);
         return $declareAccessor($queueName);
     }
 

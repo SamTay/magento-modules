@@ -12,6 +12,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="installTopologyCommand" xsi:type="object">BlueAcorn\AmqpBase\Console\InstallTopologyCommand</item>
+                <item name="startAllConsumersCommand" xsi:type="object">BlueAcorn\AmqpBase\Console\StartAllConsumersCommand</item>
             </argument>
         </arguments>
     </type>
