@@ -14,6 +14,7 @@ use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
 use BlueAcorn\AmqpBase\Console\StartConsumerCommand;
 use Magento\Framework\Exception\LocalizedException;
 use BlueAcorn\AmqpBase\Helper\MessageQueue\Config as QueueConfig;
+use Magento\Framework\Json\Encoder as JsonEncoder;
 use Magento\Framework\MessageQueue\PublisherFactory;
 use Magento\Framework\Phrase;
 
@@ -47,25 +48,33 @@ class Daemonizer
     protected $shell;
 
     /**
+     * @var JsonEncoder
+     */
+    protected $jsonEncoder;
+
+    /**
      * Daemonizer constructor.
      * @param Topology $topology
      * @param QueueConfig $queueConfig
      * @param ConsumerConfig $consumerConfig
      * @param PublisherFactory $publisherFactory
      * @param Parallelizer $shell
+     * @param JsonEncoder $jsonEncoder
      */
     public function __construct(
         Topology $topology,
         QueueConfig $queueConfig,
         ConsumerConfig $consumerConfig,
         PublisherFactory $publisherFactory,
-        Parallelizer $shell
+        Parallelizer $shell,
+        JsonEncoder $jsonEncoder
     ) {
         $this->topology = $topology;
         $this->queueConfig = $queueConfig;
         $this->consumerConfig = $consumerConfig;
         $this->publisherFactory = $publisherFactory;
         $this->shell = $shell;
+        $this->jsonEncoder = $jsonEncoder;
     }
 
     /**
@@ -186,7 +195,7 @@ class Daemonizer
     {
         $topic = $this->queueConfig->getTopicFromConsumer($consumerName);
         $publisher = $this->publisherFactory->create($topic);
-        $publisher->publish($topic, [Consumer::SHUTDOWN_PROTOCOL => true]);
+        $publisher->publish($topic, $this->jsonEncoder->encode([Consumer::SHUTDOWN_PROTOCOL => true]));
     }
 
     /**
