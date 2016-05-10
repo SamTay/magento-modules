@@ -13,8 +13,7 @@ use BlueAcorn\AmqpBase\Model\Topology;
 use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
 use BlueAcorn\AmqpBase\Console\StartConsumerCommand;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
-use Magento\Framework\MessageQueue\Config\Converter as QueueConverter;
+use BlueAcorn\AmqpBase\Helper\MessageQueue\Config as QueueConfig;
 use Magento\Framework\MessageQueue\PublisherFactory;
 use Magento\Framework\Phrase;
 
@@ -103,6 +102,8 @@ class Daemonizer
 
     /**
      * Get current daemon count for consumer
+     * TODO: Investigate passive queue declaration to check for existence. May or may not close connection
+     * on IO exception, but could be a cleaner solution than this
      *
      * @param $consumerName
      * @return int
@@ -110,8 +111,18 @@ class Daemonizer
      */
     public function getCurrentDaemonCount($consumerName)
     {
-        $queueName = $this->getQueueByConsumer($consumerName);
-        return $this->topology->getConsumerCount($queueName);
+        $queueName = $this->queueConfig->getQueueByConsumer($consumerName);
+        /**
+         * I don't want to extend topology class and I don't want the methods to be public.
+         * It is a very particular use case that the declaration returns a count of consumers, so I am
+         * explicitly breaking OOO to leverage that return value.
+         */
+        $declareAccessor = function($queueName) {
+            list(,,$consumerCount) = $this->declareQueue($queueName);
+            return $consumerCount;
+        };
+        $declareAccessor->bindTo($this->topology, get_class($this->topology));
+        return $declareAccessor($queueName);
     }
 
     /**
@@ -138,30 +149,6 @@ class Daemonizer
     }
 
     /**
-     * Get queue name from consumer name
-     *
-     * @param string $consumerName
-     * @return string
-     * @throws LocalizedException
-     */
-    public function getQueueByConsumer($consumerName)
-    {
-        $path = implode('/', [
-            QueueConverter::CONSUMERS,
-            $consumerName,
-            QueueConverter::CONSUMER_QUEUE
-        ]);
-        $queueName = $this->queueConfig->get($path);
-        if (!$queueName) {
-            throw new LocalizedException(
-                new Phrase('No queue specified for consumer %name', ['name' => $consumerName])
-            );
-        }
-
-        return $queueName;
-    }
-
-    /**
      * Truncates consumer daemon count (i.e., removes a single consumer daemon)
      *
      * @param $consumerName
@@ -169,7 +156,7 @@ class Daemonizer
      */
     protected function truncateConsumer($consumerName)
     {
-        $topic = $this->getTopicFromConsumer($consumerName);
+        $topic = $this->queueConfig->getTopicFromConsumer($consumerName);
         $publisher = $this->publisherFactory->create($topic);
         $publisher->publish($topic, [Consumer::SHUTDOWN_PROTOCOL => true]);
     }
@@ -192,37 +179,5 @@ class Daemonizer
                 StartConsumerCommand::STANDALONE_PROCESS_FLAG
             ]
         );
-    }
-
-    /**
-     * Get topic from consumer name
-     *
-     * @param $consumerName
-     * @return mixed
-     * @throws LocalizedException
-     */
-    public function getTopicFromConsumer($consumerName)
-    {
-        $queueName = $this->getQueueByConsumer($consumerName);
-        return $this->getTopicFromQueue($queueName);
-    }
-
-    /**
-     * Get topic from queue name
-     *
-     * @param $queueName
-     * @return mixed
-     * @throws LocalizedException
-     */
-    public function getTopicFromQueue($queueName)
-    {
-        $topic = null;
-        foreach($this->queueConfig->get(QueueConverter::BINDS) as $bind) {
-            if ($bind[QueueConverter::BIND_QUEUE] == $queueName) {
-                return $bind[QueueConverter::BIND_TOPIC];
-            }
-        }
-
-        throw new LocalizedException(new Phrase('Queue %name has no topic binds', ['name' => $queueName]));
     }
 }

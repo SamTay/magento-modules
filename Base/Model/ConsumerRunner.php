@@ -8,7 +8,7 @@
 namespace BlueAcorn\AmqpBase\Model;
 
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
-use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
+use BlueAcorn\AmqpBase\Helper\MessageQueue\Config as QueueConfig;
 use Magento\Framework\MessageQueue\ConsumerFactory;
 use Magento\Framework\Exception\LocalizedException;
 
@@ -63,28 +63,12 @@ class ConsumerRunner
     {
         try {
             $consumer = $this->consumerFactory->get($name);
-            $maxMessages = $this->getMaxMessages($name);
+            $maxMessages = $this->queueConfig->getMaxMessages($name);
         } catch (\Exception $e) {
             $errorMsg = '"%callbackMethod" callback method specified in crontab.xml '
                 . 'must have corresponding consumer declared in some queue.xml.';
             throw new LocalizedException(__($errorMsg, ['callbackMethod' => $name]));
         }
         $consumer->process($maxMessages);
-    }
-
-    /**
-     * Get max_messages configured for consumer
-     *
-     * @param string $consumerName
-     * @return string|int|null
-     */
-    protected function getMaxMessages($consumerName)
-    {
-        $path = implode('/', [
-            QueueConfigConverter::CONSUMERS,
-            $consumerName,
-            QueueConfigConverter::CONSUMER_MAX_MESSAGES
-        ]);
-        return $this->queueConfig->get($path);
     }
 }

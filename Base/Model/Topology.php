@@ -8,10 +8,9 @@
 namespace BlueAcorn\AmqpBase\Model;
 
 use BlueAcorn\AmqpBase\Helper\Logger;
+use BlueAcorn\AmqpBase\Helper\MessageQueue\Config;
 use Magento\Amqp\Model\Config as AmqpConfig;
-use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
-use PhpAmqpLib\Exception\AMQPInvalidArgumentException;
 
 /**
  * Class Topology creates topology for Amqp messaging
@@ -66,12 +65,12 @@ class Topology
      * Initialize dependencies
      *
      * @param AmqpConfig $amqpConfig
-     * @param QueueConfig $queueConfig
+     * @param Config $queueConfig
      * @param Logger $logger
      */
     public function __construct(
         AmqpConfig $amqpConfig,
-        QueueConfig $queueConfig,
+        Config $queueConfig,
         Logger $logger
     ) {
         $this->amqpConfig = $amqpConfig;
@@ -86,10 +85,10 @@ class Topology
      */
     public function install()
     {
-        $queueConfig = $this->getQueueConfigData();
+        $queueConfig = $this->queueConfig->getQueueConfigData();
         if (isset($queueConfig[QueueConfigConverter::BINDS])) {
-            $availableQueues = $this->getQueuesList(self::AMQP_CONNECTION);
-            $availableExchanges = $this->getExchangesList(self::AMQP_CONNECTION);
+            $availableQueues = $this->queueConfig->getQueuesList(self::AMQP_CONNECTION);
+            $availableExchanges = $this->queueConfig->getExchangesList(self::AMQP_CONNECTION);
 
             foreach ($queueConfig[QueueConfigConverter::BINDS] as $bind) {
                 $queueName = $bind[QueueConfigConverter::BIND_QUEUE];
@@ -113,25 +112,6 @@ class Topology
                 }
             }
         }
-    }
-
-    /**
-     * Get number of consumers currently subscribed to queue
-     * TODO: Investigate passive queue declaration to check for existence. May or may not close connection
-     * on IO exception, but could be a cleaner solution than this
-     *
-     * @param $queueName
-     * @return int
-     */
-    public function getConsumerCount($queueName)
-    {
-        if (!$this->isValidQueueName($queueName)) {
-            throw new AMQPInvalidArgumentException(
-                sprintf('The queue %s has not been properly declared in queue.xml.', $queueName)
-            );
-        }
-        list(,,$consumerCount) = $this->declareQueue($queueName);
-        return (int)$consumerCount;
     }
 
     /**
@@ -179,70 +159,4 @@ class Topology
         return $this->amqpConfig->getChannel();
     }
 
-    /**
-     * Return list of queue names, that are available for connection
-     *
-     * @param string $connection
-     * @return array List of queue names
-     */
-    protected function getQueuesList($connection)
-    {
-        $queues = [];
-        $queueConfig = $this->getQueueConfigData();
-        if (isset($queueConfig[QueueConfigConverter::CONSUMERS])) {
-            foreach ($queueConfig[QueueConfigConverter::CONSUMERS] as $consumer) {
-                if ($consumer[QueueConfigConverter::CONSUMER_CONNECTION] === $connection) {
-                    $queues[] = $consumer[QueueConfigConverter::CONSUMER_QUEUE];
-                }
-            }
-            $queues = array_unique($queues);
-        }
-        return $queues;
-    }
-
-    /**
-     * Return list of exchange names, that are available for connection
-     *
-     * @param string $connection
-     * @return array List of exchange names
-     */
-    protected function getExchangesList($connection)
-    {
-        $exchanges = [];
-        $queueConfig = $this->getQueueConfigData();
-        if (isset($queueConfig[QueueConfigConverter::PUBLISHERS])) {
-            foreach ($queueConfig[QueueConfigConverter::PUBLISHERS] as $consumer) {
-                if ($consumer[QueueConfigConverter::PUBLISHER_CONNECTION] === $connection) {
-                    $exchanges[] = $consumer[QueueConfigConverter::PUBLISHER_EXCHANGE];
-                }
-            }
-            $exchanges = array_unique($exchanges);
-        }
-        return $exchanges;
-    }
-
-    /**
-     * Returns the queue configuration.
-     *
-     * @return array
-     */
-    protected function getQueueConfigData()
-    {
-        if ($this->queueConfigData == null) {
-            $this->queueConfigData = $this->queueConfig->get();
-        }
-        return $this->queueConfigData;
-    }
-
-    /**
-     * Check if queueName exists in configuration
-     *
-     * @param $queueName
-     * @return bool
-     */
-    public function isValidQueueName($queueName)
-    {
-        $availableQueues = $this->getQueuesList(self::AMQP_CONNECTION);
-        return in_array($queueName, $availableQueues);
-    }
 }
