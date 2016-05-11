@@ -126,7 +126,7 @@ class StartConsumerCommand extends Command
     protected function configure()
     {
         $this->setName(self::COMMAND_QUEUE_CONSUMERS_START);
-        $this->setDescription('Start MessageQueue consumer');
+        $this->setDescription('Start consumer');
         $this->addArgument(
             self::ARGUMENT_CONSUMER,
             InputArgument::REQUIRED,
@@ -153,7 +153,7 @@ class StartConsumerCommand extends Command
         );
         $this->setHelp(
             <<<HELP
-This command starts MessageQueue consumer by its name.
+This command starts consumer by its name.
 
 To run the consumer as a single daemon instance:
 
