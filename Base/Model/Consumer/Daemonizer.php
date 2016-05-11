@@ -22,6 +22,11 @@ class Daemonizer
 {
     const MAX_DAEMON_COUNT = 20;
 
+    /** Statuses for updating configuration & starting consumers */
+    const STATUS_NO_ACTION_NECESSARY = 0;
+    const STATUS_TRUNCATE_STARTED = 1;
+    const STATUS_SPAWN_STARTED = 2;
+
     /**
      * @var Topology
      */
@@ -83,9 +88,11 @@ class Daemonizer
      *
      * @param bool $noTruncate
      * @throws LocalizedException
+     * @return array of status updates
      */
     public function startAllConsumers($noTruncate = false)
     {
+        $statuses = [];
         foreach($this->queueConfig->getConsumersList() as $consumerName) {
             $configuredDaemonCount = $this->consumerConfig->getDaemonCount($consumerName);
             $currentDaemonCount = $this->getCurrentDaemonCount($consumerName);
@@ -94,15 +101,19 @@ class Daemonizer
             switch(true) {
                 case ($diff > 0):
                     $this->addDaemons($consumerName, $diff);
+                    $statuses[] = self::STATUS_SPAWN_STARTED;
                     break;
-                case ($diff < 0):
-                    $noTruncate || $this->removeDaemons($consumerName, abs($diff));
+                case ($diff < 0 && !$noTruncate):
+                    $this->removeDaemons($consumerName, abs($diff));
+                    $statuses[] = self::STATUS_TRUNCATE_STARTED;
                     break;
                 default:
                     // No action necessary
                     break;
             }
         }
+
+        return $statuses ? array_unique($statuses) : [self::STATUS_NO_ACTION_NECESSARY];
     }
 
     /**
