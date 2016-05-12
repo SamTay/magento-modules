@@ -12,7 +12,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Event\Observer as EventObserver;
 
-class StartAllConsumers implements ObserverInterface
+class ConfigSectionSave implements ObserverInterface
 {
     /**
      * @var Daemonizer
@@ -25,7 +25,6 @@ class StartAllConsumers implements ObserverInterface
     protected $messageManager;
 
     /**
-     * StartAllConsumers constructor.
      * @param Daemonizer $daemonizer
      * @param ManagerInterface $messageManager
      */
@@ -44,12 +43,11 @@ class StartAllConsumers implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        $statuses = $this->daemonizer->startAllConsumers();
-        if (in_array(Daemonizer::STATUS_TRUNCATE_STARTED, $statuses)) {
+        $status = $this->daemonizer->startAllConsumers();
+        if ($status[Daemonizer::STATUS_TRUNCATE_NECESSARY]) {
             $this->messageManager->addNotice(
-                'Some daemons needed to be removed for this configuration. Because this requires'
-                . ' daemons that are "free", i.e., not currently consuming important messages, this can take'
-                . ' a few minutes.'
+                'These changes require removing consumer daemons. Because this requires consumers that are "free",'
+                . ' that is, not currently consuming important messages, this may take a few minutes.'
             );
         }
     }

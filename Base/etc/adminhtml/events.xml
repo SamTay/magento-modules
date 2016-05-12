@@ -7,6 +7,6 @@
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="admin_system_config_changed_section_ba_amqp">
-        <observer name="amqpSaveStartAllConsumers" instance="BlueAcorn\AmqpBase\Observer\StartAllConsumers"/>
+        <observer name="amqpConfigSectionSave" instance="BlueAcorn\AmqpBase\Observer\ConfigSectionSave"/>
     </event>
 </config>
