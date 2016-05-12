@@ -24,8 +24,8 @@ class Daemonizer
 
     /** Statuses for updating configuration & starting consumers */
     const STATUS_NO_ACTION_NECESSARY = 0;
-    const STATUS_TRUNCATE_STARTED = 1;
-    const STATUS_SPAWN_STARTED = 2;
+    const STATUS_TRUNCATE_NECESSARY = 1;
+    const STATUS_SPAWN_NECESSARY = 2;
 
     /**
      * @var Topology
@@ -85,14 +85,29 @@ class Daemonizer
     /**
      * Start all consumers according to configured daemon counts
      * Optionally disallow truncating daemons
+     * Optionally dry run without modifying daemon counts
+     *
+     * Returns status array: [
+     * SPAWN_NECESSARY =>
+     *   [
+     *     $consumer1 => $diffCount1,
+     *     $consumer2 => $diffCount2
+     *   ],
+     * TRUNCATE_NECESSARY => [
+     * ....
      *
      * @param bool $noTruncate
+     * @param bool $dryRun
+     * @return array
      * @throws LocalizedException
-     * @return array of status updates
      */
-    public function startAllConsumers($noTruncate = false)
+    public function startAllConsumers($noTruncate = false, $dryRun = false)
     {
-        $statuses = [];
+        $statuses = [
+            self::STATUS_NO_ACTION_NECESSARY => [],
+            self::STATUS_SPAWN_NECESSARY => [],
+            self::STATUS_TRUNCATE_NECESSARY => []
+        ];
         foreach($this->queueConfig->getConsumersList() as $consumerName) {
             $configuredDaemonCount = $this->consumerConfig->getDaemonCount($consumerName);
             $currentDaemonCount = $this->getCurrentDaemonCount($consumerName);
@@ -100,20 +115,31 @@ class Daemonizer
             $diff = $configuredDaemonCount - $currentDaemonCount;
             switch(true) {
                 case ($diff > 0):
-                    $this->addDaemons($consumerName, $diff);
-                    $statuses[] = self::STATUS_SPAWN_STARTED;
+                    $dryRun || $this->addDaemons($consumerName, $diff);
+                    $statuses[self::STATUS_SPAWN_NECESSARY][$consumerName] = $diff;
                     break;
-                case ($diff < 0 && !$noTruncate):
-                    $this->removeDaemons($consumerName, abs($diff));
-                    $statuses[] = self::STATUS_TRUNCATE_STARTED;
+                case ($diff < 0):
+                    $dryRun || $noTruncate || $this->removeDaemons($consumerName, abs($diff));
+                    $statuses[self::STATUS_TRUNCATE_NECESSARY][$consumerName] = abs($diff);
                     break;
                 default:
-                    // No action necessary
+                    $statuses[self::STATUS_NO_ACTION_NECESSARY][$consumerName] = 0;
                     break;
             }
         }
 
-        return $statuses ? array_unique($statuses) : [self::STATUS_NO_ACTION_NECESSARY];
+        return $statuses;
+    }
+
+    /**
+     * Check current status between Magento configuration and rabbitMQ processes
+     * Delegates to starting consumers by dry run
+     *
+     * @return array
+     */
+    public function checkStatus()
+    {
+        return $this->startAllConsumers(false, true);
     }
 
     /**
