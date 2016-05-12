@@ -8,8 +8,9 @@
 namespace BlueAcorn\AmqpBase\Model\Shell;
 
 use Magento\Framework\OsInfo;
+use Magento\Framework\Shell\CommandRenderer;
 
-class CommandRendererBackground extends \Magento\Framework\Shell\CommandRendererBackground
+class CommandRendererBackground extends CommandRenderer
 {
     const DEFAULT_PIPE = '/dev/null';
 
@@ -42,7 +43,7 @@ class CommandRendererBackground extends \Magento\Framework\Shell\CommandRenderer
         $command = parent::render($command, $arguments);
         return $this->osInfo->isWindows() ?
             'start /B "magento background task" ' . $command
-            : $command . ' > ' . $this->pipeDestination . ' &';
+            : 'nohup ' . $command . ' > ' . $this->pipeDestination . ' 2>&1 &';
     }
 
     /**
