@@ -14,9 +14,10 @@ use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
 use BlueAcorn\AmqpBase\Console\StartConsumerCommand;
 use Magento\Framework\Exception\LocalizedException;
 use BlueAcorn\AmqpBase\Helper\MessageQueue\Config as QueueConfig;
+use Magento\Amqp\Model\Config as AmqpConfig;
 use Magento\Framework\Json\Encoder as JsonEncoder;
-use Magento\Framework\MessageQueue\PublisherFactory;
 use Magento\Framework\Phrase;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class Daemonizer
 {
@@ -43,11 +44,6 @@ class Daemonizer
     protected $consumerConfig;
 
     /**
-     * @var PublisherFactory
-     */
-    protected $publisherFactory;
-
-    /**
      * @var Parallelizer
      */
     protected $shell;
@@ -58,28 +54,33 @@ class Daemonizer
     protected $jsonEncoder;
 
     /**
+     * @var AmqpConfig
+     */
+    protected $amqpConfig;
+
+    /**
      * Daemonizer constructor.
      * @param Topology $topology
      * @param QueueConfig $queueConfig
      * @param ConsumerConfig $consumerConfig
-     * @param PublisherFactory $publisherFactory
      * @param Parallelizer $shell
+     * @param AmqpConfig $amqpConfig
      * @param JsonEncoder $jsonEncoder
      */
     public function __construct(
         Topology $topology,
         QueueConfig $queueConfig,
         ConsumerConfig $consumerConfig,
-        PublisherFactory $publisherFactory,
         Parallelizer $shell,
+        AmqpConfig $amqpConfig,
         JsonEncoder $jsonEncoder
     ) {
         $this->topology = $topology;
         $this->queueConfig = $queueConfig;
         $this->consumerConfig = $consumerConfig;
-        $this->publisherFactory = $publisherFactory;
         $this->shell = $shell;
         $this->jsonEncoder = $jsonEncoder;
+        $this->amqpConfig = $amqpConfig;
     }
 
     /**
@@ -224,17 +225,17 @@ class Daemonizer
 
     /**
      * Truncates consumer daemon count (i.e., removes a single consumer daemon)
-     * TODO: While it is good to use M2 publisher interface abstraction level, it is probably better
-     * to publish message directly to the consumer's queue, without a topic.
      *
      * @param $consumerName
      * @throws LocalizedException
      */
     protected function truncateConsumer($consumerName)
     {
-        $topic = $this->queueConfig->getTopicFromConsumer($consumerName);
-        $publisher = $this->publisherFactory->create($topic);
-        $publisher->publish($topic, $this->jsonEncoder->encode([Consumer::SHUTDOWN_PROTOCOL => true]));
+        $shutdownMessage = new AMQPMessage(
+            $this->jsonEncoder->encode([Consumer::SHUTDOWN_PROTOCOL => true])
+        );
+        $queue = $this->queueConfig->getQueueByConsumer($consumerName);
+        $this->amqpConfig->getChannel()->basic_publish($shutdownMessage, '', $queue);
     }
 
     /**
