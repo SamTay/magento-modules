@@ -8,7 +8,7 @@ see [here](https://community.magento.com/t5/Just-Ask-Alan/RabbitMQ-lt-gt-Magento
 
 ### Installation
 ```
-composer config repositories.blueacorn/amqp-integrations git git@github.com:blueacorninc/ba-module-amqp-integrations-m2.git
+composer config repositories.blueacorn/amqp-integrations git git@github.com:blueacorninc/m2-amqp-integrations.git
 composer require blueacorn/amqp-integrations:dev-master
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
