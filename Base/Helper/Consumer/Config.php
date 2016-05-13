@@ -91,7 +91,9 @@ class Config extends AbstractHelper
             unset($config); // Manually unsetting so nothing ends up referencing the property pointer
         }
 
-        return isset($this->config[$consumerName]) ? $this->config[$consumerName] : $this->getDefaultFields();
+        return $consumerName && isset($this->config[$consumerName])
+            ? $this->config[$consumerName]
+            : $this->getDefaultFields();
     }
 
     /**

@@ -50,6 +50,11 @@ interface AlertInterface
     public function getTimestamp();
 
     /**
+     * @return array
+     */
+    public function getTemplateVars();
+
+    /**
      * @param string $message
      * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
      */
@@ -57,31 +62,31 @@ interface AlertInterface
 
     /**
      * @param string $stackTrace
-     * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
+     * @return \BlueAcorn\AmqpBase\Api\Data\AlertInterface
      */
     public function setStackTrace($stackTrace);
 
     /**
      * @param string $consumer
-     * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
+     * @return \BlueAcorn\AmqpBase\Api\Data\AlertInterface
      */
     public function setConsumer($consumer);
 
     /**
      * @param string $emailSubject
-     * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
+     * @return \BlueAcorn\AmqpBase\Api\Data\AlertInterface
      */
     public function setEmailSubject($emailSubject);
 
     /**
      * @param string[] $emailRecipients
-     * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
+     * @return \BlueAcorn\AmqpBase\Api\Data\AlertInterface
      */
     public function setEmailRecipients($emailRecipients);
 
     /**
      * @param int $timestamp
-     * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
+     * @return \BlueAcorn\AmqpBase\Api\Data\AlertInterface
      */
     public function setTimestamp($timestamp);
 }
