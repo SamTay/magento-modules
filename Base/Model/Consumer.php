@@ -144,7 +144,7 @@ class Consumer implements ConsumerInterface
         $decodedMessage = $this->messageEncoder->decode($topicName, $message->getBody());
 
         if (isset($decodedMessage)) {
-            // If message decoded to SHUTDOWN, set property fag and skip normal callback procedure
+            // If message decoded to SHUTDOWN, set property flag and skip normal callback procedure
             if ($decodedMessage === self::SHUTDOWN_PROTOCOL) {
                 $this->logger->debug('Shutdown protocol found');
                 $this->shutdownFlag = true;
