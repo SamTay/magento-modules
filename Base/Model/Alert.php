@@ -63,7 +63,7 @@ class Alert extends DataObject implements AlertInterface
     /**
      * {@inheritdoc}
      */
-    public function setMessge($message)
+    public function setMessage($message)
     {
         return $this->setData(self::MESSAGE, $message);
     }

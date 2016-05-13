@@ -53,7 +53,7 @@ interface AlertInterface
      * @param string $message
      * @return \BlueAcorn\AmqpBase\Model\Alert\AlertInterface
      */
-    public function setMessge($message);
+    public function setMessage($message);
 
     /**
      * @param string $stackTrace
