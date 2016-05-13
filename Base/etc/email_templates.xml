@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/AmqpBase
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="amqp_alert" label="Amqp Alert" file="amqp_alert.html" type="html" module="BlueAcorn_AmqpBase" area="adminhtml"/>
+</config>

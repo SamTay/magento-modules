@@ -1,0 +1,34 @@
+<!--/*
+ * @package     BlueAcorn/AmqpBase
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<!--@subject Amqp Alert @-->
+<!--@vars {
+"var consumer":"Consumer",
+"var message":"Message",
+"var stackTrace":"Stack Trace",
+"var dateAndTime":"Date and Time of Error",
+} @-->
+
+<h1>{{trans "Amqp Alert"}}</h1>
+
+<ul>
+    <li>
+        <b>{{trans "Consumer"}}</b><br />
+        {{var consumer}}
+    </li>
+    <li>
+        <b>{{trans "Message"}}</b><br />
+        {{var message}}
+    </li>
+    <li>
+        <b>{{trans "Stack Trace"}}</b><br />
+        {{var stackTrace|raw}}
+    </li>
+    <li>
+        <b>{{trans "Date & Time:"}}</b><br />
+        {{var dateAndTime}}
+    </li>
+</ul>
