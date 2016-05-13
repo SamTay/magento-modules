@@ -19,6 +19,7 @@ use Magento\Framework\Phrase;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
 use Magento\Framework\App\ResourceConnection;
 use BlueAcorn\AmqpBase\Helper\Logger;
+use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
 
 /**
  * A MessageQueue Consumer to handle receiving a message.
@@ -67,12 +68,24 @@ class Consumer implements ConsumerInterface
     protected $logger;
 
     /**
+     * @var AlertManager
+     */
+    protected $alertManager;
+
+    /**
+     * @var ConsumerConfig
+     */
+    protected $consumerConfig;
+
+    /**
      * Initialize dependencies.
      *
      * @param QueueConfig $messageQueueConfig
      * @param MessageEncoder $messageEncoder
      * @param QueueRepository $queueRepository
      * @param Logger $logger
+     * @param AlertManager $alertManager
+     * @param ConsumerConfig $consumerConfig
      * @param ResourceConnection $resource
      */
     public function __construct(
@@ -80,6 +93,8 @@ class Consumer implements ConsumerInterface
         MessageEncoder $messageEncoder,
         QueueRepository $queueRepository,
         Logger $logger,
+        AlertManager $alertManager,
+        ConsumerConfig $consumerConfig,
         ResourceConnection $resource
     ) {
         $this->messageQueueConfig = $messageQueueConfig;
@@ -87,6 +102,8 @@ class Consumer implements ConsumerInterface
         $this->queueRepository = $queueRepository;
         $this->resource = $resource;
         $this->logger = $logger;
+        $this->alertManager = $alertManager;
+        $this->consumerConfig = $consumerConfig;
     }
 
     /**
@@ -201,6 +218,7 @@ class Consumer implements ConsumerInterface
     {
         return function (EnvelopeInterface $message) use ($queue) {
             try {
+                $this->logger->debug($message->getBody());
                 $this->resource->getConnection()->beginTransaction();
                 $this->dispatchMessage($message);
                 $queue->acknowledge($message);
@@ -209,12 +227,42 @@ class Consumer implements ConsumerInterface
                     $this->shutdown();
                 }
             } catch (ConnectionLostException $e) {
+                $this->alert($e);
                 $this->resource->getConnection()->rollBack();
             } catch (\Exception $e) {
+                $this->alert($e);
                 $this->resource->getConnection()->rollBack();
                 $queue->reject($message);
             }
         };
+    }
+
+    /**
+     * Aggregate consumer coniguration to build and publish an alert
+     *
+     * @param \Exception $e
+     */
+    public function alert(\Exception $e)
+    {
+        $this->logger->debug($e);
+        $consumerName = $this->configuration->getConsumerName();
+        $config = $this->consumerConfig->getConsumerConfig($consumerName);
+        if ($config[ConsumerConfig::FIELD_EMAIL_RECIPIENTS]) {
+            $alert = $this->alertManager->getBuilder()
+                ->setEmailRecipients($config[ConsumerConfig::FIELD_EMAIL_RECIPIENTS])
+                ->setEmailSubject($config[ConsumerConfig::FIELD_EMAIL_SUBJECT])
+                ->setConsumer($consumerName)
+                ->setMessage($e->getMessage())
+                ->setStackTrace($e->getTraceAsString())
+                ->setTimestamp(time())
+                ->create();
+            $this->alertManager->publish($alert);
+        } else {
+            $this->logger->debug(new Phrase(
+                'Exception was generated, but no email recipients are configured for %consumer',
+                ['consumer' => $consumerName]
+            ));
+        }
     }
 
     /**
