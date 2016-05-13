@@ -78,6 +78,7 @@ class StartConsumerCommand extends Command
 
         // If standalone flag (i.e. started from daemon loop below), start off consumer daemon
         if ($standaloneProcessFlag) {
+            $this->prepareDaemonProcess();
             $consumer->process();
             return;
         }
@@ -186,5 +187,14 @@ HELP
         $processor = new ComplexParameter(self::OPTION_INTERNAL_PARAMS);
         $optionValues = $processor->getFromString('--' . self::OPTION_INTERNAL_PARAMS . '=' . $internalParams);
         return isset($optionValues[self::STANDALONE_PROCESS_FLAG]) && $optionValues[self::STANDALONE_PROCESS_FLAG];
+    }
+
+    /**
+     * Prepare daemon process by ignoring external abort // time limits
+     */
+    protected function prepareDaemonProcess()
+    {
+        ignore_user_abort(true);
+        set_time_limit(0);
     }
 }
