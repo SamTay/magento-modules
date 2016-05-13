@@ -9,6 +9,7 @@
     <preference for="Magento\MessageQueue\Console\StartConsumerCommand" type="BlueAcorn\AmqpBase\Console\StartConsumerCommand"/>
     <preference for="Magento\MessageQueue\Console\ConsumerListCommand" type="BlueAcorn\AmqpBase\Console\ConsumerListCommand"/>
     <preference for="Magento\Amqp\Model\Topology" type="BlueAcorn\AmqpBase\Model\Topology"/>
+    <preference for="BlueAcorn\AmqpBase\Api\Data\AlertInterface" type="BlueAcorn\AmqpBase\Model\Alert"/>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">

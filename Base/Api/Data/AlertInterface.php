@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\AmqpBase\Model\Alert;
+namespace BlueAcorn\AmqpBase\Api\Data;
 
 interface AlertInterface
 {

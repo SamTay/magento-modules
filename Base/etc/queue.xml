@@ -8,7 +8,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
     <!-- Publishers & Topics -->
     <publisher name="alerts" connection="amqp" exchange="alerts"/>
-    <topic publisher="alerts" name="alert" schema="BlueAcorn\AmqpBase\Model\Alert\AlertInterface" />
+    <topic publisher="alerts" name="alert" schema="BlueAcorn\AmqpBase\Api\Data\AlertInterface" />
 
     <!-- Consumers & Bindings -->
     <consumer name="alertListener" queue="alert_queue" connection="amqp" class="BlueAcorn\AmqpBase\Model\Alert\Processor" method="processAlert" max_messages="100"/>
