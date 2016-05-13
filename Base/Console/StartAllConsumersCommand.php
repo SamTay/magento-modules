@@ -22,6 +22,7 @@ use BlueAcorn\AmqpBase\Model\Consumer\Daemonizer;
 class StartAllConsumersCommand extends Command
 {
     const OPTION_NO_TRUNCATE = 'no-truncate';
+    const OPTION_DRY_RUN = 'dry-run';
     const COMMAND_QUEUE_CONSUMERS_START_ALL = 'queue:consumers:start-all';
 
     /**
@@ -47,12 +48,22 @@ class StartAllConsumersCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $noTruncateFlag = $input->getOption(self::OPTION_NO_TRUNCATE);
-        $this->daemonizer->startAllConsumers($noTruncateFlag);
-        $output->writeln(
-            '<info>'
-            . 'Started consumers according to system configuration'
-            . '</info>'
-        );
+        $dryRun = $input->getOption(self::OPTION_DRY_RUN);
+        $statuses = $this->daemonizer->startAllConsumers($noTruncateFlag, $dryRun);
+        if (!$dryRun) {
+            $output->writeln(
+                '<info>'
+                . 'Started consumers according to system configuration'
+                . '</info>'
+            );
+        } else {
+            $map = $this->getStatusMap();
+            foreach ($statuses as $status => $consumers) {
+                foreach($consumers as $consumerName => $diff) {
+                    $output->writeln(sprintf('%30s: ' . $map[$status], $consumerName, $diff));
+                }
+            }
+        }
     }
 
     /**
@@ -68,6 +79,12 @@ class StartAllConsumersCommand extends Command
             InputOption::VALUE_NONE,
             'Optionally disallow truncating; will only add consumers and do not remove them.'
         );
+        $this->addOption(
+            self::OPTION_DRY_RUN,
+            null,
+            InputOption::VALUE_NONE,
+            'Just dry run and inform what this command would do.'
+        );
         $this->setHelp(
             <<<HELP
 This command starts all consumers to the daemon count specified in system configuration. If the
@@ -80,5 +97,19 @@ To start up or maintain the configured consumer daemons:
 HELP
         );
         parent::configure();
+    }
+
+    /**
+     * Get human readable text for each status type
+     *
+     * @return array
+     */
+    protected function getStatusMap()
+    {
+        return [
+            Daemonizer::STATUS_SPAWN_NECESSARY => 'spawn %d daemons',
+            Daemonizer::STATUS_TRUNCATE_NECESSARY => 'truncate %d daemons',
+            Daemonizer::STATUS_NO_ACTION_NECESSARY => 'no action necessary'
+        ];
     }
 }
