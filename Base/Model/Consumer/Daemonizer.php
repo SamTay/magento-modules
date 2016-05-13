@@ -224,6 +224,8 @@ class Daemonizer
 
     /**
      * Truncates consumer daemon count (i.e., removes a single consumer daemon)
+     * TODO: While it is good to use M2 publisher interface abstraction level, it is probably better
+     * to publish message directly to the consumer's queue, without a topic.
      *
      * @param $consumerName
      * @throws LocalizedException
