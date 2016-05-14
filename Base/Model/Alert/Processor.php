@@ -55,10 +55,12 @@ class Processor
             $recipients = $this->getEmailRecipients($alert);
             $vars = $alert->getData();
             $this->sendEmail($recipients, $vars);
-        } catch (LocalizedException $e) {
-            // Todo: Make logger composed of virtual type handlers for different log files
+        } catch (\Exception $e) {
+            // Squelch all errors in alert queue processing, we don't want to create infinite message loop
+
+            // TODO: Make logger composed of virtual type handlers for different log files
             // magic __call will get logger for next method call
-            $this->logger->alert()->error($e->getLogMessage());
+            $this->logger->error($e);
         }
     }
 
