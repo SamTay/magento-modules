@@ -77,7 +77,7 @@ class Config
             }
         }
 
-        throw new LocalizedException(new Phrase('Queue %name has no topic binds', ['name' => $queueName]));
+        throw new LocalizedException(new Phrase('Queue "%name" has no topic binds', ['name' => $queueName]));
     }
 
     /**
@@ -97,7 +97,7 @@ class Config
         $queueName = $this->queueConfig->get($path);
         if (!$queueName) {
             throw new LocalizedException(
-                new Phrase('No queue specified for consumer %name', ['name' => $consumerName])
+                new Phrase('No queue specified for consumer "%name"', ['name' => $consumerName])
             );
         }
 

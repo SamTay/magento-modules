@@ -96,8 +96,8 @@ class Processor
         $recipients = $alert->getEmailRecipients() ?: $this->consumerConfig->getEmailRecipients($consumer);
         if (!$recipients) {
             throw new LocalizedException(new Phrase(
-                'Alert received with no email recipients, and no default email configuration was found. Data: %data',
-                $alert->getData()
+                'Alert received with no email recipients, and no default email configuration was found. Data: "%data"',
+                ['data' => var_export($alert->getData(), true)]
             ));
         }
         return $recipients;

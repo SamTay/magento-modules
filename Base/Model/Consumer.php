@@ -259,7 +259,7 @@ class Consumer implements ConsumerInterface
             $this->alertManager->publish($alert);
         } else {
             $this->logger->debug(new Phrase(
-                'Exception was generated, but no email recipients are configured for %consumer',
+                'Exception was generated, but no email recipients are configured for "%consumer"',
                 ['consumer' => $consumerName]
             ));
         }
