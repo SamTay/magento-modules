@@ -10,6 +10,7 @@ namespace BlueAcorn\AmqpBase\Model\Alert;
 use BlueAcorn\AmqpBase\Api\Data\AlertInterface;
 use BlueAcorn\AmqpBase\Helper\Logger;
 use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
+use Magento\Framework\App\State as AppState;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Phrase;
@@ -34,19 +35,27 @@ class Processor
     protected $consumerConfig;
 
     /**
+     * @var AppState
+     */
+    protected $appState;
+
+    /**
      * Processor constructor.
      * @param TransportBuilder $transportBuilder
      * @param ConsumerConfig $consumerConfig
      * @param Logger $logger
+     * @param AppState $appState
      */
     public function __construct(
         TransportBuilder $transportBuilder,
         ConsumerConfig $consumerConfig,
-        Logger $logger
+        Logger $logger,
+        AppState $appState
     ) {
         $this->transportBuilder = $transportBuilder;
         $this->logger = $logger;
         $this->consumerConfig = $consumerConfig;
+        $this->appState = $appState;
     }
 
     public function processAlert(AlertInterface $alert)
@@ -72,17 +81,21 @@ class Processor
      */
     protected function sendEmail(array $recipients, array $vars)
     {
-        $this->transportBuilder
-            ->addTo($recipients)
-            ->setTemplateVars($vars)
-            ->setTemplateIdentifier(self::EMAIL_TEMPLATE_ID)
-            ->setTemplateOptions([
-                'area' => \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE,
-                'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID
-            ])
-            ->getTransport()
-            ->sendMessage();
-
+        $this->appState->emulateAreaCode(
+            \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE,
+            function() use ($recipients, $vars) {
+                $this->transportBuilder
+                    ->addTo($recipients)
+                    ->setTemplateVars($vars)
+                    ->setTemplateIdentifier(self::EMAIL_TEMPLATE_ID)
+                    ->setTemplateOptions([
+                        'area' => \Magento\Backend\App\Area\FrontNameResolver::AREA_CODE,
+                        'store' => \Magento\Store\Model\Store::DEFAULT_STORE_ID
+                    ])
+                    ->getTransport()
+                    ->sendMessage();
+            }
+        );
     }
 
     /**
