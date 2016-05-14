@@ -53,7 +53,7 @@ class Processor
     {
         try {
             $recipients = $this->getEmailRecipients($alert);
-            $vars = $alert->getTemplateVars();
+            $vars = $alert->getData();
             $this->sendEmail($recipients, $vars);
         } catch (LocalizedException $e) {
             // Todo: Make logger composed of virtual type handlers for different log files

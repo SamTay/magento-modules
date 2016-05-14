@@ -50,11 +50,6 @@ interface AlertInterface
     public function getTimestamp();
 
     /**
-     * @return array
-     */
-    public function getTemplateVars();
-
-    /**
      * @param string $message
      * @return \BlueAcorn\AmqpBase\Api\Data\AlertInterface
      */
