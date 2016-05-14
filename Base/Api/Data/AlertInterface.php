@@ -40,7 +40,7 @@ interface AlertInterface
     public function getEmailSubject();
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getEmailRecipients();
 
