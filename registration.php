@@ -17,3 +17,10 @@
     'BlueAcorn_AmqpShipping',
     __DIR__ . DIRECTORY_SEPARATOR . 'Shipping'
 );
+
+
+\Magento\Framework\Component\ComponentRegistrar::register(
+    \Magento\Framework\Component\ComponentRegistrar::LIBRARY,
+    'blueacorn/framework-entity-map',
+    __DIR__ . DIRECTORY_SEPARATOR . 'EntityMap'
+);

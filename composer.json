@@ -10,8 +10,9 @@
 	"autoload": {
 		"files": ["registration.php"],
 		"psr-4": {
-			"BlueAcorn\\AmqpShipping\\": "Shipping/",
-			"BlueAcorn\\AmqpBase\\": "Base/"
+			"BlueAcorn\\AmqpBase\\": "Base/",
+			"BlueAcorn\\EntityMap\\": "EntityMap/",
+			"BlueAcorn\\AmqpShipping\\": "Shipping/"
 		}
 	}
 }
