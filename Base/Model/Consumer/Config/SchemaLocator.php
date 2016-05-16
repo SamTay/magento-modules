@@ -19,14 +19,14 @@ class SchemaLocator implements SchemaLocatorInterface
     /**
      * Path to corresponding XSD file with validation rules for merged config
      *
-     * @var string|null
+     * @var string
      */
     protected $_schema;
 
     /**
      * Path to corresponding XSD file with validation rules for separate config files
      *
-     * @var string|null
+     * @var string
      */
     protected $_perFileSchema;
 
