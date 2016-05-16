@@ -218,7 +218,6 @@ class Consumer implements ConsumerInterface
     {
         return function (EnvelopeInterface $message) use ($queue) {
             try {
-                $this->logger->debug($message->getBody());
                 $this->resource->getConnection()->beginTransaction();
                 $this->dispatchMessage($message);
                 $queue->acknowledge($message);
@@ -226,13 +225,27 @@ class Consumer implements ConsumerInterface
                 if ($this->shutdownFlag) {
                     $this->shutdown();
                 }
+            } catch (ConsumptionUnfinishedException $e) {
+                $this->alert($e);
+                /**
+                 * Only reject messages for this exception type (reject will re-enqueue messages)
+                 * Notice changes are still committed when this exception is thrown
+                 */
+                $this->resource->getConnection()->commit();
+                $queue->reject($message);
             } catch (ConnectionLostException $e) {
                 $this->alert($e);
+                /**
+                 * If a connection is lost, there is nothing we can do other than rollback transaction
+                 */
                 $this->resource->getConnection()->rollBack();
             } catch (\Exception $e) {
                 $this->alert($e);
+                /**
+                 * Always acknowledge to avoid infinite message loop
+                 */
+                $queue->acknowledge($message);
                 $this->resource->getConnection()->rollBack();
-                $queue->reject($message);
             }
         };
     }
