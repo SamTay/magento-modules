@@ -3,8 +3,8 @@ Blue Acorn module for scheduling status updates to products and cms pages
 
 ### Installation
 ```
-composer config repositories.blueacorn/content-publisher git git@github.com:blueacorninc/ba-content-publisher-m2.git
-composer require blueacorn/content-publisher:dev-master
+composer config repositories.blueacorn/module-content-publisher git git@github.com:blueacorninc/m2-content-publisher.git
+composer require blueacorn/module-content-publisher:dev-master
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
 
@@ -12,7 +12,7 @@ bin/magento setup:upgrade && bin/magento cache:flush
 
 ```
 mkdir -p app/code/BlueAcorn/ContentPublisher
-git clone git@github.com:blueacorninc/ba-content-publisher-m2.git app/code/BlueAcorn/ContentPublisher
+git clone git@github.com:blueacorninc/m2-content-publisher.git app/code/BlueAcorn/ContentPublisher
 bin/magento module:enable BlueAcorn_ContentPublisher
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
