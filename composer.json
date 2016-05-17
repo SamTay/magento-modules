@@ -1,5 +1,5 @@
 {
-	"name": "blueacorn/content-publisher",
+	"name": "blueacorn/module-content-publisher",
 	"description": "Content Publisher",
 	"type": "magento2-module",
 	"version": "1.0.0",
