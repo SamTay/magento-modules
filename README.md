@@ -3,8 +3,8 @@ Blue Acorn module for scheduling alternate CMS blocks and pages
 
 ### Installation
 ```
-composer config repositories.blueacorn/content-scheduler git git@github.com:blueacorninc/ba-content-scheduler-m2.git
-composer require blueacorn/content-scheduler:dev-master
+composer config repositories.blueacorn/module-content-scheduler git git@github.com:blueacorninc/m2-content-scheduler.git
+composer require blueacorn/module-content-scheduler:dev-master
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
 
@@ -12,7 +12,7 @@ bin/magento setup:upgrade && bin/magento cache:flush
 
 ```
 mkdir -p app/code/BlueAcorn/ContentScheduler
-git clone git@github.com:blueacorninc/ba-content-scheduler-m2.git app/code/BlueAcorn/ContentScheduler
+git clone git@github.com:blueacorninc/m2-content-scheduler.git app/code/BlueAcorn/ContentScheduler
 bin/magento module:enable BlueAcorn_ContentScheduler
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
