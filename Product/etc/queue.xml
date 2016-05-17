@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn\AmqpProduct
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
+    <!-- Topics -->
+    <publisher name="products" connection="amqp" exchange="products"/>
+    <topic publisher="products" name="erp.product.create" schema="Magento\Catalog\Api\Data\ProductInterface" />
+    <topic publisher="products" name="erp.product.update" schema="Magento\Catalog\Api\Data\ProductInterface" />
+    <topic publisher="products" name="erp.product.create.batch" schema="Magento\Catalog\Api\Data\ProductInterface" />
+    <topic publisher="products" name="erp.product.update.batch" schema="Magento\Catalog\Api\Data\ProductInterface" />
+
+    <!-- Consumers & Bindings -->
+    <consumer name="productCreatedListener" queue="product_create_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\Processor" method="processMessage" />
+    <consumer name="productUpdatedListener" queue="product_update_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\Processor" method="processMessage" />
+    <consumer name="productCreatedBatchListener" queue="product_create_batch_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\BatchProcessor" method="processMessage" max_messages="100"/>
+    <consumer name="productUpdatedBatchListener" queue="product_update_batch_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\BatchProcessor" method="processMessage" max_messages="100"/>
+
+    <bind queue="product_create_queue" exchange="products" topic="erp.product.create" />
+    <bind queue="product_update_queue" exchange="products" topic="erp.product.update" />
+    <bind queue="product_create_batch_queue" exchange="products" topic="erp.product.create.batch" />
+    <bind queue="product_update_batch_queue" exchange="products" topic="erp.product.update.batch" />
+</config>

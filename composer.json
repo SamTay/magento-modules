@@ -12,6 +12,7 @@
 		"psr-4": {
 			"BlueAcorn\\AmqpBase\\": "Base/",
 			"BlueAcorn\\EntityMap\\": "EntityMap/",
+			"BlueAcorn\\AmqpProduct\\": "Product/",
 			"BlueAcorn\\AmqpShipping\\": "Shipping/"
 		}
 	}
