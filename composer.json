@@ -1,5 +1,5 @@
 {
-	"name": "blueacorn/content-scheduler",
+	"name": "blueacorn/module-content-scheduler",
 	"description": "CMS Content Scheduler",
 	"type": "magento2-module",
 	"version": "1.0.0",
