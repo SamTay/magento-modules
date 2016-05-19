@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Config;
+namespace BlueAcorn\EntityMap\Import\Config;
 
 use Magento\Framework\Config\FileResolverInterface;
 use Magento\Framework\Config\Reader\Filesystem as FilesystemReader;
@@ -22,7 +22,10 @@ class Reader extends FilesystemReader
      * @var array
      */
     protected $_idAttributes = [
-        // TODO figure out ID attributes
+        '/config/entity' => 'name',
+        '/config/entity/default_mapper' => 'class', //TODO make sure we don't get duplicates when overriding
+        '/config/entity/key' => 'from',
+        '/config/entity/attribute_map' => 'code'
     ];
 
     /**
@@ -40,7 +43,7 @@ class Reader extends FilesystemReader
         Converter $converter,
         SchemaLocator $schemaLocator,
         ValidationStateInterface $validationState,
-        $fileName = 'entity_map.xml',
+        $fileName = 'entity_map_import.xml',
         $idAttributes = [],
         $domDocumentClass = 'Magento\Framework\Config\Dom',
         $defaultScope = 'global'

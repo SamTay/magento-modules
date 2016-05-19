@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--/*
+ * @package     BlueAcorn\EntityMap
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="entity" type="entityDeclaration" minOccurs="1" maxOccurs="unbounded">
+                    <xs:unique name="uniqueKeyFrom">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Key "from" attribute must be unique
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:selector xpath="key"/>
+                        <xs:field xpath="@from"/>
+                    </xs:unique>
+                    <xs:unique name="uniqueAttributeCode">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Attribute code must be unique
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:selector xpath="attribute_map"/>
+                        <xs:field xpath="@code"/>
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="uniqueEntityName">
+            <xs:annotation>
+                <xs:documentation>
+                    Import entity name must be unique.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:selector xpath="entity"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+
+    <xs:complexType name="entityDeclaration">
+        <xs:annotation>
+            <xs:documentation>
+                Import entity declaration.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="default_mapper" type="mapperDeclaration" maxOccurs="1" />
+            <xs:element name="key" type="keyDeclaration" />
+            <xs:element name="attribute_map" type="attributeMapperDeclaration" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="keyDeclaration">
+        <xs:annotation>
+            <xs:documentation>
+                Initial mapping of key
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="from" type="xs:string" use="required" />
+        <xs:attribute name="to" type="attributeCode" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="mapperDeclaration">
+        <xs:annotation>
+            <xs:documentation>
+                Default mapper declaration
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="class" type="modelName" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="attributeMapperDeclaration">
+        <xs:annotation>
+            <xs:documentation>
+                Specific attribute mapper declaration
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="code" type="attributeCode" use="required" />
+        <xs:attribute name="mapper" type="modelName" use="required" />
+    </xs:complexType>
+
+    <xs:simpleType name="attributeCode">
+        <xs:annotation>
+            <xs:documentation>
+                Attribute code can contain only alphanumeric characters, up to length 30
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[\w]+" />
+            <xs:maxLength value="30" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="modelName">
+        <xs:annotation>
+            <xs:documentation>
+                Model name can contain only [A-Za-z_\\\\].
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Za-z_\\\\]+" />
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>
