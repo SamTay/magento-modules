@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Import\Config;
+namespace BlueAcorn\EntityMap\Decode\Config;
 
 use Magento\Framework\Config\CacheInterface;
 
@@ -24,7 +24,7 @@ class Data extends \Magento\Framework\Config\Data
     public function __construct(
         Reader $reader,
         CacheInterface $cache,
-        $cacheId = 'ba_entity_map_import_config_cache'
+        $cacheId = 'ba_entity_decode_config_cache'
     ) {
         parent::__construct($reader, $cache, $cacheId);
     }

@@ -5,7 +5,7 @@ for example modules that will live in client repositories.
 
 ## Examples
 #### Product Integration
-See this module for an example of leveraging this framework for specific PIM imports. Note the `entity_map_import.xml` file,
+See this module for an example of leveraging this framework for specific PIM imports. Note the `entity_decode.xml` file,
 which automatically handles three important sequential steps:
 
 ###### 1. Simple key maps

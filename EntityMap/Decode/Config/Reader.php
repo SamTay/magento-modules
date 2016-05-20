@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Import\Config;
+namespace BlueAcorn\EntityMap\Decode\Config;
 
 use Magento\Framework\Config\FileResolverInterface;
 use Magento\Framework\Config\Reader\Filesystem as FilesystemReader;
@@ -44,7 +44,7 @@ class Reader extends FilesystemReader
         Converter $converter,
         SchemaLocator $schemaLocator,
         ValidationStateInterface $validationState,
-        $fileName = 'entity_map_import.xml',
+        $fileName = 'entity_decode.xml',
         $idAttributes = [],
         $domDocumentClass = 'Magento\Framework\Config\Dom',
         $defaultScope = 'global'
