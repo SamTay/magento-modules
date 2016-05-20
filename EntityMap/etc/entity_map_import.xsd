@@ -50,8 +50,8 @@
         </xs:annotation>
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
             <xs:element name="default_mapper" type="mapperDeclaration" maxOccurs="1" />
-            <xs:element name="key" type="keyDeclaration" />
-            <xs:element name="attribute_map" type="attributeMapperDeclaration" />
+            <xs:element name="key" type="keyDeclaration" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="attribute_map" type="attributeMapperDeclaration" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required" />
     </xs:complexType>
@@ -92,7 +92,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:string">
-            <xs:pattern value="[\w]+" />
+            <xs:pattern value="[a-zA-Z0-9_]+" />
             <xs:maxLength value="30" />
         </xs:restriction>
     </xs:simpleType>
