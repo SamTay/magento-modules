@@ -8,16 +8,22 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
     <!-- Topics -->
     <publisher name="products" connection="amqp" exchange="products"/>
-    <topic publisher="products" name="erp.product.create" schema="Magento\Catalog\Api\Data\ProductInterface" />
-    <topic publisher="products" name="erp.product.update" schema="Magento\Catalog\Api\Data\ProductInterface" />
-    <topic publisher="products" name="erp.product.create.batch" schema="Magento\Catalog\Api\Data\ProductInterface" />
-    <topic publisher="products" name="erp.product.update.batch" schema="Magento\Catalog\Api\Data\ProductInterface" />
+    <!-- possibly change to model, method schema so we can easily accept arrays -->
+    <topic publisher="products" name="erp.product.create" schema="BlueAcorn\AmqpProduct\Model\Import::create" />
+    <topic publisher="products" name="erp.product.update" schema="BlueAcorn\AmqpProduct\Model\Import::update" />
+    <topic publisher="products" name="erp.product.create.batch" schema="BlueAcorn\AmqpProduct\Model\Import::create" />
+    <topic publisher="products" name="erp.product.update.batch" schema="BlueAcorn\AmqpProduct\Model\Import::update" />
 
     <!-- Consumers & Bindings -->
-    <consumer name="productCreatedListener" queue="product_create_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\Processor" method="processMessage" />
-    <consumer name="productUpdatedListener" queue="product_update_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\Processor" method="processMessage" />
-    <consumer name="productCreatedBatchListener" queue="product_create_batch_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\BatchProcessor" method="processMessage" max_messages="100"/>
-    <consumer name="productUpdatedBatchListener" queue="product_update_batch_queue" connection="amqp" class="BlueAcorn\AmqpProduct\Model\BatchProcessor" method="processMessage" max_messages="100"/>
+    <consumer name="productCreatedListener" queue="product_create_queue" connection="amqp"
+        class="BlueAcorn\AmqpProduct\Model\Import" method="create" />
+    <consumer name="productUpdatedListener" queue="product_update_queue" connection="amqp"
+        class="BlueAcorn\AmqpProduct\Model\Import" method="update" />
+
+    <consumer name="productCreatedBatchListener" queue="product_create_batch_queue" connection="amqp"
+        class="BlueAcorn\AmqpProduct\Model\Import" method="create" max_messages="100"/>
+    <consumer name="productUpdatedBatchListener" queue="product_update_batch_queue" connection="amqp"
+        class="BlueAcorn\AmqpProduct\Model\Import" method="update" max_messages="100"/>
 
     <bind queue="product_create_queue" exchange="products" topic="erp.product.create" />
     <bind queue="product_update_queue" exchange="products" topic="erp.product.update" />
