@@ -137,7 +137,7 @@ class Config extends AbstractHelper
             return;
         }
 
-        $emailList = preg_replace('/\s+/', ' ', $emailList);
+        $emailList = preg_replace('/\s+/', '', $emailList);
         $emailList = array_filter(explode(',', $emailList));
     }
 }
