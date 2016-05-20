@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn\ProductIntegration
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:blueacorn:framework-entity-map:etc/entity_map_import.xsd">
+    <entity name="catalog_product">
+        <default_mapper class="BlueAcorn\EntityMap\Mapper\OneToOne" />
+        <key_map from="somethingCamelCased" to="something_snake_cased" />
+        <key_map from="anotherExample" to="another_example" />
+        <key_map from="spColor" to="color" />
+        <aggregate id="confidence_builder">
+            <key id="free_shipping_all_orders" />
+            <key id="money_back_guarantee" />
+        </aggregate>
+        <attribute_map code="color" mapper="BlueAcorn\ProductIntegration\Model\Mapper\Attribute\Color" />
+        <attribute_map code="confidence_builder" mapper="BlueAcorn\ProductIntegration\Model\Mapper\Attribute\ConfidenceBuilder" />
+    </entity>
+</config>
