@@ -30,14 +30,20 @@ class Data extends \Magento\Framework\Config\Data
     }
 
     /**
-     * Get all entity info
+     * Get all entity info, include empty arrays where necessary
      *
      * @param $entityType
      * @return array
      */
     public function getEntityInfo($entityType)
     {
-        return $this->get($entityType);
+        return [
+            Converter::ENTITY_KEY_MAP => $this->getKeyMap($entityType),
+            Converter::ENTITY_KEY_COLLAPSE => $this->getKeysToCollapse($entityType),
+            Converter::ENTITY_ATTRIBUTE_MAP => $this->getAttributeMap($entityType),
+            Converter::ENTITY_DEFAULT_MAPPER => $this->getDefaultMapper($entityType),
+            Converter::ENTITY_KEY_AGGREGATE => $this->getAggregateKeys($entityType)
+        ];
     }
 
     /**
@@ -49,6 +55,28 @@ class Data extends \Magento\Framework\Config\Data
     public function getKeyMap($entityType)
     {
         return $this->getByArray([$entityType, Converter::ENTITY_KEY_MAP], []);
+    }
+
+    /**
+     * Get keys for collapsing [key1 => aggregate, key2 => aggregate]
+     *
+     * @param $entityType
+     * @return array
+     */
+    public function getKeysToCollapse($entityType)
+    {
+        return $this->getByArray([$entityType, Converter::ENTITY_KEY_COLLAPSE], []);
+    }
+
+    /**
+     * Get aggregates [aggregate => [key1, key2, key3]]
+     *
+     * @param $entityType
+     * @return array
+     */
+    public function getAggregateKeys($entityType)
+    {
+        return $this->getByArray([$entityType, Converter::ENTITY_KEY_AGGREGATE], []);
     }
 
     /**
