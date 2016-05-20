@@ -16,6 +16,8 @@ class Converter implements ConverterInterface
 {
     const ENTITY_TYPE = 'type';
     const ENTITY_KEY_MAP = 'key_map';
+    const ENTITY_KEY_AGGREGATE = 'key_aggregate';
+    const ENTITY_KEY_COLLAPSE = 'key_collapse';
     const ENTITY_ATTRIBUTE_MAP = 'attribute_map';
     const ENTITY_DEFAULT_MAPPER = 'default_mapper';
 
@@ -49,7 +51,9 @@ class Converter implements ConverterInterface
             self::ENTITY_TYPE => $entityNode->attributes->getNamedItem('name')->nodeValue,
             self::ENTITY_DEFAULT_MAPPER => '',
             self::ENTITY_ATTRIBUTE_MAPS => [],
-            self::ENTITY_KEY_MAP => []
+            self::ENTITY_KEY_MAP => [],
+            self::ENTITY_KEY_AGGREGATE => [],
+            self::ENTITY_KEY_COLLAPSE => []
         ];
         /** @var $childNode \DOMNode */
         foreach($entityNode->childNodes as $childNode) {
@@ -66,6 +70,16 @@ class Converter implements ConverterInterface
                     $from = $childNode->attributes->getNamedItem('from');
                     $to = $childNode->attributes->getNamedItem('to');
                     $data[self::ENTITY_KEY_MAP][$from] = $to;
+                    break;
+                case('aggregate'):
+                    $aggregateId = $childNode->attributes->getNamedItem('id');
+                    $keysToAggregate = [];
+                    foreach($childNode->childNodes as $keyNode) {
+                        $keysToAggregate[] = $keyNode->attributes->getNamedItem('id');
+                    }
+                    $data[self::ENTITY_KEY_AGGREGATE][$aggregateId] = $keysToAggregate;
+                    $collapse = array_fill_keys($keysToAggregate, $aggregateId);
+                    $data[self::ENTITY_KEY_COLLAPSE] = array_merge($data[self::ENTITY_KEY_COLLAPSE], $collapse);
                     break;
             }
         }
