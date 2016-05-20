@@ -64,6 +64,7 @@ class Data extends \Magento\Framework\Config\Data
 
     /**
      * Get default mapper if exists
+     * TODO Ensure we only get strings and not arrays, (ensure override instead of duplicate nodes)
      *
      * @param $entityType
      * @return string|null
