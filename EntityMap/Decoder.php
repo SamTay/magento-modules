@@ -78,8 +78,8 @@ class Decoder
         // First map all keys one-to-one
         $this->_mapKeys($data);
 
-        // Then collapse/aggregate all specified keys
-        $this->_collapseKeys($data);
+        // Then aggregate all specified keys
+        $this->_aggregateKeys($data);
 
         // Then map [key => value] pairs
         $this->_mapAttributes($data);
@@ -92,11 +92,12 @@ class Decoder
      */
     private function _mapKeys(DataObject $dataObject)
     {
-        $keysToMap = array_keys($this->config[Converter::ENTITY_KEY_MAP]);
+        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[Converter::ENTITY_KEY_MAP]));
         $dataToMap = $dataObject->toArray($keysToMap);
-        $mappedData = array_combine($this->config[Converter::ENTITY_KEY_MAP], $dataToMap) ?: [];
-        $dataObject->addData($mappedData);
         $dataObject->unsetData($keysToMap);
+        $newKeys = array_intersect_key($this->config[Converter::ENTITY_KEY_MAP], $dataToMap); // truncate keys not present in data
+        $mappedData = array_combine($newKeys, $dataToMap) ?: []; // combine is sequential -- foreach on keys would be more error proof
+        $dataObject->addData($mappedData);
     }
 
     /**
@@ -104,10 +105,12 @@ class Decoder
      *
      * @param DataObject $dataObject
      */
-    private function _collapseKeys(DataObject $dataObject)
+    private function _aggregateKeys(DataObject $dataObject)
     {
         $aggregationMap = $this->config[Converter::ENTITY_KEY_AGGREGATE];
         foreach($aggregationMap as $aggregateId => $keysToAggregate) {
+            $keysToAggregate = $this->filterHasData($dataObject, $keysToAggregate);
+            if (!$keysToAggregate) continue;
             $aggregatedData = $dataObject->toArray($keysToAggregate);
             $dataObject->setData($aggregateId, $aggregatedData);
         }
@@ -117,14 +120,12 @@ class Decoder
 
     /**
      * Map attributes
-     * TODO: SHIT! We don't want toArray to return empty values when keys dont exist
-     * TODO: For example, if update just has price update, this will remove all other attribute values. Fix!!!
      *
      * @param DataObject $dataObject
      */
     private function _mapAttributes(DataObject $dataObject)
     {
-        $keysToMap = array_keys($this->config[Converter::ENTITY_ATTRIBUTE_MAP]);
+        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[Converter::ENTITY_ATTRIBUTE_MAP]));
         $dataToMap = $dataObject->toArray($keysToMap);
         $dataObject->unsetData($keysToMap); // Unset data completely -- keys should be returned by mapper if necessary
         foreach($dataToMap as $key => $value) {
@@ -152,5 +153,17 @@ class Decoder
     private function resetConfig()
     {
         $this->config = [];
+    }
+
+    /**
+     * Filter $keys to only include those that already exist in $dataObject
+     *
+     * @param DataObject $dataObject
+     * @param $keys
+     * @return array
+     */
+    private function filterHasData(DataObject $dataObject, $keys)
+    {
+        return array_filter($keys, [$dataObject, 'hasData']);
     }
 }
