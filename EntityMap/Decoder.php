@@ -131,7 +131,7 @@ class Decoder
             $mapperClass = $this->config[Converter::ENTITY_ATTRIBUTE_MAP][$key];
             $entityType = $this->config[Converter::ENTITY_TYPE];
             $mapper = $this->mapperFactory->get($mapperClass, $entityType);
-            $mappedData = $mapper->map([$key => $value]);
+            $mappedData = $mapper->map($key, $value);
             $dataObject->addData($mappedData);
         }
     }
