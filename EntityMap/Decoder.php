@@ -143,8 +143,7 @@ class Decoder
         $dataObject->unsetData($keysToMap); // Unset data completely -- keys should be returned by mapper if necessary
         foreach($dataToMap as $key => $value) {
             $mapperClass = $this->config[Converter::ENTITY_ATTRIBUTE_MAP][$key];
-            $entityType = $this->config[Converter::ENTITY_TYPE];
-            $mapper = $this->mapperFactory->get($mapperClass, $entityType);
+            $mapper = $this->mapperFactory->get($mapperClass);
             $mappedData = $mapper->map($key, $value);
             $dataObject->addData($mappedData);
         }

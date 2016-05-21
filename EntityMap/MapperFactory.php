@@ -25,37 +25,33 @@ class MapperFactory
      * MapperFactory constructor.
      *
      * @param ObjectManagerInterface $objectManager
+     * @param MapperInterface[] $pool
      */
     public function __construct(
-        ObjectManagerInterface $objectManager
+        ObjectManagerInterface $objectManager,
+        array $pool = []
     ) {
         $this->objectManager = $objectManager;
+        $this->pool = $pool;
     }
 
     /**
      * Only implementing "get", as all mappers should be sharable within entity types
      *
      * @param $mapperClass
-     * @param $entityType
      * @throws \InvalidArgumentException
      * @return MapperInterface
      */
-    public function get($mapperClass, $entityType = null)
+    public function get($mapperClass)
     {
-        $entityKey = $entityType ?: 'shared';
-        $poolKey = $entityKey . '|' . $mapperClass;
-        if (!isset($this->pool[$poolKey])) {
-            $mapperInstance = $this->objectManager->create(
-                $mapperClass,
-                // TODO reflection here to see if constructor takes entityType
-                $entityType ? ['entityType' => $entityType] : []
-            );
+        if (!isset($this->pool[$mapperClass])) {
+            $mapperInstance = $this->objectManager->create($mapperClass);
             if (!$mapperInstance instanceof MapperInterface) {
                 throw new \InvalidArgumentException(get_class($mapperInstance) . ' isn\'t instance of MapperInterface');
             }
-            $this->pool[$poolKey] = $mapperInstance;
+            $this->pool[$mapperClass] = $mapperInstance;
         }
 
-        return $this->pool[$poolKey];
+        return $this->pool[$mapperClass];
     }
 }
