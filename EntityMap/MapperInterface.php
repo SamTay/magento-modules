@@ -10,11 +10,12 @@ namespace BlueAcorn\EntityMap;
 interface MapperInterface
 {
     /**
-     * Maps [inputKey, inputValue] to an [outputKey, outputValue]
+     * Maps [inputKey => inputValue] to an [outputKey => outputValue]
+     * Note: can also return multiple outputKey => outputValue pairs in return array. Return value should be acceptable as
+     * arguments to \Magento\Framework\DataObject::addData
      *
-     * @param string $key
-     * @param mixed $value
+     * @param array $data
      * @return array
      */
-    public function map($key, $value);
+    public function map(array $data);
 }

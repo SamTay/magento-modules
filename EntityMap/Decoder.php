@@ -9,6 +9,7 @@ namespace BlueAcorn\EntityMap;
 
 use BlueAcorn\EntityMap\Decode\Config\Converter;
 use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
+use Magento\Framework\DataObject;
 
 class Decoder
 {
@@ -53,7 +54,9 @@ class Decoder
     {
         try {
             $this->initConfig($entityType);
-            return $this->_decode($data);
+            $dataObject = new DataObject($data);
+            $this->_decode($dataObject);
+            return $dataObject->getData();
         } catch (\Exception $e) {
             throw new \Exception('Error occurred during decoding', 0, $e);
         } finally {
@@ -68,9 +71,9 @@ class Decoder
      * use an <attribute_map> node.
      * TODO: To allow a nested decoding process, perhaps allow '/' in the keys
      *
-     * @param $data
+     * @param DataObject $data
      */
-    private function _decode($data)
+    private function _decode(DataObject $data)
     {
         // First map all keys one-to-one
         $this->_mapKeys($data);
@@ -80,88 +83,56 @@ class Decoder
 
         // Then map [key => value] pairs
         $this->_mapAttributes($data);
-
-        return $data;
     }
 
     /**
      * Map all keys (from <key_map> nodes)
      *
-     * @param $data
+     * @param DataObject $dataObject
      */
-    private function _mapKeys(&$data)
+    private function _mapKeys(DataObject $dataObject)
     {
-        $keysToUnset = [];
-        foreach($data as $origKey => &$origValue) {
-            if (array_key_exists($origKey, $this->config[Converter::ENTITY_KEY_MAP])) {
-                $newKey = $this->config[Converter::ENTITY_KEY_MAP][$origKey];
-                $data[$newKey] = $origValue;
-                $keysToUnset[] = $origKey;
-            }
-        }
-        $this->_unsetKeys($data, $keysToUnset);
+        $keysToMap = array_keys($this->config[Converter::ENTITY_KEY_MAP]);
+        $dataToMap = $dataObject->toArray($keysToMap);
+        $mappedData = array_combine($this->config[Converter::ENTITY_KEY_MAP], $dataToMap) ?: [];
+        $dataObject->addData($mappedData);
+        $dataObject->unsetData($keysToMap);
     }
 
     /**
      * Collapse multi keys to single aggregate keys (from <aggregate> nodes)
      *
-     * @param $data
+     * @param DataObject $dataObject
      */
-    private function _collapseKeys(&$data)
+    private function _collapseKeys(DataObject $dataObject)
     {
-        $keysToUnset = [];
-        foreach($data as $key => $value) {
-            if (array_key_exists($key, $this->config[Converter::ENTITY_KEY_COLLAPSE])) {
-                $aggregateId = $this->config[Converter::ENTITY_KEY_COLLAPSE];
-                if (isset($data[$aggregateId])) {
-                    if (is_array($data[$aggregateId])) {
-                        $data[$aggregateId][$key] = $value;
-                    } else {
-                        $data[$aggregateId] = [$aggregateId => $data[$aggregateId], $key => $value];
-                    }
-                } else {
-                    $data[$aggregateId] = [$key => $value];
-                }
-                $keysToUnset[] = $key;
-            }
+        $aggregationMap = $this->config[Converter::ENTITY_KEY_AGGREGATE];
+        foreach($aggregationMap as $aggregateId => $keysToAggregate) {
+            $aggregatedData = $dataObject->toArray($keysToAggregate);
+            $dataObject->setData($aggregateId, $aggregatedData);
         }
-        $this->_unsetKeys($data, $keysToUnset);
+        // Unset data AFTER all aggregation complete, in case we are aggregating the same keys to different places
+        $dataObject->unsetData($this->config[Converter::ENTITY_KEY_COLLAPSE]);
     }
 
     /**
-     * Map key,value pairs
+     * Map attributes
+     * TODO: SHIT! We don't want toArray to return empty values when keys dont exist
+     * TODO: For example, if update just has price update, this will remove all other attribute values. Fix!!!
      *
-     * @param $data
+     * @param DataObject $dataObject
      */
-    private function _mapAttributes(&$data)
+    private function _mapAttributes(DataObject $dataObject)
     {
-        $keysToUnset = [];
-        foreach($data as $origKey => &$origValue) {
-            if (array_key_exists($origKey, $this->config[Converter::ENTITY_ATTRIBUTE_MAP])) {
-                list($newKey, $newValue) = $this->mapperFactory->get($this->config[Converter::ENTITY_TYPE])
-                    ->setAttributeCode($origKey)
-                    ->map($origKey, $origValue);
-                if ($newKey === $origKey) {
-                    $origValue = $newValue;
-                } else {
-                    $data[$newKey] = $newValue;
-                    $keysToUnset[] = $origKey;
-                }
-            }
-        }
-        $this->_unsetKeys($data, $keysToUnset);
-    }
-
-    /**
-     * Unset keys by reference
-     *
-     * @param $data
-     * @param $keysToUnset
-     */
-    private function _unsetKeys(&$data, $keysToUnset)
-    {
-        foreach($keysToUnset as $key) {
-            unset($data[$key]);
+        $keysToMap = array_keys($this->config[Converter::ENTITY_ATTRIBUTE_MAP]);
+        $dataToMap = $dataObject->toArray($keysToMap);
+        $dataObject->unsetData($keysToMap); // Unset data completely -- keys should be returned by mapper if necessary
+        foreach($dataToMap as $key => $value) {
+            $mapperClass = $this->config[Converter::ENTITY_ATTRIBUTE_MAP][$key];
+            $entityType = $this->config[Converter::ENTITY_TYPE];
+            $mapper = $this->mapperFactory->get($mapperClass, $entityType);
+            $mappedData = $mapper->map([$key => $value]);
+            $dataObject->addData($mappedData);
         }
     }
 
