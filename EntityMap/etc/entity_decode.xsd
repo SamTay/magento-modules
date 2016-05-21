@@ -49,7 +49,6 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
-            <xs:element name="default_mapper" type="mapperDeclaration" maxOccurs="1" />
             <xs:element name="key_map" type="keyMapDeclaration" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="aggregate" type="aggregateDeclaration" minOccurs="0" maxOccurs="unbounded">
                 <xs:unique name="uniqueKeyId">
@@ -81,10 +80,6 @@
 
     <xs:complexType name="keyDeclaration">
         <xs:attribute name="id" type="xs:string" use="required" />
-    </xs:complexType>
-
-    <xs:complexType name="mapperDeclaration">
-        <xs:attribute name="class" type="modelName" use="required" />
     </xs:complexType>
 
     <xs:complexType name="attributeMapperDeclaration">

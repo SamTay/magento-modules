@@ -41,7 +41,6 @@ class Data extends \Magento\Framework\Config\Data
             Converter::ENTITY_KEY_MAP => $this->getKeyMap($entityType),
             Converter::ENTITY_KEY_COLLAPSE => $this->getKeysToCollapse($entityType),
             Converter::ENTITY_ATTRIBUTE_MAP => $this->getAttributeMap($entityType),
-            Converter::ENTITY_DEFAULT_MAPPER => $this->getDefaultMapper($entityType),
             Converter::ENTITY_KEY_AGGREGATE => $this->getAggregateKeys($entityType)
         ];
     }
@@ -88,18 +87,6 @@ class Data extends \Magento\Framework\Config\Data
     public function getAttributeMap($entityType)
     {
         return $this->getByArray([$entityType, Converter::ENTITY_ATTRIBUTE_MAP], []);
-    }
-
-    /**
-     * Get default mapper if exists
-     * TODO Ensure we only get strings and not arrays, (ensure override instead of duplicate nodes)
-     *
-     * @param $entityType
-     * @return string|null
-     */
-    public function getDefaultMapper($entityType)
-    {
-        return $this->getByArray([$entityType, Converter::ENTITY_DEFAULT_MAPPER]);
     }
 
     /**

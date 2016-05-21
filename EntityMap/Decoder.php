@@ -10,6 +10,7 @@ namespace BlueAcorn\EntityMap;
 use BlueAcorn\EntityMap\Decode\Config\Converter;
 use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
 use Magento\Framework\DataObject;
+use Magento\Framework\Event\Manager as EventManager;
 
 class Decoder
 {
@@ -29,16 +30,24 @@ class Decoder
     protected $mapperFactory;
 
     /**
+     * @var EventManager
+     */
+    protected $eventManager;
+
+    /**
      * Converter constructor.
      * @param DecodeConfig $decodeConfig
      * @param MapperFactory $mapperFactory
+     * @param EventManager $eventManager
      */
     public function __construct(
         DecodeConfig $decodeConfig,
-        MapperFactory $mapperFactory
+        MapperFactory $mapperFactory,
+        EventManager $eventManager
     ) {
         $this->decodeConfig = $decodeConfig;
         $this->mapperFactory = $mapperFactory;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -55,7 +64,11 @@ class Decoder
         try {
             $this->initConfig($entityType);
             $dataObject = new DataObject($data);
+            $this->eventManager->dispatch('entity_entitymap_decode_before', ['object' => $dataObject]);
+            $this->eventManager->dispatch($entityType . '_entitymap_decode_before', ['object' => $dataObject]);
             $this->_decode($dataObject);
+            $this->eventManager->dispatch('entity_entitymap_decode_before', ['object' => $dataObject]);
+            $this->eventManager->dispatch($entityType . '_entitymap_decode_after', ['object' => $dataObject]);
             return $dataObject->getData();
         } catch (\Exception $e) {
             throw new \Exception('Error occurred during decoding', 0, $e);

@@ -21,9 +21,5 @@ which automatically handles three important sequential steps:
   - xml: `<attribute_map code="color" mapper="BlueAcorn\EntityMap\Mapper\OptionTable />`
   - result: `['color' => 'blue,green'] -> ['color' => '82,24']`
   
-###### 4. Default mapper specification
-  - xml: `<default_mapper class="BlueAcorn\EntityMap\Mapper\OneToOne" />`
-  - result: maps anything not specified via this mapper class
-
 ## Support
 If the documentation here is inadequate, please submit a github issue.

@@ -23,7 +23,6 @@ class Reader extends FilesystemReader
      */
     protected $_idAttributes = [
         '/config/entity' => 'name',
-        '/config/entity/default_mapper' => 'class', //TODO make sure we don't get duplicates when overriding
         '/config/entity/key' => 'from',
         '/config/entity/attribute_map' => 'code',
         '/config/entity/aggregate/key' => 'id'

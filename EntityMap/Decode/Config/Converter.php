@@ -19,7 +19,6 @@ class Converter implements ConverterInterface
     const ENTITY_KEY_AGGREGATE = 'key_aggregate';
     const ENTITY_KEY_COLLAPSE = 'key_collapse';
     const ENTITY_ATTRIBUTE_MAP = 'attribute_map';
-    const ENTITY_DEFAULT_MAPPER = 'default_mapper';
 
     /**
      * Convert dom node tree to array
@@ -49,7 +48,6 @@ class Converter implements ConverterInterface
     {
         $data = [
             self::ENTITY_TYPE => $entityNode->attributes->getNamedItem('name')->nodeValue,
-            self::ENTITY_DEFAULT_MAPPER => '',
             self::ENTITY_ATTRIBUTE_MAPS => [],
             self::ENTITY_KEY_MAP => [],
             self::ENTITY_KEY_AGGREGATE => [],
@@ -58,9 +56,6 @@ class Converter implements ConverterInterface
         /** @var $childNode \DOMNode */
         foreach($entityNode->childNodes as $childNode) {
             switch($childNode->nodeName) {
-                case ('default_mapper'):
-                    $data[self::ENTITY_DEFAULT_MAPPER] = $childNode->attributes->getNamedItem('class');
-                    break;
                 case ('attribute_map'):
                     $attributeCode = $childNode->attributes->getNamedItem('code');
                     $mapperClass = $childNode->attributes->getNamedItem('mapper');
