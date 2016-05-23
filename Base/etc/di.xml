@@ -77,9 +77,11 @@
             <argument name="fileName" xsi:type="string">/var/log/ba_amqp.log</argument>
         </arguments>
     </virtualType>
-    <type name="BlueAcorn\AmqpBase\Helper\Logger">
+    <type name="BlueAcorn\AmqpBase\Helper\LogManager">
         <arguments>
-            <argument name="logger" xsi:type="object">BlueAcornAmqpBaseLogger</argument>
+            <argument name="loggers" xsi:type="array">
+                <item name="base" xsi:type="object">BlueAcornAmqpBaseLogger</item>
+            </argument>
         </arguments>
     </type>
 </config>
