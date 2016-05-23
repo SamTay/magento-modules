@@ -14,8 +14,8 @@
 
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'BlueAcorn_AmqpShipping',
-    __DIR__ . DIRECTORY_SEPARATOR . 'Shipping'
+    'BlueAcorn_AmqpShipment',
+    __DIR__ . DIRECTORY_SEPARATOR . 'Shipment'
 );
 
 \Magento\Framework\Component\ComponentRegistrar::register(

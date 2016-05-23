@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--/*
- * @package     BlueAcorn\AmqpShipping
+ * @package     BlueAcorn\AmqpShipment
  * @version     1.0.0
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
@@ -14,8 +14,8 @@
     <topic publisher="shipments" name="external.shipment.update" schema="Magento\Sales\Api\Data\ShipmentInterface" />
 
     <!-- Consumers & Bindings -->
-    <consumer name="shipmentCreatedListener" queue="shipment_create_queue" connection="amqp" class="BlueAcorn\AmqpShipping\Model\Processor" method="processMessage" max_messages="100"/>
-    <consumer name="shipmentUpdatedListener" queue="shipment_update_queue" connection="amqp" class="BlueAcorn\AmqpShipping\Model\Processor" method="processMessage" max_messages="100"/>
+    <consumer name="shipmentCreatedListener" queue="shipment_create_queue" connection="amqp" class="BlueAcorn\AmqpShipment\Model\Processor" method="processMessage" max_messages="100"/>
+    <consumer name="shipmentUpdatedListener" queue="shipment_update_queue" connection="amqp" class="BlueAcorn\AmqpShipment\Model\Processor" method="processMessage" max_messages="100"/>
     <bind queue="shipment_create_queue" exchange="shipments" topic="external.shipment.create" />
     <bind queue="shipment_update_queue" exchange="shipments" topic="external.shipment.update" />
 </config>

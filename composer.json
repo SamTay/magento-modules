@@ -13,7 +13,7 @@
 			"BlueAcorn\\AmqpBase\\": "Base/",
 			"BlueAcorn\\EntityMap\\": "EntityMap/",
 			"BlueAcorn\\AmqpProduct\\": "Product/",
-			"BlueAcorn\\AmqpShipping\\": "Shipping/"
+			"BlueAcorn\\AmqpShipment\\": "Shipment/"
 		}
 	}
 }
