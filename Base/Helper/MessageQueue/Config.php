@@ -9,7 +9,7 @@ namespace BlueAcorn\AmqpBase\Helper\MessageQueue;
 
 use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
-use BlueAcorn\AmqpBase\Helper\Logger;
+use BlueAcorn\AmqpBase\Helper\LogManager;
 use Magento\Framework\Phrase;
 
 class Config
@@ -30,22 +30,22 @@ class Config
     protected $queueConfigData;
 
     /**
-     * @var Logger
+     * @var LogManager
      */
-    protected $logger;
+    protected $logManager;
 
     /**
      * Initialize dependencies
      *
      * @param QueueConfig $queueConfig
-     * @param Logger $logger
+     * @param LogManager $logManager
      */
     public function __construct(
         QueueConfig $queueConfig,
-        Logger $logger
+        LogManager $logManager
     ) {
         $this->queueConfig = $queueConfig;
-        $this->logger = $logger;
+        $this->logManager = $logManager;
     }
 
     /**

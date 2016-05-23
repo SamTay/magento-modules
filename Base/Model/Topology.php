@@ -7,7 +7,7 @@
  */
 namespace BlueAcorn\AmqpBase\Model;
 
-use BlueAcorn\AmqpBase\Helper\Logger;
+use BlueAcorn\AmqpBase\Helper\LogManager;
 use BlueAcorn\AmqpBase\Helper\MessageQueue\Config;
 use Magento\Amqp\Model\Config as AmqpConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
@@ -57,25 +57,25 @@ class Topology
     protected $queueConfigData;
 
     /**
-     * @var Logger
+     * @var LogManager
      */
-    protected $logger;
+    protected $logManager;
 
     /**
      * Initialize dependencies
      *
      * @param AmqpConfig $amqpConfig
      * @param Config $queueConfig
-     * @param Logger $logger
+     * @param LogManager $logManager
      */
     public function __construct(
         AmqpConfig $amqpConfig,
         Config $queueConfig,
-        Logger $logger
+        LogManager $logManager
     ) {
         $this->amqpConfig = $amqpConfig;
         $this->queueConfig = $queueConfig;
-        $this->logger = $logger;
+        $this->logManager = $logManager;
     }
 
     /**
@@ -100,7 +100,7 @@ class Topology
                         $this->declareExchange($exchangeName);
                         $this->bindQueue($queueName, $exchangeName, $topicName);
                     } catch (\PhpAmqpLib\Exception\AMQPExceptionInterface $e) {
-                        $this->logger->error(
+                        $this->logManager->getLogger()->error(
                             sprintf(
                                 'There is a problem with creating or binding queue "%s" and an exchange "%s". Error:',
                                 $queueName,

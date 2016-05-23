@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/AmqpProduct
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Utilizing core module for custom logger -->
+    <virtualType name="BlueAcornAmqpProductLogger" type="BlueAcorn\Core\Model\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">BlueAcorn Amqp Product Logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="base" xsi:type="object">BlueAcornAmqpProductLoggerHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="BlueAcornAmqpProductLoggerHandler" type="BlueAcorn\Core\Model\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/amqp/product.log</argument>
+        </arguments>
+    </virtualType>
+    <type name="BlueAcorn\AmqpBase\Helper\LogManager">
+        <arguments>
+            <argument name="loggers" xsi:type="array">
+                <item name="product" xsi:type="object">BlueAcornAmqpProductLogger</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
+

@@ -8,7 +8,7 @@
 namespace BlueAcorn\AmqpBase\Model\Alert;
 
 use BlueAcorn\AmqpBase\Api\Data\AlertInterface;
-use BlueAcorn\AmqpBase\Helper\Logger;
+use BlueAcorn\AmqpBase\Helper\LogManager;
 use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
 use Magento\Framework\App\State as AppState;
 use Magento\Framework\Exception\LocalizedException;
@@ -25,9 +25,9 @@ class Processor
     protected $transportBuilder;
 
     /**
-     * @var Logger
+     * @var LogManager
      */
-    protected $logger;
+    protected $logManager;
 
     /**
      * @var ConsumerConfig
@@ -43,17 +43,17 @@ class Processor
      * Processor constructor.
      * @param TransportBuilder $transportBuilder
      * @param ConsumerConfig $consumerConfig
-     * @param Logger $logger
+     * @param LogManager $logManager
      * @param AppState $appState
      */
     public function __construct(
         TransportBuilder $transportBuilder,
         ConsumerConfig $consumerConfig,
-        Logger $logger,
+        LogManager $logManager,
         AppState $appState
     ) {
         $this->transportBuilder = $transportBuilder;
-        $this->logger = $logger;
+        $this->logManager = $logManager;
         $this->consumerConfig = $consumerConfig;
         $this->appState = $appState;
     }
@@ -66,10 +66,7 @@ class Processor
             $this->sendEmail($recipients, $vars);
         } catch (\Exception $e) {
             // Squelch all errors in alert queue processing, we don't want to create infinite message loop
-
-            // TODO: Make logger composed of virtual type handlers for different log files
-            // magic __call will get logger for next method call
-            $this->logger->error($e);
+            $this->logManager->getLogger()->error($e);
         }
     }
 

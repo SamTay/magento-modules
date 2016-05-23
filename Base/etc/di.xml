@@ -74,7 +74,7 @@
     </virtualType>
     <virtualType name="BlueAcornAmqpBaseLoggerHandler" type="BlueAcorn\Core\Model\Logger\Handler\Base">
         <arguments>
-            <argument name="fileName" xsi:type="string">/var/log/ba_amqp.log</argument>
+            <argument name="fileName" xsi:type="string">/var/log/amqp/base.log</argument>
         </arguments>
     </virtualType>
     <type name="BlueAcorn\AmqpBase\Helper\LogManager">

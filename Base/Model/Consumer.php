@@ -18,7 +18,7 @@ use Magento\Framework\MessageQueue\QueueRepository;
 use Magento\Framework\Phrase;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
 use Magento\Framework\App\ResourceConnection;
-use BlueAcorn\AmqpBase\Helper\Logger;
+use BlueAcorn\AmqpBase\Helper\LogManager;
 use BlueAcorn\AmqpBase\Helper\Consumer\Config as ConsumerConfig;
 
 /**
@@ -63,9 +63,9 @@ class Consumer implements ConsumerInterface
     protected $shutdownFlag;
 
     /**
-     * @var Logger
+     * @var LogManager
      */
-    protected $logger;
+    protected $logManager;
 
     /**
      * @var AlertManager
@@ -83,7 +83,7 @@ class Consumer implements ConsumerInterface
      * @param QueueConfig $messageQueueConfig
      * @param MessageEncoder $messageEncoder
      * @param QueueRepository $queueRepository
-     * @param Logger $logger
+     * @param LogManager $logManager
      * @param AlertManager $alertManager
      * @param ConsumerConfig $consumerConfig
      * @param ResourceConnection $resource
@@ -92,7 +92,7 @@ class Consumer implements ConsumerInterface
         QueueConfig $messageQueueConfig,
         MessageEncoder $messageEncoder,
         QueueRepository $queueRepository,
-        Logger $logger,
+        LogManager $logManager,
         AlertManager $alertManager,
         ConsumerConfig $consumerConfig,
         ResourceConnection $resource
@@ -101,7 +101,7 @@ class Consumer implements ConsumerInterface
         $this->messageEncoder = $messageEncoder;
         $this->queueRepository = $queueRepository;
         $this->resource = $resource;
-        $this->logger = $logger;
+        $this->logManager = $logManager;
         $this->alertManager = $alertManager;
         $this->consumerConfig = $consumerConfig;
     }
@@ -146,7 +146,7 @@ class Consumer implements ConsumerInterface
         if (isset($decodedMessage)) {
             // If message decoded to SHUTDOWN, set property flag and skip normal callback procedure
             if ($decodedMessage === self::SHUTDOWN_PROTOCOL) {
-                $this->logger->debug('Shutdown protocol found');
+                $this->logManager->getLogger()->debug('Shutdown protocol found');
                 $this->shutdownFlag = true;
                 return;
             }
@@ -190,7 +190,7 @@ class Consumer implements ConsumerInterface
      */
     protected function runDaemonMode(QueueInterface $queue)
     {
-        $this->logger->debug('Starting daemon mode...');
+        $this->logManager->getLogger()->debug('Starting daemon mode...');
         $callback = $this->getTransactionCallback($queue);
 
         $queue->subscribe($callback);
@@ -257,7 +257,7 @@ class Consumer implements ConsumerInterface
      */
     public function alert(\Exception $e)
     {
-        $this->logger->debug($e);
+        $this->logManager->getLogger()->debug($e);
         $consumerName = $this->configuration->getConsumerName();
         $config = $this->consumerConfig->getConsumerConfig($consumerName);
         if ($config[ConsumerConfig::FIELD_EMAIL_RECIPIENTS]) {
@@ -271,7 +271,7 @@ class Consumer implements ConsumerInterface
                 ->create();
             $this->alertManager->publish($alert);
         } else {
-            $this->logger->debug(new Phrase(
+            $this->logManager->getLogger()->debug(new Phrase(
                 'Exception was generated, but no email recipients are configured for "%consumer"',
                 ['consumer' => $consumerName]
             ));
@@ -284,7 +284,7 @@ class Consumer implements ConsumerInterface
      */
     protected function shutdown()
     {
-        $this->logger->debug('Shutting down now');
+        $this->logManager->getLogger()->debug('Shutting down now');
         exit(0);
     }
 }

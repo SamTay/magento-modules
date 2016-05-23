@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/AmqpShipment
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Utilizing core module for custom logger -->
+    <virtualType name="BlueAcornAmqpShipmentLogger" type="BlueAcorn\Core\Model\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">BlueAcorn Amqp Shipment Logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="base" xsi:type="object">BlueAcornAmqpShipmentLoggerHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="BlueAcornAmqpShipmentLoggerHandler" type="BlueAcorn\Core\Model\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/amqp/shipment.log</argument>
+        </arguments>
+    </virtualType>
+    <type name="BlueAcorn\AmqpBase\Helper\LogManager">
+        <arguments>
+            <argument name="loggers" xsi:type="array">
+                <item name="shipment" xsi:type="object">BlueAcornAmqpShipmentLogger</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
+

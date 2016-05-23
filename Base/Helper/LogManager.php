@@ -10,7 +10,7 @@ namespace BlueAcorn\AmqpBase\Helper;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Logger
+ * Class LogManager
  * Expose custom loggers
  */
 class LogManager
@@ -39,10 +39,10 @@ class LogManager
     /**
      * Get logger by name
      *
-     * @param $name
+     * @param string $name
      * @return LoggerInterface
      */
-    public function getLogger($name)
+    public function getLogger($name = self::BASE_LOGGER)
     {
         if (array_key_exists($name, $this->loggers)) {
             return $this->loggers[$name];
