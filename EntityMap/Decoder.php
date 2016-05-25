@@ -7,7 +7,7 @@
  */
 namespace BlueAcorn\EntityMap;
 
-use BlueAcorn\EntityMap\Decode\Config\Converter;
+use BlueAcorn\EntityMap\Decode\Config\Converter as DecodeConfigConverter;
 use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Manager as EventManager;
@@ -35,7 +35,7 @@ class Decoder
     protected $eventManager;
 
     /**
-     * Converter constructor.
+     * Decoder constructor.
      * @param DecodeConfig $decodeConfig
      * @param MapperFactory $mapperFactory
      * @param EventManager $eventManager
@@ -105,10 +105,10 @@ class Decoder
      */
     private function _mapKeys(DataObject $dataObject)
     {
-        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[Converter::ENTITY_KEY_MAP]));
+        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[DecodeConfigConverter::ENTITY_KEY_MAP]));
         $dataToMap = $dataObject->toArray($keysToMap);
         $dataObject->unsetData($keysToMap);
-        $newKeys = array_intersect_key($this->config[Converter::ENTITY_KEY_MAP], $dataToMap); // truncate keys not present in data
+        $newKeys = array_intersect_key($this->config[DecodeConfigConverter::ENTITY_KEY_MAP], $dataToMap); // truncate keys not present in data
         $mappedData = array_combine($newKeys, $dataToMap) ?: []; // combine is sequential -- foreach on keys would be more error proof
         $dataObject->addData($mappedData);
     }
@@ -120,7 +120,7 @@ class Decoder
      */
     private function _aggregateKeys(DataObject $dataObject)
     {
-        $aggregationMap = $this->config[Converter::ENTITY_KEY_AGGREGATE];
+        $aggregationMap = $this->config[DecodeConfigConverter::ENTITY_KEY_AGGREGATE];
         foreach($aggregationMap as $aggregateId => $keysToAggregate) {
             $keysToAggregate = $this->filterHasData($dataObject, $keysToAggregate);
             if (!$keysToAggregate) continue;
@@ -128,7 +128,7 @@ class Decoder
             $dataObject->setData($aggregateId, $aggregatedData);
         }
         // Unset data AFTER all aggregation complete, in case we are aggregating the same keys to different places
-        $dataObject->unsetData($this->config[Converter::ENTITY_KEY_COLLAPSE]);
+        $dataObject->unsetData($this->config[DecodeConfigConverter::ENTITY_KEY_COLLAPSE]);
     }
 
     /**
@@ -138,11 +138,11 @@ class Decoder
      */
     private function _mapAttributes(DataObject $dataObject)
     {
-        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[Converter::ENTITY_ATTRIBUTE_MAP]));
+        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[DecodeConfigConverter::ENTITY_ATTRIBUTE_MAP]));
         $dataToMap = $dataObject->toArray($keysToMap);
         $dataObject->unsetData($keysToMap); // Unset data completely -- keys should be returned by mapper if necessary
         foreach($dataToMap as $key => $value) {
-            $mapperClass = $this->config[Converter::ENTITY_ATTRIBUTE_MAP][$key];
+            $mapperClass = $this->config[DecodeConfigConverter::ENTITY_ATTRIBUTE_MAP][$key];
             $mapper = $this->mapperFactory->get($mapperClass);
             $mappedData = $mapper->map($key, $value);
             $dataObject->addData($mappedData);
