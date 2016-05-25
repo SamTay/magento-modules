@@ -9,21 +9,21 @@
     <!-- Topics -->
     <publisher name="products" connection="amqp" exchange="products"/>
     <!-- possibly change to model, method schema so we can easily accept arrays -->
-    <topic publisher="products" name="erp.product.create" schema="BlueAcorn\AmqpProduct\Model\Import::create" />
-    <topic publisher="products" name="erp.product.update" schema="BlueAcorn\AmqpProduct\Model\Import::update" />
-    <topic publisher="products" name="erp.product.create.batch" schema="BlueAcorn\AmqpProduct\Model\Import::create" />
-    <topic publisher="products" name="erp.product.update.batch" schema="BlueAcorn\AmqpProduct\Model\Import::update" />
+    <topic publisher="products" name="erp.product.create" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::create" />
+    <topic publisher="products" name="erp.product.update" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::update" />
+    <topic publisher="products" name="erp.product.create.batch" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::create" />
+    <topic publisher="products" name="erp.product.update.batch" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::update" />
 
     <!-- Consumers & Bindings -->
     <consumer name="productCreatedListener" queue="product_create_queue" connection="amqp"
-        class="BlueAcorn\AmqpProduct\Model\Import" method="create" />
+        class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="create" />
     <consumer name="productUpdatedListener" queue="product_update_queue" connection="amqp"
-        class="BlueAcorn\AmqpProduct\Model\Import" method="update" />
+        class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="update" />
 
     <consumer name="productCreatedBatchListener" queue="product_create_batch_queue" connection="amqp"
-        class="BlueAcorn\AmqpProduct\Model\Import" method="create" max_messages="100"/>
+        class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="create" max_messages="100"/>
     <consumer name="productUpdatedBatchListener" queue="product_update_batch_queue" connection="amqp"
-        class="BlueAcorn\AmqpProduct\Model\Import" method="update" max_messages="100"/>
+        class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="update" max_messages="100"/>
 
     <bind queue="product_create_queue" exchange="products" topic="erp.product.create" />
     <bind queue="product_update_queue" exchange="products" topic="erp.product.update" />
