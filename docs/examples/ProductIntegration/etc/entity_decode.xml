@@ -7,7 +7,6 @@
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:blueacorn:framework-entity-map:etc/entity_decode.xsd">
     <entity name="catalog_product">
-        <default_mapper class="BlueAcorn\EntityMap\Mapper\OneToOne" />
         <key_map from="somethingCamelCased" to="something_snake_cased" />
         <key_map from="anotherExample" to="another_example" />
         <key_map from="spColor" to="color" />
