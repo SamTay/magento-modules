@@ -60,7 +60,7 @@ class EntityDecode implements ObserverInterface
      */
     public function execute(EventObserver $observer)
     {
-        $eventSchema = $observer->getSchema();
+        $eventSchema = ltrim($observer->getSchema(), '\\');
         $message = $observer->getTransport()->getMessage();
 
         $isArray = false;
@@ -77,7 +77,7 @@ class EntityDecode implements ObserverInterface
                 if ($isArray) {
                     $message = array_map(function($entity) use ($entityType) {
                         return $this->decoder->convert($entity, $entityType);
-                    });
+                    }, $message);
                 } else {
                     $message = $this->decoder->convert($message, $entityType);
                 }
@@ -97,7 +97,8 @@ class EntityDecode implements ObserverInterface
         if (!$this->schemaMap) {
             $config = [];
             foreach($this->decodeConfig->get() as $entityType => $entityInfo) {
-                $config[$entityInfo[DecodeConverter::ENTITY_SCHEMA]] = $entityType;
+                $schema = ltrim($entityInfo[DecodeConverter::ENTITY_SCHEMA], '\\');
+                $config[$schema] = $entityType;
             }
             $this->schemaMap = array_merge($config, $injectedMap);
         }
