@@ -51,10 +51,9 @@ class Import implements ImportInterface
      */
     public function create(array $products)
     {
-        array_walk($products, function($productData) {
-            $product = $this->decode($productData);
+        foreach($products as $product) {
             $this->productRepository->save($product);
-        });
+        }
     }
 
     /**
@@ -63,10 +62,9 @@ class Import implements ImportInterface
     public function update(array $products)
     {
         $this->logManager->getLogger('product')->debug(var_export($products[0]->toArray()));
-        array_walk($products, function($productData) {
-            $product = $this->decode($productData);
+        foreach($products as $product) {
             $this->productRepository->save($product);
-        });
+        }
     }
 
     /**
@@ -74,21 +72,9 @@ class Import implements ImportInterface
      */
     public function delete(array $products)
     {
-        array_walk($products, function($productData) {
-            // Decode here in case identifier is mapped (e.g. 'PLU' => 'sku')
-            $product = $this->decode($productData);
+        foreach($products as $product) {
+            // TODO Set entity ID on $product by SKU
             $this->productRepository->delete($product);
-        });
-    }
-
-    /**
-     * Decode product
-     *
-     * @param mixed $product
-     * @return ProductInterface
-     */
-    protected function decode($product)
-    {
-        return $this->decoder->convert($product, self::ENTITY_TYPE);
+        }
     }
 }
