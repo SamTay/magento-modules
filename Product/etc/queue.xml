@@ -8,7 +8,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
     <!-- Topics -->
     <publisher name="products" connection="amqp" exchange="products"/>
-    <!-- possibly change to model, method schema so we can easily accept arrays -->
     <topic publisher="products" name="erp.product.create" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::create" />
     <topic publisher="products" name="erp.product.update" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::update" />
     <topic publisher="products" name="erp.product.create.batch" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::create" />

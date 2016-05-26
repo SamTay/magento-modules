@@ -14,7 +14,7 @@
             <key id="free_shipping_all_orders" />
             <key id="money_back_guarantee" />
         </aggregate>
-        <attribute_map code="color" mapper="BlueAcorn\ProductIntegration\Model\Mapper\Attribute\Color" />
+        <attribute_map code="color" mapper="BlueAcorn\EntityMap\Mapper\OptionTable\Dynamic" />
         <attribute_map code="confidence_builder" mapper="BlueAcorn\ProductIntegration\Model\Mapper\Attribute\ConfidenceBuilder" />
     </entity>
 </config>
