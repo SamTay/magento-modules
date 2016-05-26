@@ -9,8 +9,6 @@ namespace BlueAcorn\AmqpShipment\Api;
 
 interface ImportInterface
 {
-    const ENTITY_TYPE = 'shipment';
-
     /**
      * @param \Magento\Sales\Api\Data\ShipmentInterface[] $shipments
      */

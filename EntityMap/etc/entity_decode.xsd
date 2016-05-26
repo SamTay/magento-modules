@@ -64,6 +64,7 @@
             <xs:element name="attribute_map" type="attributeMapperDeclaration" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="schema" type="modelName" use="required" />
     </xs:complexType>
 
     <xs:complexType name="keyMapDeclaration">

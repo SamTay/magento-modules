@@ -38,11 +38,23 @@ class Data extends \Magento\Framework\Config\Data
     public function getEntityInfo($entityType)
     {
         return [
+            Converter::ENTITY_SCHEMA => $this->getEntitySchema($entityType),
             Converter::ENTITY_KEY_MAP => $this->getKeyMap($entityType),
             Converter::ENTITY_KEY_COLLAPSE => $this->getKeysToCollapse($entityType),
             Converter::ENTITY_ATTRIBUTE_MAP => $this->getAttributeMap($entityType),
             Converter::ENTITY_KEY_AGGREGATE => $this->getAggregateKeys($entityType)
         ];
+    }
+
+    /**
+     * Get entity schema
+     *
+     * @param $entityType
+     * @return string
+     */
+    public function getEntitySchema($entityType)
+    {
+        return $this->getByArray([$entityType, Converter::ENTITY_SCHEMA], '');
     }
 
     /**

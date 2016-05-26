@@ -15,6 +15,7 @@ use Magento\Framework\Config\ConverterInterface;
 class Converter implements ConverterInterface
 {
     const ENTITY_TYPE = 'type';
+    const ENTITY_SCHEMA = 'schema';
     const ENTITY_KEY_MAP = 'key_map';
     const ENTITY_KEY_AGGREGATE = 'key_aggregate';
     const ENTITY_KEY_COLLAPSE = 'key_collapse';
@@ -48,6 +49,7 @@ class Converter implements ConverterInterface
     {
         $data = [
             self::ENTITY_TYPE => $entityNode->attributes->getNamedItem('name')->nodeValue,
+            self::ENTITY_SCHEMA => $entityNode->attributes->getNamedItem('schema')->nodeValue,
             self::ENTITY_ATTRIBUTE_MAPS => [],
             self::ENTITY_KEY_MAP => [],
             self::ENTITY_KEY_AGGREGATE => [],
