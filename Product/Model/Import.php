@@ -9,7 +9,7 @@ namespace BlueAcorn\AmqpProduct\Model;
 
 use BlueAcorn\AmqpBase\Helper\LogManager;
 use BlueAcorn\AmqpProduct\Api\ImportInterface;
-use BlueAcorn\EntityMap\Converter as EntityConverter;
+use BlueAcorn\EntityMap\Decoder;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 
@@ -22,9 +22,9 @@ class Import implements ImportInterface
     const PRODUCTS_KEY = 'products';
 
     /**
-     * @var EntityConverter
+     * @var Decoder
      */
-    protected $entityConverter;
+    protected $decoder;
 
     /**
      * @var ProductRepositoryInterface
@@ -38,21 +38,22 @@ class Import implements ImportInterface
 
     /**
      * Import constructor.
-     * @param EntityConverter $entityConverter
+     * @param Decoder $decoder
      * @param ProductRepositoryInterface $productRepository
      * @param LogManager $logManager
      */
     public function __construct(
-        EntityConverter $entityConverter,
+        Decoder $decoder,
         ProductRepositoryInterface $productRepository,
         LogManager $logManager
     ) {
-        $this->entityConverter = $entityConverter;
+        $this->decoder = $decoder;
         $this->productRepository = $productRepository;
         $this->logManager = $logManager;
     }
 
     /**
+     * {@inheritdoc}
      */
     public function create(array $products)
     {
@@ -63,7 +64,7 @@ class Import implements ImportInterface
     }
 
     /**
-     * @param ProductInterface[] $products
+     * {@inheritdoc}
      */
     public function update(array $products)
     {
@@ -75,6 +76,7 @@ class Import implements ImportInterface
     }
 
     /**
+     * {@inheritdoc}
      */
     public function delete(array $products)
     {
@@ -93,6 +95,6 @@ class Import implements ImportInterface
      */
     protected function decode($product)
     {
-        return $this->entityConverter->decode($product, self::ENTITY_TYPE);
+        return $this->decoder->convert($product, self::ENTITY_TYPE);
     }
 }

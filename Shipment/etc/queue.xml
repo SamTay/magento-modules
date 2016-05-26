@@ -10,12 +10,12 @@
 
     <!-- Publishers & Topics -->
     <publisher name="shipments" connection="amqp" exchange="shipments"/>
-    <topic publisher="shipments" name="external.shipment.create" schema="Magento\Sales\Api\Data\ShipmentInterface" />
-    <topic publisher="shipments" name="external.shipment.update" schema="Magento\Sales\Api\Data\ShipmentInterface" />
+    <topic publisher="shipments" name="erp.shipment.create" schema="BlueAcorn\AmqpShipment\Api\ImportInterface::create" />
+    <topic publisher="shipments" name="erp.shipment.update" schema="BlueAcorn\AmqpShipment\Api\ImportInterface::update" />
 
     <!-- Consumers & Bindings -->
-    <consumer name="shipmentCreatedListener" queue="shipment_create_queue" connection="amqp" class="BlueAcorn\AmqpShipment\Model\Processor" method="processMessage" max_messages="100"/>
-    <consumer name="shipmentUpdatedListener" queue="shipment_update_queue" connection="amqp" class="BlueAcorn\AmqpShipment\Model\Processor" method="processMessage" max_messages="100"/>
+    <consumer name="shipmentCreatedListener" queue="shipment_create_queue" connection="amqp" class="BlueAcorn\AmqpShipment\Api\ImportInterface" method="create" max_messages="100"/>
+    <consumer name="shipmentUpdatedListener" queue="shipment_update_queue" connection="amqp" class="BlueAcorn\AmqpShipment\Api\ImportInterface" method="update" max_messages="100"/>
     <bind queue="shipment_create_queue" exchange="shipments" topic="external.shipment.create" />
     <bind queue="shipment_update_queue" exchange="shipments" topic="external.shipment.update" />
 </config>

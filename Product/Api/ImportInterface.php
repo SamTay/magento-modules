@@ -7,7 +7,6 @@
  */
 namespace BlueAcorn\AmqpProduct\Api;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product;
 
 interface ImportInterface
@@ -15,16 +14,17 @@ interface ImportInterface
     const ENTITY_TYPE = Product::ENTITY;
 
     /**
+     * @param \Magento\Catalog\Api\Data\ProductInterface[] $products
      */
     public function create(array $products);
 
     /**
-     * TESTING TODO REMOVE
      * @param \Magento\Catalog\Api\Data\ProductInterface[] $products
      */
     public function update(array $products);
 
     /**
+     * @param \Magento\Catalog\Api\Data\ProductInterface[] $products
      */
     public function delete(array $products);
 }

@@ -7,7 +7,16 @@
  */
 namespace BlueAcorn\AmqpBase\Model;
 
+use BlueAcorn\EntityMap\ConverterInterface;
+use BlueAcorn\EntityMap\Decoder as EntityDecoder;
+use BlueAcorn\EntityMap\Encoder as EntityEncoder;
+use Magento\Framework\Json\DecoderInterface as JsonDecoderInterface;
+use Magento\Framework\Json\EncoderInterface as JsonEncoderInterface;
+use Magento\Framework\MessageQueue\Config\Data as QueueConfig;
 use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
+use Magento\Framework\Webapi\ServiceInputProcessor;
+use Magento\Framework\Webapi\ServiceOutputProcessor;
+use Magento\Framework\Webapi\ServicePayloadConverterInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 
@@ -15,8 +24,124 @@ use Magento\Framework\Phrase;
  * Class which provides encoding and decoding capabilities for MessageQueue messages.
  * Rewritten to handle shutdown message decoding
  */
-class MessageEncoder extends \Magento\Framework\MessageQueue\MessageEncoder
+class MessageEncoder
 {
+    const DIRECTION_ENCODE = 'encode';
+    const DIRECTION_DECODE = 'decode';
+
+    /**
+     * @var QueueConfig
+     */
+    private $queueConfig;
+
+    /**
+     * @var ServiceOutputProcessor
+     */
+    private $dataObjectEncoder;
+
+    /**
+     * @var ServiceInputProcessor
+     */
+    private $dataObjectDecoder;
+
+    /**
+     * @var JsonEncoderInterface
+     */
+    private $jsonEncoder;
+
+    /**
+     * @var JsonDecoderInterface
+     */
+    private $jsonDecoder;
+
+    /**
+     * @var EntityDecoder
+     */
+    private $entityDecoder;
+
+    /**
+     * @var EntityEncoder
+     */
+    private $entityEncoder;
+
+    /**
+     * Initialize dependencies.
+     *
+     * @param QueueConfig $queueConfig
+     * @param JsonEncoderInterface $jsonEncoder
+     * @param JsonDecoderInterface $jsonDecoder
+     * @param ServiceOutputProcessor $dataObjectEncoder
+     * @param ServiceInputProcessor $dataObjectDecoder
+     * @param EntityDecoder $entityDecoder
+     * @param EntityEncoder $entityEncoder
+     * @internal param EntityConverter $entityConverter
+     */
+    public function __construct(
+        QueueConfig $queueConfig,
+        JsonEncoderInterface $jsonEncoder,
+        JsonDecoderInterface $jsonDecoder,
+        ServiceOutputProcessor $dataObjectEncoder,
+        ServiceInputProcessor $dataObjectDecoder,
+        EntityDecoder $entityDecoder,
+        EntityEncoder $entityEncoder
+    ) {
+        $this->queueConfig = $queueConfig;
+        $this->dataObjectEncoder = $dataObjectEncoder;
+        $this->dataObjectDecoder = $dataObjectDecoder;
+        $this->jsonEncoder = $jsonEncoder;
+        $this->jsonDecoder = $jsonDecoder;
+        $this->entityDecoder = $entityDecoder;
+        $this->entityEncoder = $entityEncoder;
+    }
+
+    /**
+     * Encode message content based on current topic.
+     *
+     * @param string $topic
+     * @param mixed $message
+     * @return string
+     * @throws LocalizedException
+     */
+    public function encode($topic, $message)
+    {
+        $convertedMessage = $this->convertMessage($topic, $message, self::DIRECTION_ENCODE);
+        return $this->jsonEncoder->encode($convertedMessage);
+    }
+
+    /**
+     * Decode message content based on current topic.
+     *
+     * @param string $topic
+     * @param string $message
+     * @return mixed
+     * @throws LocalizedException
+     */
+    public function decode($topic, $message)
+    {
+        try {
+            $decodedMessage = $this->jsonDecoder->decode($message);
+        } catch (\Exception $e) {
+            throw new LocalizedException(new Phrase("Error occurred during message decoding."));
+        }
+        return $this->convertMessage($topic, $decodedMessage, self::DIRECTION_DECODE);
+    }
+
+    /**
+     * Identify message data schema by topic.
+     *
+     * @param string $topic
+     * @return array
+     * @throws LocalizedException
+     */
+    protected function getTopicSchema($topic)
+    {
+        $queueConfig = $this->queueConfig->get();
+        if (isset($queueConfig[QueueConfigConverter::TOPICS][$topic])) {
+            return $queueConfig[QueueConfigConverter::TOPICS][$topic][QueueConfigConverter::TOPIC_SCHEMA];
+        }
+        throw new LocalizedException(new Phrase('Specified topic "%topic" is not declared.', ['topic' => $topic]));
+    }
+
     /**
      * Convert message according to the format associated with its topic using provided converter.
      * Optionally returns a flat shutdown protocol string if found in $message
@@ -30,12 +155,15 @@ class MessageEncoder extends \Magento\Framework\MessageQueue\MessageEncoder
             return Consumer::SHUTDOWN_PROTOCOL;
         }
 
+        // TODO how to specify entity type from here ?????
+        $message = $this->getEntityMapper($direction)->convert($message);
+
         $topicSchema = $this->getTopicSchema($topic);
         if ($topicSchema[QueueConfigConverter::TOPIC_SCHEMA_TYPE] == QueueConfigConverter::TOPIC_SCHEMA_TYPE_OBJECT) {
             /** Convert message according to the data interface associated with the message topic */
             $messageDataType = $topicSchema[QueueConfigConverter::TOPIC_SCHEMA_VALUE];
             try {
-                $convertedMessage = $this->getConverter($direction)->convertValue($message, $messageDataType);
+                $convertedMessage = $this->getObjectConverter($direction)->convertValue($message, $messageDataType);
             } catch (LocalizedException $e) {
                 throw new LocalizedException(
                     new Phrase(
@@ -57,13 +185,13 @@ class MessageEncoder extends \Magento\Framework\MessageQueue\MessageEncoder
                     /** Encode parameters according to their positions in method signature */
                     $paramPosition = $methodParameterMeta[QueueConfigConverter::SCHEMA_METHOD_PARAM_POSITION];
                     if (isset($message[$paramPosition])) {
-                        $convertedMessage[$paramName] = $this->getConverter($direction)
+                        $convertedMessage[$paramName] = $this->getObjectConverter($direction)
                             ->convertValue($message[$paramPosition], $paramType);
                     }
                 } else {
                     /** Encode parameters according to their names in method signature */
                     if (isset($message[$paramName])) {
-                        $convertedMessage[$paramName] = $this->getConverter($direction)
+                        $convertedMessage[$paramName] = $this->getObjectConverter($direction)
                             ->convertValue($message[$paramName], $paramType);
                     }
                 }
@@ -87,5 +215,27 @@ class MessageEncoder extends \Magento\Framework\MessageQueue\MessageEncoder
             }
         }
         return $convertedMessage;
+    }
+
+    /**
+     * Get value converter based on conversion direction.
+     *
+     * @param string $direction
+     * @return ServicePayloadConverterInterface
+     */
+    protected function getObjectConverter($direction)
+    {
+        return ($direction == self::DIRECTION_ENCODE) ? $this->dataObjectEncoder : $this->dataObjectDecoder;
+    }
+
+    /**
+     * Get entity mapper decoder/encoder based on direction
+     *
+     * @param $direction
+     * @return ConverterInterface
+     */
+    protected function getEntityMapper($direction)
+    {
+        return ($direction == self::DIRECTION_ENCODE) ? $this->entityEncoder : $this->entityDecoder;
     }
 }

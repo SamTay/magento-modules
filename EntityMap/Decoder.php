@@ -12,7 +12,7 @@ use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Manager as EventManager;
 
-class Decoder
+class Decoder implements ConverterInterface
 {
     /**
      * @var DecodeConfig
@@ -59,16 +59,16 @@ class Decoder
      * @return array
      * @throws \Exception
      */
-    public function decode(array $data, $entityType)
+    public function convert(array $data, $entityType)
     {
         try {
             $this->initConfig($entityType);
             $dataObject = new DataObject($data);
-            $this->eventManager->dispatch('entity_entitymap_decode_before', ['object' => $dataObject]);
-            $this->eventManager->dispatch($entityType . '_entitymap_decode_before', ['object' => $dataObject]);
+            $this->eventManager->dispatch('entity_entitymap_decode_before', ['data_object' => $dataObject]);
+            $this->eventManager->dispatch($entityType . '_entitymap_decode_before', ['data_object' => $dataObject]);
             $this->_decode($dataObject);
-            $this->eventManager->dispatch('entity_entitymap_decode_before', ['object' => $dataObject]);
-            $this->eventManager->dispatch($entityType . '_entitymap_decode_after', ['object' => $dataObject]);
+            $this->eventManager->dispatch('entity_entitymap_decode_after', ['data_object' => $dataObject]);
+            $this->eventManager->dispatch($entityType . '_entitymap_decode_after', ['data_object' => $dataObject]);
             return $dataObject->getData();
         } catch (\Exception $e) {
             throw new \Exception('Error occurred during decoding', 0, $e);
