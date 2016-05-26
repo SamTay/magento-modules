@@ -10,7 +10,6 @@ namespace BlueAcorn\AmqpProduct\Model;
 use BlueAcorn\AmqpBase\Helper\LogManager;
 use BlueAcorn\AmqpProduct\Api\ImportInterface;
 use BlueAcorn\EntityMap\Decoder;
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 
 class Import implements ImportInterface
@@ -73,8 +72,8 @@ class Import implements ImportInterface
     public function delete(array $products)
     {
         foreach($products as $product) {
-            // TODO Set entity ID on $product by SKU
-            $this->productRepository->delete($product);
+            // standard `delete` method requires entity ID on $product
+            $this->productRepository->deleteById($product->getSku());
         }
     }
 }
