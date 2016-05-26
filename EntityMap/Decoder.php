@@ -106,6 +106,9 @@ class Decoder implements ConverterInterface
     private function _mapKeys(DataObject $dataObject)
     {
         $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[DecodeConfigConverter::ENTITY_KEY_MAP]));
+        if (!$keysToMap) {
+            return;
+        }
         $dataToMap = $dataObject->toArray($keysToMap);
         $dataObject->unsetData($keysToMap);
         $newKeys = array_intersect_key($this->config[DecodeConfigConverter::ENTITY_KEY_MAP], $dataToMap); // truncate keys not present in data
@@ -139,6 +142,9 @@ class Decoder implements ConverterInterface
     private function _mapAttributes(DataObject $dataObject)
     {
         $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[DecodeConfigConverter::ENTITY_ATTRIBUTE_MAP]));
+        if (!$keysToMap) {
+            return;
+        }
         $dataToMap = $dataObject->toArray($keysToMap);
         $dataObject->unsetData($keysToMap); // Unset data completely -- keys should be returned by mapper if necessary
         foreach($dataToMap as $key => $value) {
