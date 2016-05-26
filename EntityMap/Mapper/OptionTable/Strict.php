@@ -9,7 +9,7 @@ namespace BlueAcorn\EntityMap\Mapper\OptionTable;
 
 use BlueAcorn\EntityMap\Mapper\LabelToOption;
 use BlueAcorn\EntityMap\MapperDecorator;
-use Magento\Eav\Model\Config as EavConfig;
+use Magento\Eav\Api\AttributeRepositoryInterface;
 
 /**
  * Class Strict
@@ -24,11 +24,6 @@ use Magento\Eav\Model\Config as EavConfig;
 class Strict extends MapperDecorator
 {
     /**
-     * @var EavConfig
-     */
-    protected $eavConfig;
-
-    /**
      * @var LabelToOption
      */
     protected $mapper;
@@ -39,18 +34,23 @@ class Strict extends MapperDecorator
     protected $entityType;
 
     /**
+     * @var AttributeRepositoryInterface
+     */
+    protected $attributeRepository;
+
+    /**
      * Strict constructor.
      *
-     * @param EavConfig $eavConfig
+     * @param AttributeRepositoryInterface $attributeRepository
      * @param LabelToOption $mapper
      * @param string $entityType
      */
     public function __construct(
-        EavConfig $eavConfig,
+        AttributeRepositoryInterface $attributeRepository,
         LabelToOption $mapper,
         $entityType
     ) {
-        $this->eavConfig = $eavConfig;
+        $this->attributeRepository = $attributeRepository;
         $this->entityType = $entityType;
         parent::__construct($mapper);
     }
@@ -60,7 +60,12 @@ class Strict extends MapperDecorator
      */
     public function map($key, $value)
     {
-        $attribute = $this->eavConfig->getAttribute($this->entityType, $key);
+        $attribute = $this->attributeRepository->get($this->entityType, $key);
+        /**
+         * Unfortunately going against implementation here, assuming instance of AbstractAttribute. This is because
+         * of a disconnect between OptionSourceInterface and the Eav/Api interfaces, which never implement it. I still
+         * want to keep the LabelToOption class abstract enough to handle EAV and non EAV, so here we are
+         */
         $this->mapper->setSource($attribute->getSource());
         return $this->mapper->map($key, $value);
     }

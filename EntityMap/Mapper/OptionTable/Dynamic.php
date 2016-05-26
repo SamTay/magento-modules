@@ -8,12 +8,13 @@
 namespace BlueAcorn\EntityMap\Mapper\OptionTable;
 
 use BlueAcorn\EntityMap\Mapper\LabelToOption;
-use Magento\Eav\Model\Config as EavConfig;
-use Magento\Eav\Model\Entity\Attribute\AbstractAttribute;
-use Magento\Eav\Model\Entity\Attribute\Source\Table as SourceTable;
-use Magento\Framework\ObjectManagerInterface;
+use Magento\Eav\Api\AttributeRepositoryInterface;
+use Magento\Eav\Api\Data\AttributeOptionInterfaceFactory;
+use Magento\Eav\Api\AttributeOptionManagementInterface;
+use Magento\Eav\Api\Data\AttributeOptionInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Store;
+use Magento\Framework\Api\DataObjectHelper;
 
 /**
  * Class Dynamic
@@ -24,11 +25,6 @@ use Magento\Store\Model\Store;
  *
  * Note: External ERPs likely do not have the same concept of multiple stores like Magento does. Therefore
  * this option creator assumes the same store labels are used across all stores.
- *
- * Note: It would be better to use interface abstraction such as AttributeRepository, AttributeInterface::setOptions, and
- * AttributeOptionInterface[], instead of EavConfig, AbstractAttribute->setOption(), etc., but the implementation
- * at the ResourceModel level does not respect the OPTIONS = 'options' constant, and instead looks for implementation
- * level 'option' key.
  */
 class Dynamic extends Strict
 {
@@ -40,33 +36,45 @@ class Dynamic extends Strict
     protected $storeManager;
 
     /**
-     * @var ObjectManagerInterface
+     * @var AttributeOptionManagementInterface
      */
-    private $objectManager;
+    protected $attributeOptionManagement;
+
+    /**
+     * @var AttributeOptionInterfaceFactory
+     */
+    protected $optionDataFactory;
+
+    /**
+     * @var DataObjectHelper
+     */
+    protected $dataObjectHelper;
 
     /**
      * Strict constructor.
      *
-     * @param EavConfig $eavConfig
-     * @param LabelToOption $mapper
+     * @param AttributeOptionManagementInterface $attributeOptionManagement
+     * @param AttributeRepositoryInterface $attributeRepository
+     * @param AttributeOptionInterfaceFactory $optionDataFactory
      * @param StoreManagerInterface $storeManager
-     * @param ObjectManagerInterface $objectManager
+     * @param LabelToOption $mapper
+     * @param DataObjectHelper $dataObjectHelper
      * @param string $entityType
      */
     public function __construct(
-        EavConfig $eavConfig,
-        LabelToOption $mapper,
+        AttributeOptionManagementInterface $attributeOptionManagement,
+        AttributeRepositoryInterface $attributeRepository,
+        AttributeOptionInterfaceFactory $optionDataFactory,
         StoreManagerInterface $storeManager,
-        ObjectManagerInterface $objectManager,
+        LabelToOption $mapper,
+        DataObjectHelper $dataObjectHelper,
         $entityType
     ) {
+        $this->attributeOptionManagement = $attributeOptionManagement;
         $this->storeManager = $storeManager;
-        $this->objectManager = $objectManager;
-        parent::__construct(
-            $eavConfig,
-            $mapper,
-            $entityType
-        );
+        $this->optionDataFactory = $optionDataFactory;
+        $this->dataObjectHelper = $dataObjectHelper;
+        parent::__construct($attributeRepository, $mapper, $entityType);
     }
 
     /**
@@ -78,73 +86,48 @@ class Dynamic extends Strict
      */
     public function map($key, $value)
     {
-        $attribute = $this->eavConfig->getAttribute($this->entityType, $key);
-        $this->updateOptionTable($attribute, $value);
+        $this->updateOptionTable($key, $value);
         return parent::map($key, $value);
     }
 
     /**
      * Update attribute with any values found in comma separated $value argument
      *
-     * @param AbstractAttribute $attribute
-     * @param $value
+     * @param $attributeCode
+     * @param $inputValue
      */
-    private function updateOptionTable(AbstractAttribute $attribute, $value)
+    private function updateOptionTable($attributeCode, $inputValue)
     {
-        $this->checkValidSource();
-        $existingOptions = $attribute->getOption();
+        $existingOptions = $this->attributeOptionManagement->getItems($this->entityType, $attributeCode);
 
-        // Find new values
-        $valuesToAdd = $this->extractNewValues($existingOptions, $value);
+        // Find new labels
+        $labelsToAdd = $this->extractNewValues($existingOptions, $inputValue);
 
-        // Get additional option array for merging
-        $existingOptionsCount = count($existingOptions['value']);
-        $maxSort = max($existingOptions['order']) + 1;
-        $newOptions = $this->formatNewOptions($valuesToAdd, $existingOptionsCount, $maxSort);
+        // Get new option objects
+        $maxSort = array_reduce($existingOptions, function ($currMax, $option) {
+            /** @var AttributeOptionInterface $option */
+            return $currMax > $option->getSortOrder() ? $currMax : $option->getSortOrder();
+        }, 0);
+        $optionsToAdd = $this->formatNewOptions($labelsToAdd, $maxSort);
 
-        $attribute->setOption(
-            array_merge_recursive($existingOptions, $newOptions)
-        )->save();
-
-        // Overwrite $attribute reference to newly loaded model, because lingering data properties such as
-        // _source, _frontend, etc. will remain invalid
-        // TODO Needs testing to ensure creation method is correct
-        $attribute = $this->objectManager->create($attribute->getAttributeModel())
-            ->load($attribute->getId());
-    }
-
-    /**
-     * Checks that source model uses type SourceTable
-     *
-     * @param AbstractAttribute $attribute
-     * @throws \InvalidArgumentException
-     */
-    private function checkValidSource(AbstractAttribute $attribute)
-    {
-        $source = $attribute->getSource();
-        if (!$source instanceof SourceTable) {
-            throw new \InvalidArgumentException(__(
-                'Dynamic options mapper cannot be used for source models other than "%class"',
-                ['class' => self::SOURCE_MODEL_TABLE]
-            ));
+        foreach($optionsToAdd as $option) {
+            $this->attributeOptionManagement->add($this->entityType, $attributeCode, $option);
         }
     }
 
     /**
-     * Accepts existing option array (magento format ['delete' => [], 'value' => [], etc])
-     * and comma separated string of new values.
-     * Returns array of values that dont exist yet
+     * Returns array of input labels that dont exist yet
      *
-     * @param array $existingOptions
-     * @param string $inputValues
-     * @return array
+     * @param AttributeOptionInterface[] $existingOptions
+     * @param string $inputLabels
+     * @return string[]
      */
-    private function extractNewValues($existingOptions, $inputValues)
+    private function extractNewValues($existingOptions, $inputLabels)
     {
-        $values = explode(',', $inputValues);
-        return array_filter($values, function($value) use ($existingOptions) {
-            foreach($existingOptions['value'] as $existingValue) {
-                if ($existingValue[Store::DEFAULT_STORE_ID] == $value) {
+        $inputLabels = explode(',', $inputLabels);
+        return array_filter($inputLabels, function($label) use ($existingOptions) {
+            foreach($existingOptions as $existingOption) {
+                if ($existingOption->getLabel() == $label) {
                     return false;
                 }
             }
@@ -153,31 +136,28 @@ class Dynamic extends Strict
     }
 
     /**
-     * Get new values in option array format (['delete' => [], 'value' => [], etc)
+     * Get new options in AttributeOptionInterface format
      *
-     * @param $valuesToAdd
-     * @param $existingOptionsCount
+     * @param $labelsToAdd
      * @param $currentMaxSort
-     * @return array
+     * @return AttributeOptionInterface[]
      */
-    private function formatNewOptions($valuesToAdd, $existingOptionsCount, $currentMaxSort)
+    private function formatNewOptions($labelsToAdd, $currentMaxSort)
     {
-        $newOptions = ['delete' => [], 'order' => [], 'value' => []];
-        $i = $existingOptionsCount;
-        $sort = $currentMaxSort;
-        $storeIds = array_map(function($store) {
-            return $store->getId();
-        }, $this->storeManager->getStores(true));
-        foreach($valuesToAdd as $value) {
-            // In reality this key shouldn't matter, but might as well keep consistent with admin
-            $key = 'option_' . $i;
-            $newOptions['delete'][$key] = '';
-            $newOptions['order'][$key] = $sort;
-            $newOptions['value'][$key] = array_fill_keys($storeIds, $value);
-            $i++;
-            $sort++;
+        $newOptions = [];
+        foreach($labelsToAdd as $label) {
+            $optionObject = $this->optionDataFactory->create();
+            $optionData = [
+                'sort_order' => $currentMaxSort++,
+                'label' => $label,
+            ];
+            $this->dataObjectHelper->populateWithArray(
+                $optionObject,
+                $optionData,
+                '\Magento\Eav\Api\Data\AttributeOptionInterface'
+            );
+            $newOptions[] = $optionObject;
         }
-
         return $newOptions;
     }
 }
