@@ -22,21 +22,21 @@ class Import implements ImportInterface
     /**
      * {@inheritdoc}
      */
-    public function create(array $products)
+    public function create(array $shipments)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function update(array $products)
+    public function update(array $shipments)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete(array $products)
+    public function delete(array $shipments)
     {
     }
 }
