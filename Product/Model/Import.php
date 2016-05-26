@@ -16,12 +16,6 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 class Import implements ImportInterface
 {
     /**
-     * TODO: This will need to be defined at integration level, not sure where
-     * TODO: Possibly add configuration (via XML or system config) for higher level schema
-     */
-    const PRODUCTS_KEY = 'products';
-
-    /**
      * @var Decoder
      */
     protected $decoder;

@@ -15,18 +15,10 @@ use Magento\Sales\Api\ShipmentRepositoryInterface;
 
 /**
  * Class Import
- * TODO Fix phpdocs & arguments
- * TODO Add "metadata" with repository & entity converter type
- * TODO Add abstract class for importers
+ * TODO ADD docs explaining that arg names are important
  */
 class Import implements ImportInterface
 {
-    /**
-     * TODO: This will need to be defined at integration level, not sure where
-     * TODO: Possibly add configuration (via XML or system config) for higher level schema
-     */
-    const DATA_KEY = 'shipments';
-
     /**
      * {@inheritdoc}
      */

@@ -11,8 +11,6 @@ use Magento\Catalog\Model\Product;
 
 interface ImportInterface
 {
-    const ENTITY_TYPE = Product::ENTITY;
-
     /**
      * @param \Magento\Catalog\Api\Data\ProductInterface[] $products
      */
