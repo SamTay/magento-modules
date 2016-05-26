@@ -50,7 +50,7 @@ class Converter implements ConverterInterface
         $data = [
             self::ENTITY_TYPE => $entityNode->attributes->getNamedItem('name')->nodeValue,
             self::ENTITY_SCHEMA => $entityNode->attributes->getNamedItem('schema')->nodeValue,
-            self::ENTITY_ATTRIBUTE_MAPS => [],
+            self::ENTITY_ATTRIBUTE_MAP => [],
             self::ENTITY_KEY_MAP => [],
             self::ENTITY_KEY_AGGREGATE => [],
             self::ENTITY_KEY_COLLAPSE => []
@@ -61,7 +61,7 @@ class Converter implements ConverterInterface
                 case ('attribute_map'):
                     $attributeCode = $childNode->attributes->getNamedItem('code');
                     $mapperClass = $childNode->attributes->getNamedItem('mapper');
-                    $data[self::ENTITY_ATTRIBUTE_MAPS][$attributeCode] = $mapperClass;
+                    $data[self::ENTITY_ATTRIBUTE_MAP][$attributeCode] = $mapperClass;
                     break;
                 case ('key'):
                     $from = $childNode->attributes->getNamedItem('from');
