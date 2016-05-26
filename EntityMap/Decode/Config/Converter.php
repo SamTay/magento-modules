@@ -59,20 +59,22 @@ class Converter implements ConverterInterface
         foreach($entityNode->childNodes as $childNode) {
             switch($childNode->nodeName) {
                 case ('attribute_map'):
-                    $attributeCode = $childNode->attributes->getNamedItem('code');
-                    $mapperClass = $childNode->attributes->getNamedItem('mapper');
+                    $attributeCode = $childNode->attributes->getNamedItem('code')->nodeValue;
+                    $mapperClass = $childNode->attributes->getNamedItem('mapper')->nodeValue;
                     $data[self::ENTITY_ATTRIBUTE_MAP][$attributeCode] = $mapperClass;
                     break;
-                case ('key'):
-                    $from = $childNode->attributes->getNamedItem('from');
-                    $to = $childNode->attributes->getNamedItem('to');
+                case ('key_map'):
+                    $from = $childNode->attributes->getNamedItem('from')->nodeValue;
+                    $to = $childNode->attributes->getNamedItem('to')->nodeValue;
                     $data[self::ENTITY_KEY_MAP][$from] = $to;
                     break;
                 case('aggregate'):
-                    $aggregateId = $childNode->attributes->getNamedItem('id');
+                    $aggregateId = $childNode->attributes->getNamedItem('id')->nodeValue;
                     $keysToAggregate = [];
                     foreach($childNode->childNodes as $keyNode) {
-                        $keysToAggregate[] = $keyNode->attributes->getNamedItem('id');
+                        if ($keyNode->nodeName == 'key') {
+                            $keysToAggregate[] = $keyNode->attributes->getNamedItem('id')->nodeValue;
+                        }
                     }
                     $data[self::ENTITY_KEY_AGGREGATE][$aggregateId] = $keysToAggregate;
                     $collapse = array_fill_keys($keysToAggregate, $aggregateId);
