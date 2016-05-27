@@ -18,8 +18,9 @@ which automatically handles three important sequential steps:
   - note: This will mainly be useful for attribute mapping after aggregation
   
 ###### 3. Attribute key,value maps
-  - xml: `<attribute_map code="color" mapper="BlueAcorn\EntityMap\Mapper\OptionTable />`
+  - xml: `<attribute_map code="color" mapper="Virtual\OptionTable\Dynamic\Product" />`
   - result: `['color' => 'blue,green'] -> ['color' => '82,24']`
+  - note: There are mapper classes in the EntityMap library but there are also virtual types defined by submodule di.xml.
   
 ## Support
 If the documentation here is inadequate, please submit a github issue.
