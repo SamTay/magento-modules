@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <!--/*
  * @package     BlueAcorn\AmqpProduct
- * @version     1.0.0
+ * @version     0.2.0
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="BlueAcorn_AmqpProduct" setup_version="1.0.0">
+    <module name="BlueAcorn_AmqpProduct" setup_version="0.2.0">
         <sequence>
             <module name="BlueAcorn_AmqpBase"/>
         </sequence>

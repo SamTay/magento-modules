@@ -38,8 +38,8 @@ through modules' ``etc/queue.xml`` files. In addition, you can find examples in 
 or the submodules of this repository.
 - Finally, use the added console command ``queue:topology:install`` to set up rabbitMQ per your configuration.
 
-### Version 1.0.0
-- Current version 1.0.0 is the first pass at this module on M2
+### Version 0.2.0
+- Current version 0.2.0 is the first pass at this module on M2
 
 ### Configuration
 - **TBD**
