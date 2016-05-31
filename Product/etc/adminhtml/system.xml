@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/AmqpProduct
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="ba_amqp">
+            <group id="product" translate="label comment" type="text" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Product Integration</label>
+                <field id="ignore_unknown" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Ignore unknown attribute codes on import</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Warning: turning off this ignore setting will result in exceptions when
+                        unknown attribute codes are present, which will halt the import process.]]></comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
