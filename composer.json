@@ -2,7 +2,6 @@
 	"name": "blueacorn/amqp-integrations",
 	"description": "Amqp Integrations",
 	"type": "magento2-module",
-	"version": "0.2.0",
 	"require": {
 		"magento/module-amqp": "100.0.*",
 		"blueacorn/module-core": "~1.0.0"
