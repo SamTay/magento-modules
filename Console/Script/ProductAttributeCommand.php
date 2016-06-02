@@ -385,13 +385,16 @@ CODE;
         $this->setHelp(
             <<<HELP
 This command generates install/upgrade data scripts based on an input CSV file. See
-this file [ https://docs.google.com/a/blueacorn.com/spreadsheets/d/17tc9kyMmgl5HklJInPTSmI_0J1p089wTJco7QdqT1Ew/edit?usp=sharing ]
+this file:
+https://docs.google.com/a/blueacorn.com/spreadsheets/d/17tc9kyMmgl5HklJInPTSmI_0J1p089wTJco7QdqT1Ew/edit?usp=sharing
 for more information.
 
 By default an InstallData.php file is generated. Use the --setup-version option to generate an UpgradeData.php file
 with attribute creation wrapped in a version check. For example to create an upgrade file for version 1.2.0:
 
       <comment>%command.full_name% dataFile.csv --setup-version=1.2.0</comment>
+
+If the import csv does not specify an absolute path, it is assumed relative to the webroot.
 HELP
         );
         parent::configure();
