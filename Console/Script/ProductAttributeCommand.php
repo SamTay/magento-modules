@@ -14,7 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-//TODO Test version & modulename options
 //TODO pregmatch for class:constants when adding quotes
 
 /**
@@ -47,12 +46,14 @@ class ProductAttributeCommand extends Command
         self::INSTALL => [
             'filename' => 'InstallData.php',
             'class' => 'InstallData',
-            'parent_class' => 'InstallDataInterface'
+            'interface' => 'InstallDataInterface',
+            'method' => 'install'
         ],
         self::UPGRADE => [
             'filename' => 'UpgradeData.php',
             'class' => 'UpgradeData',
-            'parent_class' => 'UpgradeDataInterface'
+            'interface' => 'UpgradeDataInterface',
+            'method' => 'upgrade'
         ]
     ];
 
@@ -132,10 +133,10 @@ class ProductAttributeCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $csvFilename = $input->getArgument(self::ARGUMENT_CSV_FILE);
-        $version = $input->getOption(self::OPTION_VERSION);
+        $version = $input->getOption(self::OPTION_VERSION) ?: self::DEFAULT_VERSION;
         $moduleName = $input->getOption(self::OPTION_MODULE_NAME) ?: self::DEFAULT_MODULE_NAME;
+        $this->format = $input->getOption(self::OPTION_VERSION) ? self::UPGRADE : self::INSTALL;
 
-        $this->format = $version ? self::UPGRADE : self::INSTALL;
         $outputFilename = implode(DIRECTORY_SEPARATOR, [
             BP,
             'var',
@@ -146,7 +147,7 @@ class ProductAttributeCommand extends Command
 
         $rows = $this->parseCsvMetadata($csvFilename);
         $body = $this->getBody($rows);
-        if ($version) {
+        if ($this->format == self::UPGRADE) {
             $this->wrapVersionChecker($body);
         }
         list($header, $footer) = $this->getHeaderFooter();
@@ -320,11 +321,11 @@ namespace BlueAcorn\{{var module_name}}\Setup;
 
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
-use Magento\Framework\Setup\{{var parent_class}};
+use Magento\Framework\Setup\{{var interface}};
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 
-class {{var class}} implements InstallDataInterface
+class {{var class}} implements {{var interface}}
 {
     /**
      * @var EavSetupFactory
@@ -342,7 +343,7 @@ class {{var class}} implements InstallDataInterface
     /**
      * {@inheritdoc}
      */
-    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    public function {{var method}}(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
