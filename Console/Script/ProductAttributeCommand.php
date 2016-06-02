@@ -222,9 +222,7 @@ class ProductAttributeCommand extends Command
      */
     protected function wrapVersionChecker(&$body)
     {
-        $eightSpaces = str_repeat(' ', 8); // original indent of addAttribute calls
-        $twelveSpaces = str_repeat(' ', 12);
-        $body = str_replace($eightSpaces, $twelveSpaces, $body);
+        $body = preg_replace('/^/m', '    ', $body); // indent all body lines by 4 extra spaces
         $wrapBegin = <<<'CODE'
         if (version_compare($context->getVersion(), '{{var version}}') < 0) {
 
