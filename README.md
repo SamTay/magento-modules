@@ -17,8 +17,8 @@ bin/magento module:enable BlueAcorn_Core
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
 
-### Version 1.0.0
-- Current version 1.0.0 is the first pass at a core module
+### Version 1.1.0
+- Current version 1.1.0 is the first pass at a core module
 
 ### Features
 - To be determined
