@@ -14,7 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-//TODO Handle empty values and missing columns
 //TODO Test version & modulename options
 //TODO pregmatch for class:constants when adding quotes
 
@@ -285,7 +284,7 @@ CODE;
 
 CODE;
         $options = '';
-        foreach($this->attributeOptions as $option) {
+        foreach($this->columnToOptionLink as $option) {
             $options .= <<<"CODE"
                 '$option' => {{var $option}},
 
