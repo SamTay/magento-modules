@@ -14,8 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-//TODO pregmatch for class:constants when adding quotes
-
 /**
  * Command for generating product install scripts
  */
@@ -31,6 +29,8 @@ class ProductAttributeCommand extends Command
 
     const DEFAULT_VERSION = '1.0.0';
     const DEFAULT_MODULE_NAME = 'ProductIntegration';
+
+    const CLASS_CONSTANT_PATTERN = '/^([a-zA-Z_\\\\]+)::([a-zA-Z0-9_]+)$/';
 
     /**
      * Install vs Upgrade flag
@@ -93,10 +93,10 @@ class ProductAttributeCommand extends Command
     ];
 
     /**
-     * Holds attribute option values that we should NOT escape with quotes
-     * @var array
+     * Methods accept value and return true if quotes should be EXCLUDED
+     * @var callable[]
      */
-    protected $addQuoteBlacklist = ['true', 'false'];
+    protected $skipWrappingQuotesCheck = ['self::_isBool', 'self::_isClassConstant'];
 
     /**
      * Holds mapping [columnIndex => attributeOption]
@@ -202,9 +202,13 @@ class ProductAttributeCommand extends Command
             }
             $vars = ['attribute_code' => $row[$this->nameIndex]];
             foreach($this->columnToOptionLink as $columnIndex => $option) {
-                $vars[$option] = (in_array($row[$columnIndex], $this->addQuoteBlacklist))
-                    ? $row[$columnIndex]
-                    : '\'' . $row[$columnIndex] . '\'';
+                $optionValue = $row[$columnIndex];
+                $noQuotes = array_reduce($this->skipWrappingQuotesCheck, function($carry, $checkMethod) use($optionValue) {
+                    return $carry || call_user_func($checkMethod, $optionValue);
+                }, false);
+                $vars[$option] = $noQuotes
+                    ? $optionValue
+                    : '\'' . $optionValue . '\'';
             }
             $body .= $this->filterManager->template($template, ['variables' => $vars]);
         }
@@ -355,6 +359,28 @@ CODE;
 CODE;
 
         return [$header, $footer];
+    }
+
+    /**
+     * Check if value is a class constant
+     *
+     * @param $value
+     * @return int
+     */
+    protected function _isClassConstant($value)
+    {
+        return preg_match(self::CLASS_CONSTANT_PATTERN, $value);
+    }
+
+    /**
+     * Check if value is a boolean string
+     *
+     * @param $value
+     * @return bool
+     */
+    protected function _isBool($value)
+    {
+        return in_array($value, ['true', 'false']);
     }
 
     /**
