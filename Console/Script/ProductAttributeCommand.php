@@ -59,37 +59,46 @@ class ProductAttributeCommand extends Command
 
     /**
      * Flat array of available attribute options
+     * @see Magento\Catalog\Model\ResourceModel\Eav\Attribute\PropertyMapper
+     * @see Magento\Catalog\Model\ResourceModel\Setup\PropertyMapper
+     * @see Magento\ConfigurableProduct\Model\ResourceModel\Setup\PropertyMapper
      * @var array
      */
     protected $attributeOptions = [
-        'label',
+        'backend',
         'type',
+        'table',
+        'frontend',
         'input',
-        'group',
-        'global',
+        'label',
+        'frontend_class',
+        'source',
         'required',
+        'user_defined',
         'default',
+        'unique',
+        'note',
+        'global',
+        'input_renderer',
+        'visible',
         'searchable',
         'filterable',
         'comparable',
         'visible_on_front',
-        'visible_in_advanced_search',
-        'used_in_product_listing',
-        'unique',
-        'source',
-        'backend',
-        'frontend',
-        'input_renderer',
-        'frontend_class',
-        'note',
-        'sort_order',
-        'used_for_sort_by',
-        'position',
-        'is_configurable',
-        'used_for_promo_rules',
-        'filterable_in_search',
+        'wysiwyg_enabled',
         'is_html_allowed_on_front',
-        'apply_to'
+        'visible_in_advanced_search',
+        'filterable_in_search',
+        'used_in_product_listing',
+        'used_for_sort_by',
+        'apply_to',
+        'position',
+        'used_for_promo_rules',
+        'is_used_in_grid',
+        'is_visible_in_grid',
+        'is_filterable_in_grid',
+        'is_configurable',
+        'group',
     ];
 
     /**
@@ -295,7 +304,6 @@ CODE;
         }
 
         $end = <<<'CODE'
-                'user_defined' => true
             ]
         );
 
