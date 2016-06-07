@@ -418,7 +418,7 @@ CODE;
             <<<HELP
 This command generates install/upgrade data scripts based on an input CSV file. See
 this file:
-https://docs.google.com/a/blueacorn.com/spreadsheets/d/17tc9kyMmgl5HklJInPTSmI_0J1p089wTJco7QdqT1Ew/edit?usp=sharing
+https://docs.google.com/a/blueacorn.com/spreadsheets/d/1SZaGBvqH4zblVdxJ39NHBdk_HAag9zipW2nSRx5GrnQ/edit?usp=sharing
 for more information.
 
 By default an InstallData.php file is generated. Use the --setup-version option to generate an UpgradeData.php file
