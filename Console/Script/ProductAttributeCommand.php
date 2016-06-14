@@ -267,6 +267,9 @@ CODE;
                 break;
             }
         }
+        if (empty($columnTitles)) {
+            throw new \Exception("Couldn't find the header row");
+        }
         // Sanitize attribute options and link with associated index from columns array
         foreach($this->attributeOptions as $attributeOption) {
             $index = array_search($attributeOption, $columnTitles);
@@ -398,7 +401,7 @@ CODE;
         $this->setDescription('Generate product attribute install script');
         $this->addArgument(
             self::ARGUMENT_CSV_FILE,
-            null,
+            InputArgument::REQUIRED,
             'Csv file with attribute data'
         );
         $this->addOption(
