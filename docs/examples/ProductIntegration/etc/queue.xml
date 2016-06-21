@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--/*
- * @package     BlueAcorn\AmqpProduct
- * @version     0.2.0
+ * @package     BlueAcorn\ProductIntegration
+ * @version     1.0.0
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */-->
@@ -10,6 +10,7 @@
     <publisher name="products" connection="amqp" exchange="products"/>
     <topic publisher="products" name="erp.product.create" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::create" />
     <topic publisher="products" name="erp.product.update" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::update" />
+    <topic publisher="products" name="erp.product.delete" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::delete" />
     <topic publisher="products" name="erp.product.create.batch" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::create" />
     <topic publisher="products" name="erp.product.update.batch" schema="BlueAcorn\AmqpProduct\Api\ImportInterface::update" />
 
@@ -18,7 +19,8 @@
         class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="create" />
     <consumer name="productUpdatedListener" queue="product_update_queue" connection="amqp"
         class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="update" />
-
+    <consumer name="productDeletedListener" queue="product_delete_queue" connection="amqp"
+              class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="delete" />
     <consumer name="productCreatedBatchListener" queue="product_create_batch_queue" connection="amqp"
         class="BlueAcorn\AmqpProduct\Api\ImportInterface" method="create" max_messages="100"/>
     <consumer name="productUpdatedBatchListener" queue="product_update_batch_queue" connection="amqp"
@@ -26,6 +28,7 @@
 
     <bind queue="product_create_queue" exchange="products" topic="erp.product.create" />
     <bind queue="product_update_queue" exchange="products" topic="erp.product.update" />
+    <bind queue="product_delete_queue" exchange="products" topic="erp.product.delete" />
     <bind queue="product_create_batch_queue" exchange="products" topic="erp.product.create.batch" />
     <bind queue="product_update_batch_queue" exchange="products" topic="erp.product.update.batch" />
 </config>
