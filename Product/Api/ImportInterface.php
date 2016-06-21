@@ -7,8 +7,6 @@
  */
 namespace BlueAcorn\AmqpProduct\Api;
 
-use Magento\Catalog\Model\Product;
-
 interface ImportInterface
 {
     /**

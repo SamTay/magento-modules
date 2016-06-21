@@ -60,7 +60,6 @@ class Import implements ImportInterface
      */
     public function update(array $products)
     {
-        $this->logManager->getLogger('product')->debug(var_export($products[0]->toArray()));
         foreach($products as $product) {
             $this->productRepository->save($product);
         }
