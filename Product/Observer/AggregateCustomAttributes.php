@@ -80,6 +80,6 @@ class AggregateCustomAttributes implements ObserverInterface
         $accessor = function() {
             return $this->getCustomAttributesCodes();
         };
-        return $accessor->bindTo($this->productModel, $this->productModel); //todo test this return is ok
+        return $accessor->bindTo($this->productModel, $this->productModel);
     }
 }

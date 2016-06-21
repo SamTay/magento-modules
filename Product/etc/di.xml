@@ -6,7 +6,6 @@
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="BlueAcorn\AmqpProduct\Api\ImportInterface" type="BlueAcorn\AmqpProduct\Model\Import" />
     <!-- virtual types for mappers -->
     <virtualType name="Virtual\OptionTable\Dynamic\Product" type="BlueAcorn\EntityMap\Mapper\OptionTable\Dynamic">
         <arguments>
