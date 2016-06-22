@@ -8,16 +8,16 @@
 namespace BlueAcorn\AmqpBase\Model;
 
 use BlueAcorn\AmqpBase\Api\Data\AlertInterface;
-use Magento\Framework\DataObject;
+use Magento\Framework\Api\AbstractSimpleObject;
 
-class Alert extends DataObject implements AlertInterface
+class Alert extends AbstractSimpleObject implements AlertInterface
 {
     /**
      * {@inheritdoc}
      */
     public function getMessage()
     {
-        return $this->getData(self::MESSAGE);
+        return $this->_get(self::MESSAGE);
     }
 
     /**
@@ -25,7 +25,7 @@ class Alert extends DataObject implements AlertInterface
      */
     public function getStackTrace()
     {
-        return $this->getData(self::STACK_TRACE);
+        return $this->_get(self::STACK_TRACE);
     }
 
     /**
@@ -33,7 +33,7 @@ class Alert extends DataObject implements AlertInterface
      */
     public function getConsumer()
     {
-        return $this->getData(self::CONSUMER);
+        return $this->_get(self::CONSUMER);
     }
 
     /**
@@ -41,7 +41,7 @@ class Alert extends DataObject implements AlertInterface
      */
     public function getEmailSubject()
     {
-        return $this->getData(self::EMAIL_SUBJECT);
+        return $this->_get(self::EMAIL_SUBJECT);
     }
 
     /**
@@ -49,7 +49,7 @@ class Alert extends DataObject implements AlertInterface
      */
     public function getEmailRecipients()
     {
-        return $this->getData(self::EMAIL_RECIPIENTS);
+        return $this->_get(self::EMAIL_RECIPIENTS);
     }
 
     /**
@@ -57,7 +57,7 @@ class Alert extends DataObject implements AlertInterface
      */
     public function getTimestamp()
     {
-        return $this->getData(self::TIMESTAMP);
+        return $this->_get(self::TIMESTAMP);
     }
 
     /**
