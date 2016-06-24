@@ -1,11 +1,11 @@
 <?php
 /*
- * @package     BlueAcorn\AmqpShipment
+ * @package     BlueAcorn\ShipmentIntegration
  * @version     0.2.0
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\AmqpShipment\Api;
+namespace BlueAcorn\ShipmentIntegration\Api;
 
 interface ImportInterface
 {
