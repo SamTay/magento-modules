@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\EntityMap\Mapper\OptionTable;
 
+use BlueAcorn\EntityMap\Escape;
 use BlueAcorn\EntityMap\Mapper\LabelToOption;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 use Magento\Eav\Api\Data\AttributeOptionInterfaceFactory;
@@ -124,7 +125,7 @@ class Dynamic extends Strict
      */
     private function extractNewValues($existingOptions, $inputLabels)
     {
-        $inputLabels = explode(',', $inputLabels);
+        $inputLabels = Escape::_explode($inputLabels);
         return array_filter($inputLabels, function($label) use ($existingOptions) {
             foreach($existingOptions as $existingOption) {
                 if ($existingOption->getLabel() == $label) {

@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\EntityMap\Mapper;
 
+use BlueAcorn\EntityMap\Escape;
 use BlueAcorn\EntityMap\MapperInterface;
 use Magento\Framework\Data\OptionSourceInterface;
 
@@ -28,8 +29,8 @@ class LabelToOption implements MapperInterface
                 ['class' => get_class($this)]
             ));
         }
-        $optionLabels = explode(',', $value);
-        $optionValues = array_map([$this, 'getOptionValue'], $optionLabels);
+        $optionLabels = Escape::_explode($value);
+        $optionValues = array_filter(array_map([$this, 'getOptionValue'], $optionLabels));
         return [$key => implode(',', $optionValues)];
     }
 
