@@ -25,7 +25,7 @@
 );
 
 \Magento\Framework\Component\ComponentRegistrar::register(
-    \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'BlueAcorn_EntityMap',
+    \Magento\Framework\Component\ComponentRegistrar::LIBRARY,
+    'blueacorn/framework-entity-map',
     __DIR__ . DIRECTORY_SEPARATOR . 'EntityMap'
 );

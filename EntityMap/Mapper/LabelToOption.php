@@ -5,10 +5,10 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Model\Mapper;
+namespace BlueAcorn\EntityMap\Mapper;
 
-use BlueAcorn\EntityMap\Model\Escape;
-use BlueAcorn\EntityMap\Model\MapperInterface;
+use BlueAcorn\EntityMap\Escape;
+use BlueAcorn\EntityMap\MapperInterface;
 use Magento\Framework\Data\OptionSourceInterface;
 
 class LabelToOption implements MapperInterface

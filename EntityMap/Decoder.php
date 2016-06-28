@@ -5,10 +5,10 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Model;
+namespace BlueAcorn\EntityMap;
 
-use BlueAcorn\EntityMap\Model\Decode\Config\Converter as DecodeConfigConverter;
-use BlueAcorn\EntityMap\Model\Decode\Config\Data as DecodeConfig;
+use BlueAcorn\EntityMap\Decode\Config\Converter as DecodeConfigConverter;
+use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Manager as EventManager;
 

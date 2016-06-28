@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Model;
+namespace BlueAcorn\EntityMap;
 
 class Escape
 {
@@ -21,7 +21,7 @@ class Escape
      * @param bool $removeWhitespace
      * @return array
      */
-    public static function _explode(
+    static public function _explode(
         $string,
         $delimiter = ',',
         $escape = self::DEFAULT_ESCAPE_CHAR,
@@ -49,7 +49,7 @@ class Escape
      * @param string $escape
      * @return string
      */
-    public static function _implode(
+    static public function _implode(
         array $array,
         $glue = ',',
         $escape = self::DEFAULT_ESCAPE_CHAR

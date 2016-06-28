@@ -7,17 +7,17 @@
  */-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <!-- virtual types for mappers -->
-    <virtualType name="Virtual\OptionTable\Dynamic\Product" type="BlueAcorn\EntityMap\Model\Mapper\OptionTable\Dynamic">
+    <virtualType name="Virtual\OptionTable\Dynamic\Product" type="BlueAcorn\EntityMap\Mapper\OptionTable\Dynamic">
         <arguments>
             <argument name="entityType" xsi:type="string">catalog_product</argument>
         </arguments>
     </virtualType>
-    <virtualType name="Virtual\OptionTable\Strict\Product" type="BlueAcorn\EntityMap\Model\Mapper\OptionTable\Strict">
+    <virtualType name="Virtual\OptionTable\Strict\Product" type="BlueAcorn\EntityMap\Mapper\OptionTable\Strict">
         <arguments>
             <argument name="entityType" xsi:type="string">catalog_product</argument>
         </arguments>
     </virtualType>
-    <type name="BlueAcorn\EntityMap\Model\MapperFactory">
+    <type name="BlueAcorn\EntityMap\MapperFactory">
         <arguments>
             <argument name="pool" xsi:type="array">
                 <item name="Virtual\OptionTable\Dynamic\Product" xsi:type="object">Virtual\OptionTable\Dynamic\Product</item>

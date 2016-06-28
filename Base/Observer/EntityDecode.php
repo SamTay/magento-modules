@@ -7,11 +7,11 @@
  */
 namespace BlueAcorn\AmqpBase\Observer;
 
-use BlueAcorn\EntityMap\Model\Decode\Config\Data as DecodeConfig;
-use BlueAcorn\EntityMap\Model\Decode\Config\Converter as DecodeConverter;
+use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
+use BlueAcorn\EntityMap\Decode\Config\Converter as DecodeConverter;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer as EventObserver;
-use BlueAcorn\EntityMap\Model\Decoder;
+use BlueAcorn\EntityMap\Decoder;
 
 /**
  * Class EntityDecode
