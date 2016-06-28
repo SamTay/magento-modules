@@ -68,7 +68,7 @@
     </xs:complexType>
 
     <xs:complexType name="keyMapDeclaration">
-        <xs:attribute name="from" type="xs:string" use="required" />
+        <xs:attribute name="from" type="externalAttributeCode" use="required" />
         <xs:attribute name="to" type="attributeCode" use="required" />
     </xs:complexType>
 
@@ -81,7 +81,7 @@
     </xs:complexType>
 
     <xs:complexType name="keyDeclaration">
-        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="id" type="externalAttributeCode" use="required" />
     </xs:complexType>
 
     <xs:complexType name="attributeMapperDeclaration">
@@ -89,6 +89,17 @@
         <xs:attribute name="mapper" type="modelName" use="required" />
         <xs:attribute name="sort" type="xs:int" use="optional" />
     </xs:complexType>
+
+    <xs:simpleType name="externalAttributeCode">
+        <xs:annotation>
+            <xs:documentation>
+                External attributes can look like anything but must be nonempty
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="attributeCode">
         <xs:annotation>

@@ -126,7 +126,7 @@ class Decoder implements ConverterInterface
      * @param DataObject $dataObject
      * @param $operation
      */
-    private function _aggregateKey(DataObject $dataObject, $operation)
+    private function _aggregateKeys(DataObject $dataObject, $operation)
     {
         $aggregateId = $operation[DecodeConfigConverter::AGGREGATE_ID];
         $keysToAggregate = array_filter(
@@ -147,7 +147,7 @@ class Decoder implements ConverterInterface
      * @param DataObject $dataObject
      * @param $operation
      */
-    private function _mapAttributes(DataObject $dataObject, $operation)
+    private function _mapAttribute(DataObject $dataObject, $operation)
     {
         $key = $operation[DecodeConfigConverter::ATTRIBUTE_MAP_CODE];
         $mapperClass = $operation[DecodeConfigConverter::ATTRIBUTE_MAP_MAPPER];

@@ -76,8 +76,9 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
      */
     protected function _createFromArray($className, $data)
     {
-        if (array_key_exists($className, $this->schemaMap)) {
-            $data = $this->decoder->convert($data, $this->schemaMap[$className]);
+        $schema = ltrim($className, '\\');
+        if (array_key_exists($schema, $this->schemaMap)) {
+            $data = $this->decoder->convert($data, $this->schemaMap[$schema]);
         }
         return parent::_createFromArray($className, $data);
     }
