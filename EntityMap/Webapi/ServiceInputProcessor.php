@@ -36,7 +36,7 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
     /**
      * @var array
      */
-    protected $schema = [];
+    protected $schemaMap = [];
 
     /**
      * ServiceInputProcessor constructor.
@@ -47,6 +47,7 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
      * @param MethodsMap $methodsMap
      * @param Decoder $decoder
      * @param DecodeConfig $decodeConfig
+     * @param array $schemaMap
      */
     public function __construct(
         TypeProcessor $typeProcessor,
@@ -55,7 +56,8 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
         CustomAttributeTypeLocatorInterface $customAttributeTypeLocator,
         MethodsMap $methodsMap,
         Decoder $decoder,
-        DecodeConfig $decodeConfig
+        DecodeConfig $decodeConfig,
+        array $schemaMap = []
     ) {
         parent::__construct(
             $typeProcessor,
@@ -66,28 +68,32 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
         );
         $this->decoder = $decoder;
         $this->decodeConfig = $decodeConfig;
-        $this->initSchema();
+        $this->initSchema($schemaMap);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convertValue($data, $type)
+    protected function _createFromArray($className, $data)
     {
-        if (array_key_exists($type, $this->schema)) {
-            $data = $this->decoder->convert($data, $this->schema[$type]);
+        if (array_key_exists($className, $this->schemaMap)) {
+            $data = $this->decoder->convert($data, $this->schemaMap[$className]);
         }
-        return parent::convertValue($data, $type);
+        return parent::_createFromArray($className, $data);
     }
 
     /**
-     * Initialize schema map
+     * Initialize schema map with additions/overrides possible from di.xml
+     *
+     * @param array $injectedMap
      */
-    protected function initSchema()
+    protected function initSchema(array $injectedMap = [])
     {
+        $config = [];
         foreach($this->decodeConfig->get() as $entityType => $entityData) {
-            $schemaType = $entityData[DecodeConfigConverter::ENTITY_SCHEMA];
-            $this->schema[$schemaType] = $entityType;
+            $schema = ltrim($entityData[DecodeConfigConverter::ENTITY_SCHEMA], '\\');
+            $config[$schema] = $entityType;
         }
+        $this->schemaMap = array_merge($config, $injectedMap);
     }
 }
