@@ -11,7 +11,7 @@ use BlueAcorn\EntityMap\Decoder;
 use BlueAcorn\EntityMap\Decode\Config\Converter as DecodeConfigConverter;
 use BlueAcorn\EntityMap\Decode\Config\Data as DecodeConfig;
 use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Framework\Reflection\TypeProcessor;
+use Magento\Framework\Reflection\TypeProcessor as FrameworkTypeProcessor;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Reflection\MethodsMap;
 use Magento\Framework\Webapi\CustomAttributeTypeLocatorInterface;
@@ -40,7 +40,7 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
 
     /**
      * ServiceInputProcessor constructor.
-     * @param TypeProcessor $typeProcessor
+     * @param FrameworkTypeProcessor $typeProcessor
      * @param ObjectManagerInterface $objectManager
      * @param AttributeValueFactory $attributeValueFactory
      * @param CustomAttributeTypeLocatorInterface $customAttributeTypeLocator
@@ -50,7 +50,7 @@ class ServiceInputProcessor extends \Magento\Framework\Webapi\ServiceInputProces
      * @param array $schemaMap
      */
     public function __construct(
-        TypeProcessor $typeProcessor,
+        FrameworkTypeProcessor $typeProcessor,
         ObjectManagerInterface $objectManager,
         AttributeValueFactory $attributeValueFactory,
         CustomAttributeTypeLocatorInterface $customAttributeTypeLocator,
