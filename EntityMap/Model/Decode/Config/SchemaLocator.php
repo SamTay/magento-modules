@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Decode\Config;
+namespace BlueAcorn\EntityMap\Model\Decode\Config;
 
 use Magento\Framework\Config\Dom\UrnResolver;
 use Magento\Framework\Config\SchemaLocatorInterface;
@@ -36,9 +36,8 @@ class SchemaLocator implements SchemaLocatorInterface
      */
     public function __construct(
         UrnResolver $urnResolver
-    )
-    {
-        $this->schema = $urnResolver->getRealPath('urn:blueacorn:framework-entity-map:etc/entity_decode.xsd');
+    ) {
+        $this->schema = $urnResolver->getRealPath('urn:blueacorn:module:BlueAcorn_EntityMap:etc/entity_decode.xsd');
         $this->perFileSchema = $this->schema;
     }
 

@@ -7,7 +7,7 @@
  */
 namespace BlueAcorn\ProductIntegration\Model\Mapper\Attribute;
 
-use BlueAcorn\EntityMap\MapperInterface;
+use BlueAcorn\EntityMap\Model\MapperInterface;
 
 class ConfidenceBuilder implements MapperInterface
 {

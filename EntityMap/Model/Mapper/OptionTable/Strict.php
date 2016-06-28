@@ -5,10 +5,10 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\EntityMap\Mapper\OptionTable;
+namespace BlueAcorn\EntityMap\Model\Mapper\OptionTable;
 
-use BlueAcorn\EntityMap\Mapper\LabelToOption;
-use BlueAcorn\EntityMap\MapperDecorator;
+use BlueAcorn\EntityMap\Model\Mapper\LabelToOption;
+use BlueAcorn\EntityMap\Model\MapperDecorator;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 
 /**
