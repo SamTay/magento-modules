@@ -15,7 +15,6 @@ use Magento\Framework\MessageQueue\Config\Converter as QueueConfigConverter;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magento\Framework\Webapi\ServiceOutputProcessor;
 use Magento\Framework\Webapi\ServicePayloadConverterInterface;
-use Magento\Framework\Event\Manager as EventManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 
@@ -54,11 +53,6 @@ class MessageEncoder
     private $jsonDecoder;
 
     /**
-     * @var EventManager
-     */
-    private $eventManager;
-
-    /**
      * @var DataObjectFactory
      */
     private $dataObjectFactory;
@@ -71,7 +65,6 @@ class MessageEncoder
      * @param JsonDecoderInterface $jsonDecoder
      * @param ServiceOutputProcessor $dataObjectEncoder
      * @param ServiceInputProcessor $dataObjectDecoder
-     * @param EventManager $eventManager
      * @param DataObjectFactory $dataObjectFactory
      */
     public function __construct(
@@ -80,7 +73,6 @@ class MessageEncoder
         JsonDecoderInterface $jsonDecoder,
         ServiceOutputProcessor $dataObjectEncoder,
         ServiceInputProcessor $dataObjectDecoder,
-        EventManager $eventManager,
         DataObjectFactory $dataObjectFactory
     ) {
         $this->queueConfig = $queueConfig;
@@ -88,7 +80,6 @@ class MessageEncoder
         $this->dataObjectDecoder = $dataObjectDecoder;
         $this->jsonEncoder = $jsonEncoder;
         $this->jsonDecoder = $jsonDecoder;
-        $this->eventManager = $eventManager;
         $this->dataObjectFactory = $dataObjectFactory;
     }
 
@@ -222,7 +213,7 @@ class MessageEncoder
     }
 
     /**
-     * Wrap native value conversion with events so that entity mapper can be injected
+     * Convert value in specified direction
      *
      * @param $value
      * @param $type
@@ -231,22 +222,6 @@ class MessageEncoder
      */
     protected function convertValue($value, $type, $direction)
     {
-        $transport = $this->dataObjectFactory->create(['message' => $value]);
-        $this->eventManager->dispatch('amqp_message_convert_before', [
-            'schema' => $type,
-            'transport' => $transport,
-            'direction' => $direction
-        ]);
-
-        $value = $transport->getMessage();
-        $value = $this->getConverter($direction)->convertValue($value, $type);
-        $transport->setMessage($value);
-        $this->eventManager->dispatch('amqp_message_convert_after', [
-            'schema' => $type,
-            'transport' => $transport,
-            'direction' => $direction
-        ]);
-
-        return $transport->getMessage();
+        return $this->getConverter($direction)->convertValue($value, $type);
     }
 }
