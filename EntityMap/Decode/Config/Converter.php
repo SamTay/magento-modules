@@ -94,33 +94,26 @@ class Converter implements ConverterInterface
         $operationId = 1;
         /** @var $childNode \DOMNode */
         foreach($entityNode->childNodes as $childNode) {
-            switch($childNode->nodeName) {
+            $nodeType = $childNode->nodeName;
+            $nodeData = [self::OPERATION_TYPE_KEY => $nodeType];
+            switch($nodeType) {
                 case (self::ENTITY_ATTRIBUTE_MAP):
-                    $attrMapData = [self::OPERATION_TYPE_KEY => self::ENTITY_ATTRIBUTE_MAP];
-                    foreach($this->attributeMapAttributes as $key => $default) {
-                        $attrMapData[$key] = $childNode->attributes->getNamedItem($key)->nodeValue ?: $default;
-                    }
-                    $data[self::ENTITY_ATTRIBUTE_MAP][$operationId++] = $attrMapData;
+                    $this->_addAttributes($nodeData, $this->attributeMapAttributes, $childNode);
+                    $data[self::ENTITY_ATTRIBUTE_MAP][$operationId++] = $nodeData;
                     break;
                 case (self::ENTITY_KEY_MAP):
-                    $keyMapData = [self::OPERATION_TYPE_KEY => self::ENTITY_KEY_MAP];
-                    foreach($this->keyMapAttributes as $key => $default) {
-                        $keyMapData[$key] = $childNode->attributes->getNamedItem($key)->nodeValue ?: $default;
-                    }
-                    $data[self::ENTITY_KEY_MAP][$operationId++] = $keyMapData;
+                    $this->_addAttributes($nodeData, $this->keyMapAttributes, $childNode);
+                    $data[self::ENTITY_KEY_MAP][$operationId++] = $nodeData;
                     break;
                 case(self::ENTITY_KEY_AGGREGATE):
-                    $aggregateData = [self::OPERATION_TYPE_KEY => self::ENTITY_KEY_AGGREGATE];
-                    foreach($this->aggregateAttributes as $key => $default) {
-                        $aggregateData[$key] = $childNode->attributes->getNamedItem($key)->nodeValue ?: $default;
-                    }
-                    $aggregateData[self::AGGREGATE_COLLAPSE_KEY] = [];
+                    $this->_addAttributes($nodeData, $this->aggregateAttributes, $childNode);
+                    $nodeData[self::AGGREGATE_COLLAPSE_KEY] = [];
                     foreach($childNode->childNodes as $keyNode) {
                         if ($keyNode->nodeName == 'key') {
-                            $aggregateData[self::AGGREGATE_COLLAPSE_KEY][] = $keyNode->attributes->getNamedItem('id')->nodeValue;
+                            $nodeData[self::AGGREGATE_COLLAPSE_KEY][] = $keyNode->attributes->getNamedItem('id')->nodeValue;
                         }
                     }
-                    $data[self::ENTITY_KEY_AGGREGATE][$operationId++] = $aggregateData;
+                    $data[self::ENTITY_KEY_AGGREGATE][$operationId++] = $nodeData;
                     break;
             }
         }
@@ -157,5 +150,21 @@ class Converter implements ConverterInterface
                 : 1;
         });
         return array_merge($keyMapOps, $mixedOps);
+    }
+
+    /**
+     * Take DOM node and $map array, add attributes to $nodeData
+     *
+     * @param $nodeData
+     * @param $map
+     * @param $node
+     * @return array
+     */
+    private function _addAttributes(&$nodeData, $map, $node)
+    {
+        foreach($map as $key => $default) {
+            $attribute = $node->attributes->getNamedItem($key);
+            $nodeData[$key] = is_null($attribute) ? $default : $attribute->nodeValue;
+        }
     }
 }
