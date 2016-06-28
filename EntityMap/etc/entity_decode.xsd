@@ -77,6 +77,7 @@
             <xs:element name="key" type="keyDeclaration" minOccurs="1" maxOccurs="unbounded" />
         </xs:sequence>
         <xs:attribute name="id" type="attributeCode" use="required" />
+        <xs:attribute name="sort" type="xs:int" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="keyDeclaration">
@@ -86,6 +87,7 @@
     <xs:complexType name="attributeMapperDeclaration">
         <xs:attribute name="code" type="attributeCode" use="required" />
         <xs:attribute name="mapper" type="modelName" use="required" />
+        <xs:attribute name="sort" type="xs:int" use="optional" />
     </xs:complexType>
 
     <xs:simpleType name="attributeCode">

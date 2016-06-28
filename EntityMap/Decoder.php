@@ -35,6 +35,16 @@ class Decoder implements ConverterInterface
     protected $eventManager;
 
     /**
+     * Map operation type => operation method
+     * @var array
+     */
+    protected $operationMethodMap = [
+        DecodeConfigConverter::ENTITY_KEY_MAP => '_mapKey',
+        DecodeConfigConverter::ENTITY_KEY_AGGREGATE => '_aggregateKeys',
+        DecodeConfigConverter::ENTITY_ATTRIBUTE_MAP => '_mapAttribute',
+    ];
+
+    /**
      * Decoder constructor.
      * @param DecodeConfig $decodeConfig
      * @param MapperFactory $mapperFactory
@@ -82,75 +92,69 @@ class Decoder implements ConverterInterface
      * Note this implementation is NOT recursive, as that would remove flexibility in situations
      * where keys can match in outer and inner arrays. Instead, to modify keys in a nested array,
      * use an <attribute_map> node.
-     * TODO: To allow a nested decoding process, perhaps allow '/' in the keys
      *
      * @param DataObject $data
      */
     private function _decode(DataObject $data)
     {
-        // First map all keys one-to-one
-        $this->_mapKeys($data);
-
-        // Then aggregate all specified keys
-        $this->_aggregateKeys($data);
-
-        // Then map [key => value] pairs
-        $this->_mapAttributes($data);
+        foreach($this->config as $operation) {
+            $method = $this->operationMethodMap[$operation[DecodeConfigConverter::OPERATION_TYPE_KEY]];
+            call_user_func([$this, $method], $data, $operation);
+        }
     }
 
     /**
-     * Map all keys (from <key_map> nodes)
+     * Map key (from <key_map> nodes)
      *
      * @param DataObject $dataObject
+     * @param $operation
      */
-    private function _mapKeys(DataObject $dataObject)
+    private function _mapKey(DataObject $dataObject, $operation)
     {
-        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[DecodeConfigConverter::ENTITY_KEY_MAP]));
-        if (!$keysToMap) {
+        if ($dataObject->hasData($operation[DecodeConfigConverter::KEY_MAP_FROM])) {
+            $dataObject->setData(
+                $operation[DecodeConfigConverter::KEY_MAP_TO],
+                $dataObject->getData($operation[DecodeConfigConverter::KEY_MAP_FROM])
+            );
+            $dataObject->unsetData($operation[DecodeConfigConverter::KEY_MAP_FROM]);
+        }
+    }
+
+    /**
+     * Collapse multiple keys to single aggregate key (from <aggregate> nodes)
+     *
+     * @param DataObject $dataObject
+     * @param $operation
+     */
+    private function _aggregateKey(DataObject $dataObject, $operation)
+    {
+        $aggregateId = $operation[DecodeConfigConverter::AGGREGATE_ID];
+        $keysToAggregate = array_filter(
+            $operation[DecodeConfigConverter::AGGREGATE_COLLAPSE_KEY],
+            [$dataObject, 'hasData']
+        );
+        if (!$keysToAggregate) {
             return;
         }
-        $dataToMap = $dataObject->toArray($keysToMap);
-        $dataObject->unsetData($keysToMap);
-        $newKeys = array_intersect_key($this->config[DecodeConfigConverter::ENTITY_KEY_MAP], $dataToMap); // truncate keys not present in data
-        $mappedData = array_combine($newKeys, $dataToMap) ?: []; // combine is sequential -- foreach on keys would be more error proof
-        $dataObject->addData($mappedData);
+        $aggregatedData = $dataObject->toArray($keysToAggregate);
+        $dataObject->setData($aggregateId, $aggregatedData);
+        $dataObject->unsetData($keysToAggregate);
     }
 
     /**
-     * Collapse multi keys to single aggregate keys (from <aggregate> nodes)
+     * Map attribute
      *
      * @param DataObject $dataObject
+     * @param $operation
      */
-    private function _aggregateKeys(DataObject $dataObject)
+    private function _mapAttributes(DataObject $dataObject, $operation)
     {
-        $aggregationMap = $this->config[DecodeConfigConverter::ENTITY_KEY_AGGREGATE];
-        foreach($aggregationMap as $aggregateId => $keysToAggregate) {
-            $keysToAggregate = $this->filterHasData($dataObject, $keysToAggregate);
-            if (!$keysToAggregate) continue;
-            $aggregatedData = $dataObject->toArray($keysToAggregate);
-            $dataObject->setData($aggregateId, $aggregatedData);
-        }
-        // Unset data AFTER all aggregation complete, in case we are aggregating the same keys to different places
-        $dataObject->unsetData($this->config[DecodeConfigConverter::ENTITY_KEY_COLLAPSE]);
-    }
-
-    /**
-     * Map attributes
-     *
-     * @param DataObject $dataObject
-     */
-    private function _mapAttributes(DataObject $dataObject)
-    {
-        $keysToMap = $this->filterHasData($dataObject, array_keys($this->config[DecodeConfigConverter::ENTITY_ATTRIBUTE_MAP]));
-        if (!$keysToMap) {
-            return;
-        }
-        $dataToMap = $dataObject->toArray($keysToMap);
-        $dataObject->unsetData($keysToMap); // Unset data completely -- keys should be returned by mapper if necessary
-        foreach($dataToMap as $key => $value) {
-            $mapperClass = $this->config[DecodeConfigConverter::ENTITY_ATTRIBUTE_MAP][$key];
+        $key = $operation[DecodeConfigConverter::ATTRIBUTE_MAP_CODE];
+        $mapperClass = $operation[DecodeConfigConverter::ATTRIBUTE_MAP_MAPPER];
+        if ($dataObject->hasData($key)) {
             $mapper = $this->mapperFactory->get($mapperClass);
-            $mappedData = $mapper->map($key, $value);
+            $mappedData = $mapper->map($key, $dataObject->getData($key));
+            $dataObject->unsetData($key); // Unset data first, otherwise mappers returning the same key are thrown away
             $dataObject->addData($mappedData);
         }
     }
@@ -162,7 +166,7 @@ class Decoder implements ConverterInterface
      */
     private function initConfig($entityType)
     {
-        $this->config = $this->decodeConfig->getEntityInfo($entityType);
+        $this->config = $this->decodeConfig->getSortedOperations($entityType);
     }
 
     /**
@@ -171,17 +175,5 @@ class Decoder implements ConverterInterface
     private function resetConfig()
     {
         $this->config = [];
-    }
-
-    /**
-     * Filter $keys to only include those that already exist in $dataObject
-     *
-     * @param DataObject $dataObject
-     * @param $keys
-     * @return array
-     */
-    private function filterHasData(DataObject $dataObject, $keys)
-    {
-        return array_filter($keys, [$dataObject, 'hasData']);
     }
 }

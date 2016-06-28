@@ -40,10 +40,20 @@ class Data extends \Magento\Framework\Config\Data
         return [
             Converter::ENTITY_SCHEMA => $this->getEntitySchema($entityType),
             Converter::ENTITY_KEY_MAP => $this->getKeyMap($entityType),
-            Converter::ENTITY_KEY_COLLAPSE => $this->getKeysToCollapse($entityType),
             Converter::ENTITY_ATTRIBUTE_MAP => $this->getAttributeMap($entityType),
             Converter::ENTITY_KEY_AGGREGATE => $this->getAggregateKeys($entityType)
         ];
+    }
+
+    /**
+     * Get sorted operations
+     *
+     * @param $entityType
+     * @return array
+     */
+    public function getSortedOperations($entityType)
+    {
+        return $this->getByArray([$entityType, Converter::ENTITY_SORTED_OPERATIONS], []);
     }
 
     /**
@@ -66,17 +76,6 @@ class Data extends \Magento\Framework\Config\Data
     public function getKeyMap($entityType)
     {
         return $this->getByArray([$entityType, Converter::ENTITY_KEY_MAP], []);
-    }
-
-    /**
-     * Get keys for collapsing [key1 => aggregate, key2 => aggregate]
-     *
-     * @param $entityType
-     * @return array
-     */
-    public function getKeysToCollapse($entityType)
-    {
-        return $this->getByArray([$entityType, Converter::ENTITY_KEY_COLLAPSE], []);
     }
 
     /**

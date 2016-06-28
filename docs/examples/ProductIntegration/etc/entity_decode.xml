@@ -10,11 +10,12 @@
         <key_map from="somethingCamelCased" to="something_snake_cased" />
         <key_map from="anotherExample" to="another_example" />
         <key_map from="spColor" to="color" />
-        <aggregate id="confidence_builder">
+        <aggregate id="confidence_builder" sort="10">
             <key id="free_shipping_all_orders" />
             <key id="money_back_guarantee" />
         </aggregate>
         <attribute_map code="color" mapper="Virtual\OptionTable\Dynamic\Product" />
-        <attribute_map code="confidence_builder" mapper="BlueAcorn\ProductIntegration\Model\Mapper\Attribute\ConfidenceBuilder" />
+        <attribute_map code="confidence_builder" sort="20"
+                       mapper="BlueAcorn\ProductIntegration\Model\Mapper\Attribute\ConfidenceBuilder" />
     </entity>
 </config>
