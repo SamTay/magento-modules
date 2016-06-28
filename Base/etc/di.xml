@@ -57,6 +57,12 @@
             </argument>
         </arguments>
     </type>
+    <type name="BlueAcorn\AmqpBase\Model\MessageEncoder">
+        <arguments>
+            <argument name="dataObjectDecoder" xsi:type="object">BlueAcorn\EntityMap\Webapi\ServiceInputProcessor</argument>
+            <argument name="dataObjectEncoder" xsi:type="object">BlueAcorn\EntityMap\Webapi\ServiceOutputProcessor</argument>
+        </arguments>
+    </type>
     <type name="Magento\Config\Model\Config\Structure\Converter">
         <plugin name="consumer_config_structure_converter_plugin" type="BlueAcorn\AmqpBase\Plugin\System\Config\Structure\Converter" />
     </type>
