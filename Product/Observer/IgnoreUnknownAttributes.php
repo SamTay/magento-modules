@@ -13,6 +13,8 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Reflection\FieldNamer;
+use Magento\Framework\Reflection\MethodsMap;
 
 /**
  * Class IgnoreUnknownAttributes
@@ -22,6 +24,7 @@ use Magento\Framework\Event\ObserverInterface;
 class IgnoreUnknownAttributes implements ObserverInterface
 {
     const XML_PATH_IGNORE_UNKNOWN = 'ba_amqp/product/ignore_unknown';
+    const PRODUCT_INTERFACE = '\Magento\Catalog\Api\Data\ProductInterface';
 
     /**
      * @var ScopeConfigInterface
@@ -39,18 +42,39 @@ class IgnoreUnknownAttributes implements ObserverInterface
     protected $whitelist = ['custom_attributes'];
 
     /**
+     * @var MethodsMap
+     */
+    protected $methodsMap;
+
+    /**
+     * @var array
+     */
+    protected $interfaceAttributes = [];
+
+    /**
+     * @var FieldNamer
+     */
+    protected $fieldNamer;
+
+    /**
      * IgnoreUnknownAttributes constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param ProductAttributeRepositoryInterface $productAttributeRepository
+     * @param MethodsMap $methodsMap
+     * @param FieldNamer $fieldNamer
      * @param array $whitelist
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ProductAttributeRepositoryInterface $productAttributeRepository,
+        MethodsMap $methodsMap,
+        FieldNamer $fieldNamer,
         array $whitelist = []
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->productAttributeRepository = $productAttributeRepository;
+        $this->methodsMap = $methodsMap;
+        $this->fieldNamer = $fieldNamer;
         $this->whitelist = array_merge($this->whitelist, $whitelist);
     }
 
@@ -73,9 +97,25 @@ class IgnoreUnknownAttributes implements ObserverInterface
             return $metaData->getAttributeCode();
         }, $this->productAttributeRepository->getCustomAttributesMetadata());
 
-        $unknownKeys = array_diff($dataObjectKeys, $knownAttributeCodes, $this->whitelist);
+        $unknownKeys = array_diff($dataObjectKeys, $knownAttributeCodes, $this->getInterfaceAttributes(), $this->whitelist);
         if ($unknownKeys) {
             $dataObject->unsetData($unknownKeys);
         }
+    }
+
+    /**
+     * Get interface attributes of product model
+     *
+     * @return array
+     */
+    protected function getInterfaceAttributes()
+    {
+        if (!$this->interfaceAttributes) {
+            $methods = array_keys($this->methodsMap->getMethodsMap(self::PRODUCT_INTERFACE));
+            $this->interfaceAttributes = array_map(function($methodName) {
+                return $this->fieldNamer->getFieldNameForMethodName($methodName);
+            }, $methods);
+        }
+        return $this->interfaceAttributes;
     }
 }
