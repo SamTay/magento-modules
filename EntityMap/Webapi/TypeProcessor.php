@@ -10,6 +10,7 @@ namespace BlueAcorn\EntityMap\Webapi;
 /**
  * Rewrite framework TypeProcessor to allow callable types
  * This is an obtrusive override -- leaving global di preference up to implementation
+ * If global unwanted, virtual types of service input/output processors can be defined
  */
 class TypeProcessor extends \Magento\Framework\Reflection\TypeProcessor
 {
