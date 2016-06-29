@@ -28,6 +28,7 @@ class Converter implements ConverterInterface
     const AGGREGATE_ID = 'id';
     const AGGREGATE_COLLAPSE_KEY = 'collapse';
     const SORT_KEY = 'sort';
+    const REMOVAL_KEY = 'removal';
     const OPERATION_TYPE_KEY = 'type';
 
     /**
@@ -37,7 +38,8 @@ class Converter implements ConverterInterface
     protected $attributeMapAttributes = [
         self::ATTRIBUTE_MAP_CODE => null,
         self::ATTRIBUTE_MAP_MAPPER => null,
-        self::SORT_KEY => 0
+        self::SORT_KEY => 0,
+        self::REMOVAL_KEY => true
     ];
 
     /**
@@ -46,7 +48,8 @@ class Converter implements ConverterInterface
      */
     protected $keyMapAttributes = [
         self::KEY_MAP_FROM => null,
-        self::KEY_MAP_TO => null
+        self::KEY_MAP_TO => null,
+        self::REMOVAL_KEY => true
     ];
 
     /**
@@ -55,7 +58,8 @@ class Converter implements ConverterInterface
      */
     protected $aggregateAttributes = [
         self::AGGREGATE_ID => null,
-        self::SORT_KEY => 0
+        self::SORT_KEY => 0,
+        self::REMOVAL_KEY => true
     ];
 
     /**
@@ -165,6 +169,10 @@ class Converter implements ConverterInterface
         foreach($map as $key => $default) {
             $attribute = $node->attributes->getNamedItem($key);
             $nodeData[$key] = is_null($attribute) ? $default : $attribute->nodeValue;
+            // If key should be boolean, cast to boolean
+            if (in_array($key, [self::REMOVAL_KEY])) {
+                $nodeData[$key] = filter_var($nodeData[$key], FILTER_VALIDATE_BOOLEAN);
+            }
         }
     }
 }

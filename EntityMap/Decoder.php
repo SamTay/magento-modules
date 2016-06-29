@@ -116,7 +116,9 @@ class Decoder implements ConverterInterface
                 $operation[DecodeConfigConverter::KEY_MAP_TO],
                 $dataObject->getData($operation[DecodeConfigConverter::KEY_MAP_FROM])
             );
-            $dataObject->unsetData($operation[DecodeConfigConverter::KEY_MAP_FROM]);
+            if ($operation[DecodeConfigConverter::REMOVAL_KEY]) {
+                $dataObject->unsetData($operation[DecodeConfigConverter::KEY_MAP_FROM]);
+            }
         }
     }
 
@@ -138,7 +140,9 @@ class Decoder implements ConverterInterface
         }
         $aggregatedData = $dataObject->toArray($keysToAggregate);
         $dataObject->setData($aggregateId, $aggregatedData);
-        $dataObject->unsetData($keysToAggregate);
+        if ($operation[DecodeConfigConverter::REMOVAL_KEY]) {
+            $dataObject->unsetData($keysToAggregate);
+        }
     }
 
     /**
@@ -154,7 +158,10 @@ class Decoder implements ConverterInterface
         if ($dataObject->hasData($key)) {
             $mapper = $this->mapperFactory->get($mapperClass);
             $mappedData = $mapper->map($key, $dataObject->getData($key));
-            $dataObject->unsetData($key); // Unset data first, otherwise mappers returning the same key are thrown away
+            if ($operation[DecodeConfigConverter::REMOVAL_KEY]) {
+                // Unset data first, otherwise mappers returning the same key are thrown away
+                $dataObject->unsetData($key);
+            }
             $dataObject->addData($mappedData);
         }
     }

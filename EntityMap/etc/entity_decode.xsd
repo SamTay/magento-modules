@@ -70,6 +70,7 @@
     <xs:complexType name="keyMapDeclaration">
         <xs:attribute name="from" type="externalAttributeCode" use="required" />
         <xs:attribute name="to" type="attributeCode" use="required" />
+        <xs:attribute name="removal" type="xs:boolean" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="aggregateDeclaration">
@@ -78,6 +79,7 @@
         </xs:sequence>
         <xs:attribute name="id" type="attributeCode" use="required" />
         <xs:attribute name="sort" type="xs:int" use="optional" />
+        <xs:attribute name="removal" type="xs:boolean" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="keyDeclaration">
@@ -88,6 +90,7 @@
         <xs:attribute name="code" type="attributeCode" use="required" />
         <xs:attribute name="mapper" type="modelName" use="required" />
         <xs:attribute name="sort" type="xs:int" use="optional" />
+        <xs:attribute name="removal" type="xs:boolean" use="optional" />
     </xs:complexType>
 
     <xs:simpleType name="externalAttributeCode">
