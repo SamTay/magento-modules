@@ -99,7 +99,7 @@ class Decoder implements ConverterInterface
     {
         foreach($this->config as $operation) {
             $method = $this->operationMethodMap[$operation[DecodeConfigConverter::OPERATION_TYPE_KEY]];
-            call_user_func([$this, $method], $data, $operation);
+            $this->$method($data, $operation);
         }
     }
 

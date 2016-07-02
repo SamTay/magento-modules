@@ -49,6 +49,7 @@ class Converter implements ConverterInterface
     protected $keyMapAttributes = [
         self::KEY_MAP_FROM => null,
         self::KEY_MAP_TO => null,
+        self::SORT_KEY => 0,
         self::REMOVAL_KEY => true
     ];
 
@@ -133,27 +134,28 @@ class Converter implements ConverterInterface
      */
     protected function getSortedOperations(array $data)
     {
-        // Key maps always come first (for now, don't see any reason these should be sorted)
-        $keyMapOps = array_values($data[self::ENTITY_KEY_MAP]);
-        $mixedOps = array_merge(
+        $operations = array_merge(
+            array_values($data[self::ENTITY_KEY_MAP]),
             array_values($data[self::ENTITY_KEY_AGGREGATE]),
             array_values($data[self::ENTITY_ATTRIBUTE_MAP])
         );
-        usort($mixedOps, function($opA, $opB) {
-            // Favor aggregating before mapping
+        usort($operations, function($opA, $opB) {
+            // Favor key_map -> aggregate -> attribute_map
             if ($opA[self::SORT_KEY] == $opB[self::SORT_KEY]) {
-                if ($opA[self::OPERATION_TYPE_KEY] != $opB[self::OPERATION_TYPE_KEY]) {
-                    return $opA[self::OPERATION_TYPE_KEY] == self::ENTITY_KEY_AGGREGATE
-                        ? -1
-                        : 1;
+                $typeA = $opA[self::OPERATION_TYPE_KEY];
+                $typeB = $opB[self::OPERATION_TYPE_KEY];
+                if ($typeA == $typeB) {
+                    return 0;
                 }
-                return 0;
+                // One of these search results !== false -- if either returns 1, favor $typeA
+                // Succint :)
+                $indexKeyMap = array_search(self::ENTITY_KEY_MAP, [$typeB, $typeA]);
+                $indexAttrMap = array_search(self::ENTITY_ATTRIBUTE_MAP, [$typeA, $typeB]);
+                return in_array(1, [$indexAttrMap, $indexKeyMap], true) ? -1 : 1;
             }
-            return $opA[self::SORT_KEY] < $opB[self::SORT_KEY]
-                ? -1
-                : 1;
+            return $opA[self::SORT_KEY] < $opB[self::SORT_KEY] ? -1 : 1;
         });
-        return array_merge($keyMapOps, $mixedOps);
+        return $operations;
     }
 
     /**
