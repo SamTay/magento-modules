@@ -9,26 +9,7 @@
     <xs:element name="config">
         <xs:complexType>
             <xs:sequence minOccurs="1" maxOccurs="unbounded">
-                <xs:element name="entity" type="entityDeclaration" minOccurs="1" maxOccurs="unbounded">
-                    <xs:unique name="uniqueKeyFrom">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Key "from" attribute must be unique
-                            </xs:documentation>
-                        </xs:annotation>
-                        <xs:selector xpath="key_map"/>
-                        <xs:field xpath="@from"/>
-                    </xs:unique>
-                    <xs:unique name="uniqueAttributeCode">
-                        <xs:annotation>
-                            <xs:documentation>
-                                Attribute code must be unique
-                            </xs:documentation>
-                        </xs:annotation>
-                        <xs:selector xpath="attribute_map"/>
-                        <xs:field xpath="@code"/>
-                    </xs:unique>
-                </xs:element>
+                <xs:element name="entity" type="entityDeclaration" minOccurs="1" maxOccurs="unbounded" />
             </xs:sequence>
         </xs:complexType>
         <xs:unique name="uniqueEntityName">
