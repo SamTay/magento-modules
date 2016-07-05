@@ -57,9 +57,14 @@
             </argument>
         </arguments>
     </type>
+    <virtualType name="BlueAcornServiceInputProcessor" type="Magento\Framework\Webapi\ServiceInputProcessor">
+        <arguments>
+            <argument name="typeProcessor" xsi:type="object">BlueAcorn\EntityMap\Webapi\TypeProcessor</argument>
+        </arguments>
+    </virtualType>
     <type name="BlueAcorn\AmqpBase\Model\MessageEncoder">
         <arguments>
-            <argument name="dataObjectDecoder" xsi:type="object">BlueAcorn\EntityMap\Webapi\ServiceInputProcessor</argument>
+            <argument name="dataObjectDecoder" xsi:type="object">BlueAcornServiceInputProcessor</argument>
             <argument name="dataObjectEncoder" xsi:type="object">BlueAcorn\EntityMap\Webapi\ServiceOutputProcessor</argument>
         </arguments>
     </type>

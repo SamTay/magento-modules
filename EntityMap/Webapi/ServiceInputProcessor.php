@@ -18,6 +18,7 @@ use Magento\Framework\Webapi\CustomAttributeTypeLocatorInterface;
 
 /**
  * Class ServiceInputProcessor
+ * TODO Cange to module and create shared virtualType
  * Using inheritance instead of composition so that classes can easily inject
  * this class into __construct via di.xml instead of having to rewrite lots of code
  */
