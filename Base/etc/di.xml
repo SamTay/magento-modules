@@ -75,17 +75,17 @@
         <plugin name="consumer_config_initial_converter_plugin" type="BlueAcorn\AmqpBase\Plugin\System\Config\Initial\Converter" />
     </type>
     <!-- Utilizing core module for custom logger -->
+    <virtualType name="BlueAcornAmqpBaseLoggerHandler" type="BlueAcorn\Core\Model\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/amqp/base.log</argument>
+        </arguments>
+    </virtualType>
     <virtualType name="BlueAcornAmqpBaseLogger" type="BlueAcorn\Core\Model\Logger">
         <arguments>
             <argument name="name" xsi:type="string">BlueAcorn Amqp Base Logger</argument>
             <argument name="handlers" xsi:type="array">
                 <item name="base" xsi:type="object">BlueAcornAmqpBaseLoggerHandler</item>
             </argument>
-        </arguments>
-    </virtualType>
-    <virtualType name="BlueAcornAmqpBaseLoggerHandler" type="BlueAcorn\Core\Model\Logger\Handler\Base">
-        <arguments>
-            <argument name="fileName" xsi:type="string">/var/log/amqp/base.log</argument>
         </arguments>
     </virtualType>
     <type name="BlueAcorn\AmqpBase\Helper\LogManager">
