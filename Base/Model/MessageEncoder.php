@@ -112,6 +112,13 @@ class MessageEncoder
         } catch (\Exception $e) {
             throw new LocalizedException(new Phrase("Error occurred during message decoding."));
         }
+        if (is_array($message)
+            && isset($message[Consumer::SHUTDOWN_PROTOCOL])
+            && $message[Consumer::SHUTDOWN_PROTOCOL]
+        ) {
+            return Consumer::SHUTDOWN_PROTOCOL;
+        }
+
         return $this->convertMessage($topic, $decodedMessage, self::DIRECTION_DECODE);
     }
 
@@ -138,12 +145,6 @@ class MessageEncoder
      */
     protected function convertMessage($topic, $message, $direction)
     {
-        if (isset($message[Consumer::SHUTDOWN_PROTOCOL])
-            && $message[Consumer::SHUTDOWN_PROTOCOL]
-        ) {
-            return Consumer::SHUTDOWN_PROTOCOL;
-        }
-
         $topicSchema = $this->getTopicSchema($topic);
         if ($topicSchema[QueueConfigConverter::TOPIC_SCHEMA_TYPE] == QueueConfigConverter::TOPIC_SCHEMA_TYPE_OBJECT) {
             /** Convert message according to the data interface associated with the message topic */
