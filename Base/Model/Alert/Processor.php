@@ -14,6 +14,7 @@ use Magento\Framework\App\State as AppState;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Phrase;
+use Magento\Framework\Reflection\DataObjectProcessor;
 
 class Processor
 {
@@ -40,29 +41,37 @@ class Processor
     protected $appState;
 
     /**
+     * @var DataObjectProcessor
+     */
+    protected $dataObjectProcessor;
+
+    /**
      * Processor constructor.
      * @param TransportBuilder $transportBuilder
      * @param ConsumerConfig $consumerConfig
      * @param LogManager $logManager
      * @param AppState $appState
+     * @param DataObjectProcessor $dataObjectProcessor
      */
     public function __construct(
         TransportBuilder $transportBuilder,
         ConsumerConfig $consumerConfig,
         LogManager $logManager,
-        AppState $appState
+        AppState $appState,
+        DataObjectProcessor $dataObjectProcessor
     ) {
         $this->transportBuilder = $transportBuilder;
         $this->logManager = $logManager;
         $this->consumerConfig = $consumerConfig;
         $this->appState = $appState;
+        $this->dataObjectProcessor = $dataObjectProcessor;
     }
 
     public function processAlert(AlertInterface $alert)
     {
         try {
             $recipients = $this->getEmailRecipients($alert);
-            $vars = $alert->getData();
+            $vars = $this->dataObjectProcessor->buildOutputDataArray($alert, 'BlueAcorn\AmqpBase\Api\Data\AlertInterface');
             $this->sendEmail($recipients, $vars);
         } catch (\Exception $e) {
             // Squelch all errors in alert queue processing, we don't want to create infinite message loop
