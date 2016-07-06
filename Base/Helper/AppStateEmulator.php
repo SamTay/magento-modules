@@ -9,6 +9,7 @@ namespace BlueAcorn\AmqpBase\Helper;
 
 use Magento\Framework\App\State as AppState;
 use Magento\Backend\App\Area\FrontNameResolver as BackendArea;
+use Magento\Framework\Registry;
 
 /**
  * Class AppStateEmulator
@@ -27,13 +28,26 @@ class AppStateEmulator
     protected $areaCode = BackendArea::AREA_CODE;
 
     /**
+     * @var Registry
+     */
+    protected $registry;
+
+    /**
+     * @var bool
+     */
+    protected $prevSecureValue = false;
+
+    /**
      * Import constructor.
      * @param AppState $appState
+     * @param Registry $registry
      */
     public function __construct(
-        AppState $appState
+        AppState $appState,
+        Registry $registry
     ) {
         $this->appState = $appState;
+        $this->registry = $registry;
     }
 
     /**
@@ -49,6 +63,21 @@ class AppStateEmulator
     }
 
     /**
+     * Set secure area
+     * Removes secure area setting after 'wrap' is called
+     *
+     * @param bool $secure
+     * @return $this
+     */
+    public function setSecureArea($secure = true)
+    {
+        $this->prevSecureValue = $this->registry->registry('isSecureArea') ?: false;
+        $this->registry->unregister('isSecureArea');
+        $this->registry->register('isSecureArea', $secure);
+        return $this;
+    }
+
+    /**
      * Wrap function in an emulated area.
      * Accepts variable number of arguments to pass to the $closure argument
      *
@@ -60,6 +89,9 @@ class AppStateEmulator
     {
         $args = func_get_args(); // Get variable number of arguments
         array_shift($args); // Remove first \Closure argument
-        return $this->appState->emulateAreaCode($this->areaCode, $closure, $args);
+        $return = $this->appState->emulateAreaCode($this->areaCode, $closure, $args);
+        $this->registry->unregister('isSecureArea');
+        $this->registry->register('isSecureArea', $this->prevSecureValue);
+        return $return;
     }
 }
