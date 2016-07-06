@@ -8,8 +8,8 @@
 <!--@vars {
 "var consumer":"Consumer",
 "var message":"Message",
-"var stackTrace":"Stack Trace",
-"var dateAndTime":"Date and Time of Error",
+"var stack_trace":"Stack Trace",
+"var date_and_time":"Date and Time of Error",
 } @-->
 
 <h1>{{trans "Amqp Alert"}}</h1>
@@ -25,10 +25,10 @@
     </li>
     <li>
         <b>{{trans "Stack Trace"}}</b><br />
-        {{var stackTrace|raw}}
+        {{var stack_trace|raw}}
     </li>
     <li>
         <b>{{trans "Date & Time:"}}</b><br />
-        {{var dateAndTime}}
+        {{var date_and_time}}
     </li>
 </ul>
