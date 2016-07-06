@@ -57,7 +57,7 @@
             </argument>
         </arguments>
     </type>
-    <virtualType name="BlueAcornServiceInputProcessor" type="Magento\Framework\Webapi\ServiceInputProcessor">
+    <virtualType name="BlueAcornServiceInputProcessor" type="BlueAcorn\EntityMap\Webapi\ServiceInputProcessor">
         <arguments>
             <argument name="typeProcessor" xsi:type="object">BlueAcorn\EntityMap\Webapi\TypeProcessor</argument>
         </arguments>
