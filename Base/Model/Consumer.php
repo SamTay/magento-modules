@@ -266,7 +266,7 @@ class Consumer implements ConsumerInterface
                 ->setEmailSubject($config[ConsumerConfig::FIELD_EMAIL_SUBJECT])
                 ->setConsumer($consumerName)
                 ->setMessage($e->getMessage())
-                ->setStackTrace($e->getTraceAsString())
+                ->setStackTrace(nl2br($e->getTraceAsString()))
                 ->setTimestamp(time())
                 ->create();
             $this->alertManager->publish($alert);
