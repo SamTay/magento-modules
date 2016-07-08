@@ -30,6 +30,7 @@ class LabelToOption implements MapperInterface
             ));
         }
         $optionLabels = Escape::_explode($value);
+        $optionLabels = array_unique($optionLabels);
         $optionValues = array_filter(array_map([$this, 'getOptionValue'], $optionLabels));
         return [$key => implode(',', $optionValues)];
     }
