@@ -112,9 +112,9 @@ class MessageEncoder
         } catch (\Exception $e) {
             throw new LocalizedException(new Phrase("Error occurred during message decoding."));
         }
-        if (is_array($message)
-            && isset($message[Consumer::SHUTDOWN_PROTOCOL])
-            && $message[Consumer::SHUTDOWN_PROTOCOL]
+        if (is_array($decodedMessage)
+            && isset($decodedMessage[Consumer::SHUTDOWN_PROTOCOL])
+            && $decodedMessage[Consumer::SHUTDOWN_PROTOCOL]
         ) {
             return Consumer::SHUTDOWN_PROTOCOL;
         }
