@@ -4,7 +4,7 @@ Blue Acorn module for improving the native layered navigation
 ### Installation
 ```
 composer config repositories.blueacorn/layered-navigation git git@github.com:blueacorninc/m2-layered-navigation.git
-composer require blueacorn/layered-navigation:dev-master
+composer require blueacorn/module-layered-navigation:dev-master
 bin/magento setup:upgrade && bin/magento cache:flush
 ```
 
