@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/AmqpBase
+ * @version     0.2.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="amqp">
+        <job name="refresh_amqp_daemons" instance="BlueAcorn\AmqpBase\Cron\RefreshDaemon" method="execute">
+            <schedule>*/5 * * * *</schedule>
+        </job>
+    </group>
+</config>
