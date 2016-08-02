@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="catalogsearch.navigation.renderer">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">BlueAcorn_LayeredNavigation::layer/filter.phtml</argument>
+            </action>
+        </referenceBlock>
+    </body>
+</page>
