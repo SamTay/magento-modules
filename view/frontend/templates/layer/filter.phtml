@@ -1,11 +1,10 @@
 <?php
 /**
- * Copyright © 2016 Magento. All rights reserved.
- * See COPYING.txt for license details.
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-
-// @codingStandardsIgnoreFile
-
 ?>
 <?php
 /**
@@ -18,19 +17,21 @@
 <ol class="items">
     <?php foreach ($filterItems as $filterItem): ?>
         <li class="item">
-            <?php if ($filterItem->getCount() > 0): ?>
+            <?php if ($filterItem->getCount() > 0 && !$filterItem->getAlreadyApplied()): ?>
                 <a href="<?php echo $block->escapeUrl($filterItem->getUrl()) ?>">
                     <?php /* @escapeNotVerified */ echo $filterItem->getLabel() ?>
                     <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
                         <span class="count"><?php /* @escapeNotVerified */ echo $filterItem->getCount()?><span class="filter-count-label">
-                            <?php if ($filterItem->getCount() == 1):?> <?php /* @escapeNotVerified */ echo __('item')?><?php else:?> <?php /* @escapeNotVerified */ echo __('items') ?><?php endif;?></span></span>
+                        <?php echo ($filterItem->getCount() == 1) ? __('item') : __('items'); ?>
+                    </span></span>
                     <?php endif; ?>
                 </a>
             <?php else:?>
                 <?php /* @escapeNotVerified */ echo $filterItem->getLabel() ?>
                 <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
                     <span class="count"><?php /* @escapeNotVerified */ echo $filterItem->getCount()?><span class="filter-count-label">
-                        <?php if ($filterItem->getCount() == 1):?><?php /* @escapeNotVerified */ echo __('item')?><?php else:?><?php /* @escapeNotVerified */ echo __('items') ?><?php endif;?></span></span>
+                        <?php echo ($filterItem->getCount() == 1) ? __('item') : __('items'); ?>
+                    </span></span>
                 <?php endif; ?>
             <?php endif; ?>
         </li>
