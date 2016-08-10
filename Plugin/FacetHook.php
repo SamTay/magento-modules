@@ -10,6 +10,10 @@ namespace BlueAcorn\LayeredNavigation\Plugin;
 use BlueAcorn\LayeredNavigation\Model\FacetPool;
 use Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection as FulltextCollection;
 
+/**
+ * TODO: Decide whether this should remain a plugin (global for any fulltext collection)
+ * or just inject a custom wrapper object into the collection provider (hooks only for single collection belonging to layer)
+ */
 class FacetHook
 {
     /** @var FacetPool */
@@ -26,22 +30,15 @@ class FacetHook
     }
 
     /**
-     * TODO: Right now this plugin will apply to all pooled facet collections :( no bueno,
-     * maybe extend dummy class to avoid plugin
+     * Add facet for this filter
      *
      * @param FulltextCollection $subject
-     * @param \Closure $proceed
      * @param $field
      * @param null $condition
-     * @param return FulltextCollection
      */
-    public function aroundAddFieldToFilter(FulltextCollection $subject, \Closure $proceed, $field, $condition = null)
+    public function beforeAddFieldToFilter(FulltextCollection $subject, $field, $condition = null)
     {
-        // TODO maybe check if $field is a non price/decimal attribute ?? Not sure ...
-        // if all price/decimals are using sliders then we shouldn't worry about faceting against them
-        $this->facetPool->addFacet($field, $subject);
-        $return = $proceed($field, $condition);
-        $this->facetPool->addFieldToFilter($field, $condition);
-        return $return;
+        $this->facetPool->addFacet($field, $condition);
+        return;
     }
 }

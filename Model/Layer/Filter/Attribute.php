@@ -93,8 +93,6 @@ class Attribute extends AbstractFilter
         $attribute = $this->getAttributeModel();
         /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
         $productCollection = $this->facetPool->getFacet($attribute->getAttributeCode());
-        // TODO see if getting faceted data PER collection is viable, or if we should just execute some SQL
-        // on the collections in facet pool
         $optionsFacetedData = $productCollection->getFacetedData($attribute->getAttributeCode());
 
         $productSize = $productCollection->getSize();

@@ -9,65 +9,64 @@ namespace BlueAcorn\LayeredNavigation\Model;
 
 use Magento\Catalog\Model\Layer;
 use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
-use Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection as FulltextCollection;
+use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 
 /**
  * Class FacetPool
- * TODO: FUCK looks like catalog_view_container does not exist when trying to query against multiple fulltext collections
- * TODO: Possibly use normal catalog resource collections per facet, and keep main facet in line with fulltext collection
- * ( if getting faceted data per collection doesn't work )
  */
 class FacetPool
 {
-    /** TODO Decide whether or not to use catalog resource collection or catalog-search fulltext collection */
-    /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection[] */
+    const MAIN = '__MAIN__';
+
+    /** @var ProductCollection[] */
     protected $facets = [];
 
-    /** @var array filters for which we should NOT clone collections */
-    protected $filterblacklist = ['category_ids', 'visibility'];
-
-    /** TODO Decide whether or not to use catalog resource collection or catalog-search fulltext collection */
+    /** @var ProductCollectionFactory */
     protected $collectionFactory;
 
     /** @var Layer */
     protected $layer;
 
-    /**
-     * CollectionPool constructor.
-     * @param Layer $layer
-     */
-    public function __construct(
-        LayerResolver $layerResolver
-    ) {
-        $this->layer = $layerResolver->get();
-    }
+    /** @var array filters for which we should NOT create collections */
+    protected $filterblacklist = ['category_ids', 'visibility'];
 
     /**
-     * @param $attributeCode
-     * @param FulltextCollection $collection
+     * CollectionPool constructor.
+     * @param LayerResolver $layerResolver
+     * @param ProductCollectionFactory $collectionFactory
      */
-    public function addFacet($attributeCode, FulltextCollection $collection)
+    public function __construct(
+        LayerResolver $layerResolver,
+        ProductCollectionFactory $collectionFactory
+    ) {
+        $this->layer = $layerResolver->get();
+        $this->collectionFactory = $collectionFactory;
+        $this->facets[self::MAIN] = $this->collectionFactory->create();
+    }
+
+    public function addFacet($field, $condition)
     {
         // TODO test if clone works for collections, otherwise preference rewrite, __call, and save [method, args]
         // TODO what should happen if array key already exists??
-        if (!in_array($attributeCode, $this->filterblacklist)) {
-            $this->facets[$attributeCode] = clone $collection;
+        // TODO possibly filter $field against attributes of type int / varchar or select / multiselect, etc.
+        // TODO maybe check if $field is a non price/decimal attribute ?? Not sure ...
+        // if all price/decimals are using sliders then we shouldn't worry about faceting against them
+        if (!in_array($field, $this->filterblacklist)) {
+            $this->facets[$field] = clone $this->facets[self::MAIN];
         }
+        $this->addFieldToFilter($field, $condition);
     }
 
     /**
      * Get layer product collection without specified attribute filter
      *
      * @param $attributeCode
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Collection|FulltextCollection
+     * @return ProductCollection|null
      */
     public function getFacet($attributeCode)
     {
-        // TODO decide whether to be strict (requires filter models knowing whether or not their field has been applied)
-        // and coupled or loose coupling and defaulting to singleton layer collection
-        return array_key_exists($attributeCode, $this->facets)
-            ? $this->facets[$attributeCode]
-            : $this->layer->getProductCollection();
+        return array_key_exists($attributeCode, $this->facets) ? $this->facets[$attributeCode] : null;
     }
 
     /**
@@ -81,10 +80,7 @@ class FacetPool
     {
         foreach ($this->facets as $attributeCode => $collection) {
             if ($attributeCode != $field) {
-                // Direct call to 'addFieldToFilter' so that we don't hook into plugin again
-                $className = 'Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection';
-                $method = 'addFieldToFilter';
-                call_user_func([$collection, "$className::$method"], $field, $condition);
+                $collection->addFieldToFilter($field, $condition);
             }
         }
     }
