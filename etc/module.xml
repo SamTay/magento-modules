@@ -9,6 +9,7 @@
     <module name="BlueAcorn_LayeredNavigation" setup_version="1.0.0">
         <sequence>
             <module name="Magento_Catalog"/>
+            <module name="Magento_CatalogSearch"/>
             <module name="Magento_LayeredNavigation"/>
         </sequence>
     </module>
