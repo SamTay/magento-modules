@@ -8,9 +8,15 @@
 namespace BlueAcorn\LayeredNavigation\Model;
 
 use Magento\Catalog\Model\Layer;
-use Magento\CatalogSearch\Model\ResourceModel\Fulltext\CollectionFactory as FulltextCollectionFactory;
+use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
 use Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection as FulltextCollection;
 
+/**
+ * Class FacetPool
+ * TODO: FUCK looks like catalog_view_container does not exist when trying to query against multiple fulltext collections
+ * TODO: Possibly use normal catalog resource collections per facet, and keep main facet in line with fulltext collection
+ * ( if getting faceted data per collection doesn't work )
+ */
 class FacetPool
 {
     /** TODO Decide whether or not to use catalog resource collection or catalog-search fulltext collection */
@@ -18,10 +24,9 @@ class FacetPool
     protected $facets = [];
 
     /** @var array filters for which we should NOT clone collections */
-    protected $filterblacklist = [];
+    protected $filterblacklist = ['category_ids', 'visibility'];
 
     /** TODO Decide whether or not to use catalog resource collection or catalog-search fulltext collection */
-    /** @var FulltextCollectionFactory */
     protected $collectionFactory;
 
     /** @var Layer */
@@ -29,15 +34,12 @@ class FacetPool
 
     /**
      * CollectionPool constructor.
-     * @param FulltextCollectionFactory $collectionFactory
      * @param Layer $layer
      */
     public function __construct(
-        FulltextCollectionFactory $collectionFactory,
-        Layer $layer
+        LayerResolver $layerResolver
     ) {
-        $this->collectionFactory = $collectionFactory;
-        $this->layer = $layer;
+        $this->layer = $layerResolver->get();
     }
 
     /**
@@ -48,7 +50,9 @@ class FacetPool
     {
         // TODO test if clone works for collections, otherwise preference rewrite, __call, and save [method, args]
         // TODO what should happen if array key already exists??
-        $this->facets[$attributeCode] = clone $collection;
+        if (!in_array($attributeCode, $this->filterblacklist)) {
+            $this->facets[$attributeCode] = clone $collection;
+        }
     }
 
     /**
@@ -77,7 +81,10 @@ class FacetPool
     {
         foreach ($this->facets as $attributeCode => $collection) {
             if ($attributeCode != $field) {
-                $collection->addFieldToFilter($field, $condition);
+                // Direct call to 'addFieldToFilter' so that we don't hook into plugin again
+                $className = 'Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection';
+                $method = 'addFieldToFilter';
+                call_user_func([$collection, "$className::$method"], $field, $condition);
             }
         }
     }
