@@ -7,37 +7,52 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model;
 
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\DB\Select;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Facet
 {
-    /** @var string */
-    protected $attributeCode;
-
     /** @var  ProductCollection */
     protected $collection;
 
-    /** @var AdapterInterface */
-    protected $connection;
+    /** @var Attribute */
+    protected $attribute;
 
+    /** @var StoreManagerInterface */
+    protected $storeManager;
+
+    /** @var ResourceConnection */
+    protected $resource;
+
+    /**
+     * Facet constructor.
+     * @param ProductCollection $collection
+     * @param Attribute $attribute
+     * @param ResourceConnection $resource
+     * @param StoreManagerInterface $storeManager
+     */
     public function __construct(
         ProductCollection $collection,
-        AdapterInterface $connection,
-        $attributeCode
+        Attribute $attribute,
+        ResourceConnection $resource,
+        StoreManagerInterface $storeManager
     ) {
-        $this->attributeCode = $attributeCode;
         $this->collection = $collection;
-        $this->connection = $connection;
+        $this->attribute = $attribute;
+        $this->storeManager = $storeManager;
+        $this->resource = $resource;
     }
 
     /**
-     * Get result count for this facet
+     * Get result count per attribute value
      *
-     * @return int
+     * @return array
      */
-    public function getCount()
+    public function getFacetedData()
     {
         // clone select from collection
         $select = clone $this->collection->getSelect();
@@ -48,16 +63,16 @@ class Facet
         $select->reset(Select::LIMIT_OFFSET);
 
         $connection = $this->getConnection();
-        $attribute = $filter->getAttributeModel();
+        $attribute = $this->getAttribute();
         $tableAlias = sprintf('%s_idx', $attribute->getAttributeCode());
         $conditions = [
             "{$tableAlias}.entity_id = e.entity_id",
             $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
-            $connection->quoteInto("{$tableAlias}.store_id = ?", $filter->getStoreId()),
+            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->storeManager->getStore()->getId()),
         ];
 
         $select->join(
-            [$tableAlias => $this->getMainTable()],
+            [$tableAlias => 'catalog_product_index_eav'],
             join(' AND ', $conditions),
             ['value', 'count' => new \Zend_Db_Expr("COUNT({$tableAlias}.entity_id)")]
         )->group(
@@ -68,14 +83,36 @@ class Facet
     }
 
     /**
-     * Forward filter to colletion
+     * Check if facet should skip this collection modifier
      *
-     * @param mixed $field
-     * @param mixed $condition
+     * @param $method
+     * @param $args
+     * @return bool
      */
-    public function addFieldToFilter($field, $condition = null)
+    public function shouldSkip($method, $args)
     {
-        $this->collection->addFieldToFilter($field, $condition);
+        return $method == 'addFieldToFilter'
+            && $args && $args[0] == $this->getAttributeCode();
+    }
+
+    /**
+     * Get collection
+     *
+     * @return ProductCollection
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * Get attribute
+     *
+     * @return Attribute
+     */
+    public function getAttribute()
+    {
+        return $this->attribute;
     }
 
     /**
@@ -85,7 +122,7 @@ class Facet
      */
     public function getAttributeCode()
     {
-        return $this->attributeCode;
+        return $this->attribute->getAttributeCode();
     }
 
     /**
@@ -95,6 +132,6 @@ class Facet
      */
     public function getConnection()
     {
-        return $this->connection;
+        return $this->resource->getConnection();
     }
 }

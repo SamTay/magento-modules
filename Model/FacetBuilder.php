@@ -7,14 +7,14 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model;
 
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
+use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Framework\ObjectManagerInterface;
 
 class FacetBuilder
 {
     const INSTANCE_NAME = 'BlueAcorn\LayeredNavigation\Model\Facet';
-    const ATTRIBUTE_CODE_KEY = 'attributeCode';
+    const ATTRIBUTE_KEY = 'attribute';
     const COLLECTION_KEY = 'collection';
 
     /** @var ObjectManagerInterface */
@@ -45,14 +45,14 @@ class FacetBuilder
     }
 
     /**
-     * Set attribute code
+     * Set attribute model
      *
-     * @param $attributeCode
+     * @param Attribute $attribute
      * @return $this
      */
-    public function setAttributeCode($attributeCode)
+    public function setAttribute(Attribute $attribute)
     {
-        $this->data[self::ATTRIBUTE_CODE_KEY] = $attributeCode;
+        $this->data[self::ATTRIBUTE_KEY] = $attribute;
         return $this;
     }
 

@@ -69,6 +69,7 @@ class Attribute extends AbstractFilter
             ? $attributeValue
             : ['in' => explode(',', $attributeValue)];
         $attribute = $this->getAttributeModel();
+        $this->facetPool->addFacet($attribute);
         $productCollection->addFieldToFilter($attribute->getAttributeCode(), $condition);
         $label = $this->getOptionText($attributeValue);
         if (is_array($label)) {
@@ -90,33 +91,49 @@ class Attribute extends AbstractFilter
      */
     protected function _getItemsData()
     {
+        $totalSize = $this->getLayer()->getProductCollection()->getSize();
+        $facetedData = $this->_getFacetedData();
         $attribute = $this->getAttributeModel();
-        /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
-        $productCollection = $this->facetPool->getFacet($attribute->getAttributeCode());
-        $optionsFacetedData = $productCollection->getFacetedData($attribute->getAttributeCode());
-
-        $productSize = $productCollection->getSize();
-
-        $options = $attribute->getFrontend()
-            ->getSelectOptions();
+        $options = $attribute->getFrontend()->getSelectOptions();
         foreach ($options as $option) {
             if (empty($option['value'])) {
                 continue;
             }
-            // Check filter type
-            if (empty($optionsFacetedData[$option['value']]['count'])
+            // TODO this check for reducing results size will exclude currently applied filter values
+            // TODO absolutely need to rewrite this logic in the case that this attribute is already applied,
+            // since total size will be LESS THAN OR EQUAL TO faceted size
+            if (empty($facetedData[$option['value']])
                 || ($this->getAttributeIsFilterable($attribute) == static::ATTRIBUTE_OPTIONS_ONLY_WITH_RESULTS
-                    && !$this->isOptionReducesResults($optionsFacetedData[$option['value']]['count'], $productSize))
+                    && !$this->isOptionReducesResults($facetedData[$option['value']], $totalSize))
             ) {
                 continue;
             }
             $this->itemDataBuilder->addItemData(
                 $this->tagFilter->filter($option['label']),
                 $option['value'],
-                $optionsFacetedData[$option['value']]['count']
+                $facetedData[$option['value']]
             );
         }
 
         return $this->itemDataBuilder->build();
+    }
+
+    /**
+     * Get faceted data
+     *
+     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    protected function _getFacetedData()
+    {
+        $attribute = $this->getAttributeModel();
+        $facet = $this->facetPool->getFacet($attribute->getAttributeCode());
+        if ($facet) {
+            return $facet->getFacetedData();
+        }
+
+        return array_map(function($data) {
+            return $data['count'];
+        }, $this->getLayer()->getProductCollection()->getFacetedData($attribute->getAttributeCode()));
     }
 }

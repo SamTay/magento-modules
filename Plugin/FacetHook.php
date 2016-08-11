@@ -8,6 +8,7 @@
 namespace BlueAcorn\LayeredNavigation\Plugin;
 
 use BlueAcorn\LayeredNavigation\Model\FacetPool;
+use Magento\Catalog\Model\Category;
 use Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection as FulltextCollection;
 
 /**
@@ -38,7 +39,13 @@ class FacetHook
      */
     public function beforeAddFieldToFilter(FulltextCollection $subject, $field, $condition = null)
     {
-        $this->facetPool->addFacet($field, $condition);
+        $this->facetPool->addCollectionModifier('addFieldToFilter', [$field, $condition]);
+        return;
+    }
+
+    public function beforeAddCategoryFilter(FulltextCollection $subject, Category $category)
+    {
+        $this->facetPool->addCollectionModifier('addCategoryFilter', [$category]);
         return;
     }
 }
