@@ -15,6 +15,8 @@ use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
  */
 class Attribute extends AbstractFilter
 {
+    const ALREADY_APPLIED = 'already_applied';
+
     /** @var \Magento\Framework\Filter\StripTags */
     protected $tagFilter;
 
@@ -65,12 +67,14 @@ class Attribute extends AbstractFilter
         }
         /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
         $productCollection = $this->getLayer()->getProductCollection();
+        $attribute = $this->getAttributeModel();
+        $this->facetPool->addFacet($attribute, $attributeValue);
+        // Allow multiple filter values
         $condition = strpos($attributeValue, ',') === false
             ? $attributeValue
             : ['in' => explode(',', $attributeValue)];
-        $attribute = $this->getAttributeModel();
-        $this->facetPool->addFacet($attribute);
         $productCollection->addFieldToFilter($attribute->getAttributeCode(), $condition);
+        $this->setAlreadyApplied(true);
         $label = $this->getOptionText($attributeValue);
         if (is_array($label)) {
             $label = implode(', ', $label);
@@ -79,7 +83,6 @@ class Attribute extends AbstractFilter
             ->getState()
             ->addFilter($this->_createItem($label, $attributeValue));
 
-        //$this->setItems([]); // set items to disable show filtering
         return $this;
     }
 
@@ -99,12 +102,10 @@ class Attribute extends AbstractFilter
             if (empty($option['value'])) {
                 continue;
             }
-            // TODO this check for reducing results size will exclude currently applied filter values
-            // TODO absolutely need to rewrite this logic in the case that this attribute is already applied,
-            // since total size will be LESS THAN OR EQUAL TO faceted size
+            // TODO if value is already applied, check sys config whether or not this should show up as a span?
             if (empty($facetedData[$option['value']])
                 || ($this->getAttributeIsFilterable($attribute) == static::ATTRIBUTE_OPTIONS_ONLY_WITH_RESULTS
-                    && !$this->isOptionReducesResults($facetedData[$option['value']], $totalSize))
+                    && !$this->isOptionAffectsResults($facetedData[$option['value']], $totalSize))
             ) {
                 continue;
             }
@@ -135,5 +136,20 @@ class Attribute extends AbstractFilter
         return array_map(function($data) {
             return $data['count'];
         }, $this->getLayer()->getProductCollection()->getFacetedData($attribute->getAttributeCode()));
+    }
+
+    /**
+     * Check if option will affect results (change total collection size)
+     *
+     * @param $optionCount
+     * @param $totalSize
+     * @return bool
+     */
+    protected function isOptionAffectsResults($optionCount, $totalSize)
+    {
+        if ($this->getAlreadyApplied()) {
+            return $optionCount > $totalSize;
+        }
+        return parent::isOptionReducesResults($optionCount, $totalSize);
     }
 }
