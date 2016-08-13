@@ -38,6 +38,14 @@ that is, if the Color => Blue filter is selected, or if all items in the collect
 "Blue". There is configuration to restrict showing the dependent filters if the attribute is a multiselect and more than
 one value is selected (or if some items in the collection have more than the dependent value set).
 
+### Approach
+##### Multi Value Filtering
+The approach here is to allow the main layer product collection to continue to leverage the fulltext enhancements. Each
+of the Layer/Filter models are overridden to keep native fulltext functionality, but hook in and spin off faceted
+collections whenever an attribute filter is applied. This is done so that we can have OR conditions when filtering
+multiple values for each attribute. None of these faceted collections are loaded, but their SELECTs are utilized to
+query result counts for applying additional filter values.
+
 ### Known Issues
 None yet.
 
