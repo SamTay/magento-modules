@@ -27,7 +27,7 @@
             </argument>
         </arguments>
     </virtualType>
-    <type name="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection">
-        <plugin name="facetedCollectionHook" type="BlueAcorn\LayeredNavigation\Plugin\FacetHook" />
+    <type name="Magento\CatalogSearch\Model\Layer\Category\ItemCollectionProvider">
+        <plugin name="getCategoryFilterForMirror" type="BlueAcorn\LayeredNavigation\Plugin\FacetInitializer" />
     </type>
 </config>
