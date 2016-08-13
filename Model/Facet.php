@@ -9,10 +9,7 @@ namespace BlueAcorn\LayeredNavigation\Model;
 
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\DB\Adapter\AdapterInterface;
-use Magento\Framework\DB\Select;
-use Magento\Store\Model\StoreManagerInterface;
+use BlueAcorn\LayeredNavigation\Model\ResourceModel\Facet as FacetResource;
 
 class Facet
 {
@@ -22,28 +19,28 @@ class Facet
     /** @var Attribute */
     protected $attribute;
 
-    /** @var StoreManagerInterface */
-    protected $storeManager;
+    /** @var int|string */
+    protected $attributeValue;
 
-    /** @var ResourceConnection */
+    /** @var FacetResource */
     protected $resource;
 
     /**
      * Facet constructor.
      * @param ProductCollection $collection
      * @param Attribute $attribute
-     * @param ResourceConnection $resource
-     * @param StoreManagerInterface $storeManager
+     * @param int|string $attributeValue
+     * @param FacetResource $resource
      */
     public function __construct(
         ProductCollection $collection,
         Attribute $attribute,
-        ResourceConnection $resource,
-        StoreManagerInterface $storeManager
+        $attributeValue,
+        FacetResource $resource
     ) {
         $this->collection = $collection;
         $this->attribute = $attribute;
-        $this->storeManager = $storeManager;
+        $this->attributeValue = $attributeValue;
         $this->resource = $resource;
     }
 
@@ -54,45 +51,7 @@ class Facet
      */
     public function getFacetedData()
     {
-        // clone select from collection
-        $select = clone $this->collection->getSelect();
-        // reset columns, order and limitation conditions
-        $select->reset(Select::COLUMNS);
-        $select->reset(Select::ORDER);
-        $select->reset(Select::LIMIT_COUNT);
-        $select->reset(Select::LIMIT_OFFSET);
-
-        $connection = $this->getConnection();
-        $attribute = $this->getAttribute();
-        $tableAlias = sprintf('%s_idx', $attribute->getAttributeCode());
-        $conditions = [
-            "{$tableAlias}.entity_id = e.entity_id",
-            $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
-            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->storeManager->getStore()->getId()),
-        ];
-
-        $select->join(
-            [$tableAlias => 'catalog_product_index_eav'],
-            join(' AND ', $conditions),
-            ['value', 'count' => new \Zend_Db_Expr("COUNT({$tableAlias}.entity_id)")]
-        )->group(
-            "{$tableAlias}.value"
-        );
-
-        return $connection->fetchPairs($select);
-    }
-
-    /**
-     * Check if facet should skip this collection modifier
-     *
-     * @param $method
-     * @param $args
-     * @return bool
-     */
-    public function shouldSkip($method, $args)
-    {
-        return $method == 'addFieldToFilter'
-            && $args && $args[0] == $this->getAttributeCode();
+        return $this->resource->getFacetedData($this);
     }
 
     /**
@@ -116,6 +75,16 @@ class Facet
     }
 
     /**
+     * Get applied attribute value
+     *
+     * @return int|string
+     */
+    public function getAttributeValue()
+    {
+        return $this->attributeValue;
+    }
+
+    /**
      * Get attribute code
      *
      * @return string
@@ -128,7 +97,7 @@ class Facet
     /**
      * Get connection
      *
-     * @return AdapterInterface
+     * @return \Magento\Framework\DB\Adapter\AdapterInterface
      */
     public function getConnection()
     {

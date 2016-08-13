@@ -15,6 +15,7 @@ class FacetBuilder
 {
     const INSTANCE_NAME = 'BlueAcorn\LayeredNavigation\Model\Facet';
     const ATTRIBUTE_KEY = 'attribute';
+    const ATTRIBUTE_VALUE_KEY = 'attributeValue';
     const COLLECTION_KEY = 'collection';
 
     /** @var ObjectManagerInterface */
@@ -53,6 +54,18 @@ class FacetBuilder
     public function setAttribute(Attribute $attribute)
     {
         $this->data[self::ATTRIBUTE_KEY] = $attribute;
+        return $this;
+    }
+
+    /**
+     * Set filtered attribute value
+     *
+     * @param $attributeValue
+     * @return $this
+     */
+    public function setAttributeValue($attributeValue)
+    {
+        $this->data[self::ATTRIBUTE_VALUE_KEY] = $attributeValue;
         return $this;
     }
 
