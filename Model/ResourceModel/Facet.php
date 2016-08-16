@@ -17,6 +17,7 @@ use BlueAcorn\LayeredNavigation\Model\Facet as FacetModel;
 class Facet
 {
     const TABLE_CATALOG_PRODUCT_INDEX_EAV = 'catalog_product_index_eav';
+    const TABLE_CATALOG_PRODUCT_INDEX_EAV_DECIMAL = 'catalog_product_index_eav_decimal';
 
     /** @var StoreManagerInterface */
     protected $storeManager;
@@ -78,6 +79,39 @@ class Facet
     {
         $collection->setStoreId($category->getStoreId())
             ->addCategoryFilter($category);
+    }
+
+    /**
+     * Add decimal filter to collection
+     *
+     * @param ProductCollection $collection
+     * @param Attribute $attribute
+     * @param $from
+     * @param $to
+     */
+    public function addDecimalFilter(ProductCollection $collection, Attribute $attribute, $from, $to)
+    {
+        $connection = $this->getConnection();
+        $tableAlias = sprintf('%s_idx', $attribute->getAttributeCode());
+        $conditions = [
+            "{$tableAlias}.entity_id = e.entity_id",
+            $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
+            $connection->quoteInto("{$tableAlias}.store_id = ?", $collection->getStoreId()),
+        ];
+
+        $collection->getSelect()->join(
+            [$tableAlias => $this->getMainTable()],
+            implode(' AND ', $conditions),
+            []
+        );
+
+        $collection->getSelect()->where(
+            "{$tableAlias}.value >= ?",
+            $from
+        )->where(
+            "{$tableAlias}.value < ?",
+            $to
+        );
     }
 
     /**

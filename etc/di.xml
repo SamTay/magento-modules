@@ -12,7 +12,7 @@
             <argument name="filters" xsi:type="array">
                 <item name="attribute" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\Filter\Attribute</item>
                 <item name="price" xsi:type="string">Magento\CatalogSearch\Model\Layer\Filter\Price</item>
-                <item name="decimal" xsi:type="string">Magento\CatalogSearch\Model\Layer\Filter\Decimal</item>
+                <item name="decimal" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\Filter\Decimal</item>
                 <item name="category" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\Filter\Category</item>
             </argument>
         </arguments>
@@ -22,7 +22,7 @@
             <argument name="filters" xsi:type="array">
                 <item name="attribute" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\Filter\Attribute</item>
                 <item name="price" xsi:type="string">Magento\CatalogSearch\Model\Layer\Filter\Price</item>
-                <item name="decimal" xsi:type="string">Magento\CatalogSearch\Model\Layer\Filter\Decimal</item>
+                <item name="decimal" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\Filter\Decimal</item>
                 <item name="category" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\Filter\Category</item>
             </argument>
         </arguments>
