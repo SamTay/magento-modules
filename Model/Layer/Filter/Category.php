@@ -11,7 +11,9 @@ use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 use Magento\Catalog\Model\Layer\Filter\DataProvider\Category as CategoryDataProvider;
 
 /**
- * Layer category filter
+ * Override from native to hook into facet pool (keeping collection facets per attribute filter
+ * in sync with main fulltext collection). Right now, restricting multi value sorting to select/multiselect
+ * attributes
  */
 class Category extends AbstractFilter
 {

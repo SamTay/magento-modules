@@ -10,7 +10,11 @@ namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 
 /**
- * Layer decimal filter
+ * Override from native to hook into facet pool (keeping collection facets per attribute filter
+ * in sync with main fulltext collection). Right now, restricting multi value sorting to select/multiselect
+ * attributes
+ *
+ * TODO: Override _getItemsData or rendering logic to put a range slider on the frontend for all decimal filters
  */
 class Decimal extends AbstractFilter
 {
