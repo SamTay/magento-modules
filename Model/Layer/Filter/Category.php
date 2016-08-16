@@ -26,13 +26,18 @@ class Category extends AbstractFilter
     private $dataProvider;
 
     /**
+     * @var \BlueAcorn\LayeredNavigation\Model\FacetPool
+     */
+    private $facetPool;
+
+    /**
      * @param \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Catalog\Model\Layer $layer
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
-     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
      * @param \Magento\Framework\Escaper $escaper
-     * @param CategoryManagerFactory $categoryManager
+     * @param \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory
+     * @param \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool
      * @param array $data
      */
     public function __construct(
@@ -42,6 +47,7 @@ class Category extends AbstractFilter
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Escaper $escaper,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory,
+        \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
         array $data = []
     ) {
         parent::__construct(
@@ -54,6 +60,7 @@ class Category extends AbstractFilter
         $this->escaper = $escaper;
         $this->_requestVar = 'cat';
         $this->dataProvider = $categoryDataProviderFactory->create(['layer' => $this->getLayer()]);
+        $this->facetPool = $facetPool;
     }
 
     /**
@@ -70,10 +77,11 @@ class Category extends AbstractFilter
         }
 
         $this->dataProvider->setCategoryId($categoryId);
-
         $category = $this->dataProvider->getCategory();
 
         if ($request->getParam('id') != $category->getId() && $this->dataProvider->isValid()) {
+            /** No new facets for category filter, just need filter applied to current facet pool */
+            $this->facetPool->addCategoryFilter($category);
             $this->getLayer()->getProductCollection()->addCategoryFilter($category);
             $this->getLayer()->getState()->addFilter($this->_createItem($category->getName(), $categoryId));
         }
