@@ -7,8 +7,8 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
-use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 use Magento\Catalog\Model\Layer\Filter\DataProvider\Category as CategoryDataProvider;
+use BlueAcorn\LayeredNavigation\Model\Layer\FilterDependency\Manager as FilterDependencyManager;
 
 /**
  * Override from native to hook into facet pool (keeping collection facets per attribute filter
@@ -50,6 +50,7 @@ class Category extends AbstractFilter
         \Magento\Framework\Escaper $escaper,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory,
         \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
+        FilterDependencyManager $filterDependencyManager,
         array $data = []
     ) {
         parent::__construct(
@@ -57,6 +58,7 @@ class Category extends AbstractFilter
             $storeManager,
             $layer,
             $itemDataBuilder,
+            $filterDependencyManager,
             $data
         );
         $this->escaper = $escaper;

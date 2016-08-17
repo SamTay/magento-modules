@@ -8,7 +8,7 @@
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
 use BlueAcorn\LayeredNavigation\Model\FacetPool;
-use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
+use BlueAcorn\LayeredNavigation\Model\Layer\FilterDependency\Manager as FilterDependencyManager;
 
 /**
  * Layer attribute filter
@@ -39,6 +39,7 @@ class Attribute extends AbstractFilter
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Filter\StripTags $tagFilter,
         FacetPool $facetPool,
+        FilterDependencyManager $filterDependencyManager,
         array $data = []
     ) {
         parent::__construct(
@@ -46,6 +47,7 @@ class Attribute extends AbstractFilter
             $storeManager,
             $layer,
             $itemDataBuilder,
+            $filterDependencyManager,
             $data
         );
         $this->tagFilter = $tagFilter;

@@ -7,7 +7,7 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
-use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
+use BlueAcorn\LayeredNavigation\Model\Layer\FilterDependency\Manager as FilterDependencyManager;
 
 /**
  * Override from native to hook into facet pool (keeping collection facets per attribute filter
@@ -50,6 +50,7 @@ class Decimal extends AbstractFilter
         \Magento\Catalog\Model\ResourceModel\Layer\Filter\DecimalFactory $filterDecimalFactory,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
+        FilterDependencyManager $filterDependencyManager,
         array $data = []
     ) {
         parent::__construct(
@@ -57,6 +58,7 @@ class Decimal extends AbstractFilter
             $storeManager,
             $layer,
             $itemDataBuilder,
+            $filterDependencyManager,
             $data
         );
         $this->resource = $filterDecimalFactory->create();
