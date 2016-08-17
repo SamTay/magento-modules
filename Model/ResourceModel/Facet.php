@@ -10,6 +10,7 @@ namespace BlueAcorn\LayeredNavigation\Model\ResourceModel;
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Db\Select;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 use BlueAcorn\LayeredNavigation\Model\Facet as FacetModel;
@@ -122,17 +123,25 @@ class Facet
      */
     public function getFacetedData(FacetModel $facet)
     {
-        // TODO include OR logic in count/group against $this->attributeValue
         $select = clone $facet->getCollection()->getSelect();
-        // reset columns, order and limitation conditions
-        $select->reset(Select::COLUMNS);
-        $select->reset(Select::ORDER);
-        $select->reset(Select::LIMIT_COUNT);
-        $select->reset(Select::LIMIT_OFFSET);
+        $this->resetSelect($select);
 
         $connection = $this->getConnection();
         $attribute = $facet->getAttribute();
         $tableAlias = sprintf('%s_idx', $attribute->getAttributeCode());
+        $attributeValue = $facet->getAttributeValue();
+        // Interpret attributeValue
+        if (is_string($attributeValue) && strpos($attributeValue, ',') !== false) {
+            $attributeValue = explode(',', $attributeValue);
+        }
+        $multiValueCond = is_array($attributeValue)
+            ? $connection->quoteInto("value = {$tableAlias}.value OR value IN ?", $attributeValue)
+            : $connection->quoteInto("value = {$tableAlias}.value OR value = ?", $attributeValue);
+        $innerSelect = $this->getConnection()->select()
+            ->from(self::TABLE_CATALOG_PRODUCT_INDEX_EAV, new \Zend_Db_Expr('COUNT(DISTINCT(entity_id))'))
+            ->where('attribute_id = ?', $attribute->getAttributeId()) // todo test with this gone
+            ->where($multiValueCond)
+            ->__toString();
         $conditions = [
             "{$tableAlias}.entity_id = e.entity_id",
             $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
@@ -142,7 +151,7 @@ class Facet
         $select->join(
             [$tableAlias => self::TABLE_CATALOG_PRODUCT_INDEX_EAV],
             join(' AND ', $conditions),
-            ['value', 'count' => new \Zend_Db_Expr("COUNT({$tableAlias}.entity_id)")]
+            ['value', "($innerSelect) as count"]
         )->group(
             "{$tableAlias}.value"
         );
@@ -158,5 +167,18 @@ class Facet
     public function getConnection()
     {
         return $this->resource->getConnection();
+    }
+
+    /**
+     * Reset columns, order, limitation
+     *
+     * @param Select $select
+     */
+    protected function resetSelect(Select $select)
+    {
+        $select->reset(Select::COLUMNS);
+        $select->reset(Select::ORDER);
+        $select->reset(Select::LIMIT_COUNT);
+        $select->reset(Select::LIMIT_OFFSET);
     }
 }
