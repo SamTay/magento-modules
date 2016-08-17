@@ -13,6 +13,11 @@
         <referenceBlock name="catalog.navigation.state">
             <!-- might need to extend state ? -->
         </referenceBlock>
+        <referenceBlock name="catalog.leftnav">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">BlueAcorn_LayeredNavigation::layer/view.phtml</argument>
+            </action>
+        </referenceBlock>
         <referenceBlock name="catalog.navigation.renderer">
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">BlueAcorn_LayeredNavigation::layer/filter.phtml</argument>
