@@ -60,7 +60,7 @@ class Facet
             $connection->quoteInto("{$tableAlias}.store_id = ?", $collection->getStoreId()),
         ];
         $conditions[] = is_array($attributeValue)
-            ? $connection->quoteInto("{$tableAlias}.value IN ?", $attributeValue)
+            ? $connection->quoteInto("{$tableAlias}.value IN (?)", $attributeValue)
             : $connection->quoteInto("{$tableAlias}.value = ?", $attributeValue);
 
         $collection->getSelect()->join(
@@ -135,7 +135,7 @@ class Facet
             $attributeValue = explode(',', $attributeValue);
         }
         $multiValueCond = is_array($attributeValue)
-            ? $connection->quoteInto("value = {$tableAlias}.value OR value IN ?", $attributeValue)
+            ? $connection->quoteInto("value = {$tableAlias}.value OR value IN (?)", $attributeValue)
             : $connection->quoteInto("value = {$tableAlias}.value OR value = ?", $attributeValue);
         $innerSelect = $this->getConnection()->select()
             ->from(self::TABLE_CATALOG_PRODUCT_INDEX_EAV, new \Zend_Db_Expr('COUNT(DISTINCT(entity_id))'))
