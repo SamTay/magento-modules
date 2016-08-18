@@ -26,17 +26,23 @@ class Facet
     /** @var ResourceConnection */
     protected $resource;
 
+    /** @var Facet\Price */
+    protected $priceResource;
+
     /**
      * Facet constructor.
      * @param ResourceConnection $resource
      * @param StoreManagerInterface $storeManager
+     * @param Facet\Price $priceResource
      */
     public function __construct(
         ResourceConnection $resource,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        Facet\Price $priceResource
     ) {
         $this->storeManager = $storeManager;
         $this->resource = $resource;
+        $this->priceResource = $priceResource;
     }
 
     /**
@@ -113,6 +119,18 @@ class Facet
             "{$tableAlias}.value < ?",
             $to
         );
+    }
+
+    /**
+     * Add price filter to collection
+     *
+     * @param ProductCollection $collection
+     * @param $from
+     * @param $to
+     */
+    public function addPriceFilter(ProductCollection $collection, $from, $to)
+    {
+        $this->priceResource->addFilter($collection, $from, $to);
     }
 
     /**
