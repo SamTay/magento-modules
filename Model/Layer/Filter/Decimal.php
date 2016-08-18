@@ -64,7 +64,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
         parent::apply($request);
 
         /** No new facets for decimal filter, just need filter applied to current facet pool */
-        if ($this->getLayer()->getState()->hasFilter($this->getRequestVar())) {
+        if ($this->getLayer()->getState()->hasFilter($this)) {
             $filter = $request->getParam($this->getRequestVar()) ?: '0-*'; // just in case
             list($from, $to) = explode('-', $filter);
             $this->facetPool->addDecimalFilter($this->getAttributeModel(), $from, $to);

@@ -27,8 +27,20 @@
             </argument>
         </arguments>
     </virtualType>
+    <!-- Initialize facet with initial category -->
     <type name="Magento\CatalogSearch\Model\Layer\Category\ItemCollectionProvider">
         <plugin name="getCategoryFilterForMirror" type="BlueAcorn\LayeredNavigation\Plugin\FacetInitializer" />
     </type>
+    <!-- Preference for State and injection into Catalog Layer -->
     <preference for="Magento\Catalog\Model\Layer\State" type="BlueAcorn\LayeredNavigation\Model\Layer\State" />
+    <virtualType name="BlueAcorn\LayeredNavigation\Model\Layer\StateFactory" type="Magento\Catalog\Model\Layer\StateFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">BlueAcorn\LayeredNavigation\Model\Layer\State</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Catalog\Model\Layer">
+        <arguments>
+            <argument name="layerStateFactory" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Layer\StateFactory</argument>
+        </arguments>
+    </type>
 </config>

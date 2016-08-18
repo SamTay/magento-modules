@@ -61,7 +61,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
     {
         parent::apply($request);
         /** check if parent method applied filter */
-        if ($appliedFilter = $this->getLayer()->getState()->hasFilter($this->getRequestVar())) {
+        if ($appliedFilter = $this->getLayer()->getState()->hasFilter($this)) {
             $category = $this->getCategory();
             $this->facetPool->addCategoryFilter($category);
         }

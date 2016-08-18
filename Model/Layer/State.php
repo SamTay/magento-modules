@@ -7,19 +7,21 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Layer;
 
+use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
+
 class State extends \Magento\Catalog\Model\Layer\State
 {
     /**
      * Check if state has filter applied
      * (Layer\Filter models are made unique by request var)
      *
-     * @param $requestVar
+     * @param AbstractFilter $filter
      * @return bool
      */
-    public function hasFilter($requestVar)
+    public function hasFilter(AbstractFilter $filter)
     {
         foreach ($this->getFilters() as $filterItem) {
-            if ($filterItem->getFilter()->getRequestVar() == $requestVar) {
+            if ($filterItem->getFilter()->getRequestVar() == $filter->getRequestVar()) {
                 return true;
             }
         }
@@ -27,17 +29,18 @@ class State extends \Magento\Catalog\Model\Layer\State
     }
 
     /**
-     * Get filter by request var
-     * (Layer\Filter models are made unique by request var)
+     * Get filter item by filter
+     * Warning:: Assuming that there is only one filter item per filter
+     *  - if this is incorrect, refactor this!
      *
-     * @param $requestVar
-     * @return \Magento\Catalog\Model\Layer\Filter\AbstractFilter|null
+     * @param AbstractFilter $filter
+     * @return \Magento\Catalog\Model\Layer\Filter\Item
      */
-    public function getFilter($requestVar)
+    public function getItemByFilter(AbstractFilter $filter)
     {
         foreach ($this->getFilters() as $filterItem) {
-            if ($filterItem->getFilter()->getRequestVar() == $requestVar) {
-                return $filterItem->getFilter();
+            if ($filterItem->getFilter()->getRequestVar() == $filter->getRequestVar()) {
+                return $filterItem;
             }
         }
         return null;
