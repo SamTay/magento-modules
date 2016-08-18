@@ -30,4 +30,5 @@
     <type name="Magento\CatalogSearch\Model\Layer\Category\ItemCollectionProvider">
         <plugin name="getCategoryFilterForMirror" type="BlueAcorn\LayeredNavigation\Plugin\FacetInitializer" />
     </type>
+    <preference for="Magento\Catalog\Model\Layer\State" type="BlueAcorn\LayeredNavigation\Model\Layer\State" />
 </config>

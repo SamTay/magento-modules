@@ -8,15 +8,13 @@
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
 use BlueAcorn\LayeredNavigation\Model\FacetPool;
-use BlueAcorn\LayeredNavigation\Model\Layer\FilterDependency\Manager as FilterDependencyManager;
+use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 
 /**
  * Layer attribute filter
  */
 class Attribute extends AbstractFilter
 {
-    const ALREADY_APPLIED = 'already_applied';
-
     /** @var \Magento\Framework\Filter\StripTags */
     protected $tagFilter;
 
@@ -39,7 +37,6 @@ class Attribute extends AbstractFilter
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Filter\StripTags $tagFilter,
         FacetPool $facetPool,
-        FilterDependencyManager $filterDependencyManager,
         array $data = []
     ) {
         parent::__construct(
@@ -47,7 +44,6 @@ class Attribute extends AbstractFilter
             $storeManager,
             $layer,
             $itemDataBuilder,
-            $filterDependencyManager,
             $data
         );
         $this->tagFilter = $tagFilter;
@@ -76,7 +72,6 @@ class Attribute extends AbstractFilter
             ? $attributeValue
             : ['in' => explode(',', $attributeValue)];
         $productCollection->addFieldToFilter($attribute->getAttributeCode(), $condition);
-        $this->setAlreadyApplied(true);
         $label = $this->getOptionText($attributeValue);
         if (is_array($label)) {
             $label = implode(', ', $label);
@@ -149,9 +144,6 @@ class Attribute extends AbstractFilter
      */
     protected function isOptionAffectsResults($optionCount, $totalSize)
     {
-        if ($this->getAlreadyApplied()) {
-            return $optionCount > $totalSize;
-        }
-        return parent::isOptionReducesResults($optionCount, $totalSize);
+        return $optionCount != $totalSize;
     }
 }

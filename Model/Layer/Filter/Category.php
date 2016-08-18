@@ -7,26 +7,13 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
-use Magento\Catalog\Model\Layer\Filter\DataProvider\Category as CategoryDataProvider;
-use BlueAcorn\LayeredNavigation\Model\Layer\FilterDependency\Manager as FilterDependencyManager;
-
 /**
  * Override from native to hook into facet pool (keeping collection facets per attribute filter
  * in sync with main fulltext collection). Right now, restricting multi value sorting to select/multiselect
  * attributes
  */
-class Category extends AbstractFilter
+class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
 {
-    /**
-     * @var \Magento\Framework\Escaper
-     */
-    private $escaper;
-
-    /**
-     * @var CategoryDataProvider
-     */
-    private $dataProvider;
-
     /**
      * @var \BlueAcorn\LayeredNavigation\Model\FacetPool
      */
@@ -50,7 +37,6 @@ class Category extends AbstractFilter
         \Magento\Framework\Escaper $escaper,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory,
         \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
-        FilterDependencyManager $filterDependencyManager,
         array $data = []
     ) {
         parent::__construct(
@@ -58,12 +44,10 @@ class Category extends AbstractFilter
             $storeManager,
             $layer,
             $itemDataBuilder,
-            $filterDependencyManager,
+            $escaper,
+            $categoryDataProviderFactory,
             $data
         );
-        $this->escaper = $escaper;
-        $this->_requestVar = 'cat';
-        $this->dataProvider = $categoryDataProviderFactory->create(['layer' => $this->getLayer()]);
         $this->facetPool = $facetPool;
     }
 
@@ -75,72 +59,28 @@ class Category extends AbstractFilter
      */
     public function apply(\Magento\Framework\App\RequestInterface $request)
     {
-        $categoryId = $request->getParam($this->_requestVar) ?: $request->getParam('id');
-        if (empty($categoryId)) {
-            return $this;
-        }
-
-        $this->dataProvider->setCategoryId($categoryId);
-        $category = $this->dataProvider->getCategory();
-
-        if ($request->getParam('id') != $category->getId() && $this->dataProvider->isValid()) {
-            /** No new facets for category filter, just need filter applied to current facet pool */
+        parent::apply($request);
+        /** check if parent method applied filter */
+        if ($appliedFilter = $this->getLayer()->getState()->hasFilter($this->getRequestVar())) {
+            $category = $this->getCategory();
             $this->facetPool->addCategoryFilter($category);
-            $this->getLayer()->getProductCollection()->addCategoryFilter($category);
-            $this->getLayer()->getState()->addFilter($this->_createItem($category->getName(), $categoryId));
         }
         return $this;
     }
 
     /**
-     * Get filter value for reset current filter state
+     * Get category from parent private property (better than reloading category)
+     * TODO Needs testing fo sho
      *
-     * @return mixed|null
+     * @return mixed
      */
-    public function getResetValue()
+    private function getCategory()
     {
-        return $this->dataProvider->getResetValue();
-    }
+        $categoryGetter = (function() {
+            /** @var $this \Magento\CatalogSearch\Model\Layer\Filter\Category */
+            return $this->dataProvider->getCategory();
+        })->bindTo($this, '\Magento\CatalogSearch\Model\Layer\Filter\Category');
 
-    /**
-     * Get filter name
-     *
-     * @return \Magento\Framework\Phrase
-     */
-    public function getName()
-    {
-        return __('Category');
-    }
-
-    /**
-     * Get data array for building category filter items
-     *
-     * @return array
-     */
-    protected function _getItemsData()
-    {
-        /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
-        $productCollection = $this->getLayer()->getProductCollection();
-        $optionsFacetedData = $productCollection->getFacetedData('category');
-        $category = $this->dataProvider->getCategory();
-        $categories = $category->getChildrenCategories();
-
-        $collectionSize = $productCollection->getSize();
-
-        if ($category->getIsActive()) {
-            foreach ($categories as $category) {
-                if ($category->getIsActive()
-                    && isset($optionsFacetedData[$category->getId()])
-                    && $this->isOptionReducesResults($optionsFacetedData[$category->getId()]['count'], $collectionSize)
-                ) {
-                    $this->itemDataBuilder->addItemData(
-                        $this->escaper->escapeHtml($category->getName()),
-                        $category->getId(),
-                        $optionsFacetedData[$category->getId()]['count']
-                    );
-                }
-            }
-        }
-        return $this->itemDataBuilder->build();
+        return $categoryGetter();
     }
 }
