@@ -162,11 +162,12 @@ class CollectionMirror
             }
         }
         $priceExpr = $this->collection->getPriceExpression($select);
+        $currencyRate = $this->collection->getCurrencyRate($select);
         if ($from !== '') {
-            $select->where($priceExpr . ' >= ' . $this->_getComparingValue($from));
+            $select->where($priceExpr . ' >= ' . $this->_getComparingValue($from, $currencyRate));
         }
         if ($to !== '') {
-            $select->where($priceExpr . ' < ' . $this->_getComparingValue($to));
+            $select->where($priceExpr . ' < ' . $this->_getComparingValue($to, $currencyRate));
         }
     }
 
@@ -190,10 +191,12 @@ class CollectionMirror
      */
     protected function initialize()
     {
-        $this->collection = $this->collectionFactory->create();
-        while ($this->methodStack) {
-            $func = array_shift($this->methodStack);
-            call_user_func_array([$this, $func['method']], $func['args']);
+        if (is_null($this->collection)) {
+            $this->collection = $this->collectionFactory->create();
+            while ($this->methodStack) {
+                $func = array_shift($this->methodStack);
+                call_user_func_array([$this, $func['method']], $func['args']);
+            }
         }
     }
 
@@ -246,12 +249,12 @@ class CollectionMirror
      * Get comparing value sql part
      *
      * @param float $price
+     * @param int $currencyRate
      * @param bool $decrease
      * @return float
      */
-    protected function _getComparingValue($price, $decrease = true)
+    protected function _getComparingValue($price, $currencyRate = 1, $decrease = true)
     {
-        $currencyRate = $this->collection->getCurrencyRate();
         if ($decrease) {
             return ($price - CatalogPriceResource::MIN_POSSIBLE_PRICE / 2) / $currencyRate;
         }
