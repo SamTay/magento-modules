@@ -8,16 +8,13 @@
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
 /**
- * Override from native to hook into facet pool (keeping collection facets per attribute filter
- * in sync with main fulltext collection). Right now, restricting multi value sorting to select/multiselect
- * attributes
+ * Override from native to hook into collection mirror.
+ * Right now, restricting multi value sorting to select/multiselect attributes
  */
 class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
 {
-    /**
-     * @var \BlueAcorn\LayeredNavigation\Model\FacetPool
-     */
-    private $facetPool;
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    protected $collectionMirror;
 
     /**
      * @param \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory
@@ -26,7 +23,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Framework\Escaper $escaper
      * @param \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory
-     * @param \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
      * @param array $data
      */
     public function __construct(
@@ -36,7 +33,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Escaper $escaper,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory,
-        \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
         array $data = []
     ) {
         parent::__construct(
@@ -48,7 +45,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
             $categoryDataProviderFactory,
             $data
         );
-        $this->facetPool = $facetPool;
+        $this->collectionMirror = $collectionMirror;
     }
 
     /**
@@ -63,7 +60,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
         /** check if parent method applied filter */
         if ($appliedFilter = $this->getLayer()->getState()->hasFilter($this)) {
             $category = $this->getCategory();
-            $this->facetPool->addCategoryFilter($category);
+            $this->collectionMirror->addCategoryFilter($category);
         }
         return $this;
     }

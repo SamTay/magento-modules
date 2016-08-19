@@ -7,32 +7,32 @@
  */
 namespace BlueAcorn\LayeredNavigation\Plugin;
 
-use BlueAcorn\LayeredNavigation\Model\FacetPool;
 use Magento\Catalog\Model\Category;
 use Magento\CatalogSearch\Model\Layer\Category\ItemCollectionProvider;
+use BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror;
 
-class FacetInitializer
+class MirrorInitializer
 {
-    /** @var FacetPool */
-    protected $facetPool;
+    /** @var CollectionMirror */
+    private $collectionMirror;
 
     /**
-     * FacetInitializer constructor.
-     * @param FacetPool $facetPool
+     * MirrorInitializer constructor.
+     * @param CollectionMirror $collectionMirror
      */
-    public function __construct(FacetPool $facetPool)
+    public function __construct(CollectionMirror $collectionMirror)
     {
-        $this->facetPool = $facetPool;
+        $this->collectionMirror = $collectionMirror;
     }
 
     /**
-     * Applies initial category filter to facet pool
+     * Applies initial category filter to collection mirror
      *
      * @param Category $category
      */
     public function beforeGetCollection(ItemCollectionProvider $subject, Category $category)
     {
         // TODO magento doesn't apply filter in search context (in this case $category is root category)
-        $this->facetPool->addCategoryFilter($category);
+        $this->collectionMirror->addCategoryFilter($category);
     }
 }

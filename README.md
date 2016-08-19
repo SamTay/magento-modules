@@ -41,10 +41,14 @@ one value is selected (or if some items in the collection have more than the dep
 ### Approach
 ##### Multi Value Filtering
 The approach here is to allow the main layer product collection to continue to leverage the fulltext enhancements. Each
-of the Layer/Filter models are overridden to keep native fulltext functionality, but hook in and spin off faceted
-collections whenever an attribute filter is applied. This is done so that we can have OR conditions when filtering
-multiple values for each attribute. None of these faceted collections are loaded, but their SELECTs are utilized to
-query result counts for applying additional filter values.
+of the Layer/Filter models are overridden to keep native fulltext functionality, but hook in and apply the same filters
+to a mirrored catalog (non-fulltext) collection. This is done so that we can have OR conditions when filtering
+multiple values for each attribute, as the fulltext collection uses a join against a temporary table filled with
+entity IDs of the current layer (thus there is no way to modify the query logic post collection load).
+
+When faceted data is required for an attribute that already has a filter value applied, the mirror collection's `select`
+object is cloned, the given attribute filter is removed, and a query is performed to count results for additional possible
+filter values. The mirror collection itself is never loaded.
 
 ### Known Issues
 None yet.

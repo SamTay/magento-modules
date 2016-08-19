@@ -8,18 +8,15 @@
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
 /**
- * Override from native to hook into facet pool (keeping collection facets per attribute filter
- * in sync with main fulltext collection). Right now, restricting multi value sorting to select/multiselect
- * attributes
+ * Override from native to hook into collection mirror.
+ * Right now, restricting multi value sorting to select/multiselect attributes
  *
  * TODO: Override _getItemsData or rendering logic to put a range slider on the frontend for all decimal filters
  */
 class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
 {
-    /**
-     * @var FacetPool
-     */
-    private $facetPool;
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    protected $collectionMirror;
 
     /**
      * @param \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory
@@ -28,6 +25,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Catalog\Model\ResourceModel\Layer\Filter\DecimalFactory $filterDecimalFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
      * @param array $data
      */
     public function __construct(
@@ -37,7 +35,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Catalog\Model\ResourceModel\Layer\Filter\DecimalFactory $filterDecimalFactory,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
-        \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
         array $data = []
     ) {
         parent::__construct(
@@ -49,7 +47,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
             $priceCurrency,
             $data
         );
-        $this->facetPool = $facetPool;
+        $this->collectionMirror = $collectionMirror;
     }
 
     /**
@@ -67,7 +65,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
         if ($this->getLayer()->getState()->hasFilter($this)) {
             $filter = $request->getParam($this->getRequestVar()) ?: '0-*'; // just in case
             list($from, $to) = explode('-', $filter);
-            $this->facetPool->addDecimalFilter($this->getAttributeModel(), $from, $to);
+            $this->collectionMirror->addDecimalFilter($this->getAttributeModel(), $from, $to);
         }
 
         return $this;

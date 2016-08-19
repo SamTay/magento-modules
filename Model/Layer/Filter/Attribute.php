@@ -7,7 +7,6 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
-use BlueAcorn\LayeredNavigation\Model\FacetPool;
 use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 
 /**
@@ -18,8 +17,8 @@ class Attribute extends AbstractFilter
     /** @var \Magento\Framework\Filter\StripTags */
     protected $tagFilter;
 
-    /** @var FacetPool */
-    protected $facetPool;
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    protected $collectionMirror;
 
     /**
      * @param \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory
@@ -27,7 +26,7 @@ class Attribute extends AbstractFilter
      * @param \Magento\Catalog\Model\Layer $layer
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Framework\Filter\StripTags $tagFilter
-     * @param FacetPool $facetPool
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
      * @param array $data
      */
     public function __construct(
@@ -36,7 +35,7 @@ class Attribute extends AbstractFilter
         \Magento\Catalog\Model\Layer $layer,
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Filter\StripTags $tagFilter,
-        FacetPool $facetPool,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
         array $data = []
     ) {
         parent::__construct(
@@ -47,7 +46,7 @@ class Attribute extends AbstractFilter
             $data
         );
         $this->tagFilter = $tagFilter;
-        $this->facetPool = $facetPool;
+        $this->collectionMirror = $collectionMirror;
     }
 
     /**
@@ -66,7 +65,7 @@ class Attribute extends AbstractFilter
         /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
         $productCollection = $this->getLayer()->getProductCollection();
         $attribute = $this->getAttributeModel();
-        $this->facetPool->addFacet($attribute, $attributeValue);
+        $this->collectionMirror->addAttributeFilter($attribute, $attributeValue);
         // Allow multiple filter values
         $condition = strpos($attributeValue, ',') === false
             ? $attributeValue
@@ -118,6 +117,10 @@ class Attribute extends AbstractFilter
 
     /**
      * Get faceted data
+     * If a filter has been applied for this attribute,
+     * -- use mirror collection (handles OR logic for multi value filtering)
+     * else
+     * -- use default fulltext aggregation data
      *
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -125,9 +128,9 @@ class Attribute extends AbstractFilter
     protected function _getFacetedData()
     {
         $attribute = $this->getAttributeModel();
-        $facet = $this->facetPool->getFacet($attribute->getAttributeCode());
-        if ($facet) {
-            return $facet->getFacetedData();
+        $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
+        if ($appliedFilter) {
+            return $this->collectionMirror->getFacetedData($attribute, $appliedFilter->getValue());
         }
 
         return array_map(function($data) {

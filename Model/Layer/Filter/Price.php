@@ -10,20 +10,16 @@ namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 use BlueAcorn\LayeredNavigation\Helper\Price as PriceHelper;
 
 /**
- * Override from native to hook into facet pool (keeping collection facets per attribute filter
- * in sync with main fulltext collection). Also use price slider if enabled
+ * Override from native to hook into collection mirror.
+ * Use price slider if enabled
  */
 class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
 {
-    /**
-     * @var PriceHelper
-     */
-    private $helper;
+    /** @var PriceHelper */
+    protected $helper;
 
-    /**
-     * @var \BlueAcorn\LayeredNavigation\Model\FacetPool
-     */
-    private $facetPool;
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    protected $collectionMirror;
 
     /**
      * @param \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory
@@ -36,8 +32,8 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Catalog\Model\Layer\Filter\Dynamic\AlgorithmFactory $algorithmFactory
      * @param \Magento\Catalog\Model\Layer\Filter\DataProvider\PriceFactory $dataProviderFactory
-     * @param \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool
      * @param PriceHelper $helper
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
      * @param array $data
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -53,8 +49,8 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Catalog\Model\Layer\Filter\Dynamic\AlgorithmFactory $algorithmFactory,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\PriceFactory $dataProviderFactory,
-        \BlueAcorn\LayeredNavigation\Model\FacetPool $facetPool,
         PriceHelper $helper,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
         array $data = []
     ) {
         parent::__construct(
@@ -71,7 +67,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
             $data
         );
         $this->helper = $helper;
-        $this->facetPool = $facetPool;
+        $this->collectionMirror = $collectionMirror;
     }
 
     /**
@@ -89,7 +85,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
         $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
         if ($appliedFilter) {
             list($from, $to) = $appliedFilter->getValue();
-            $this->facetPool->addPriceFilter($from, $to);
+            $this->collectionMirror->addPriceFilter($from, $to);
         }
         return $this;
     }
