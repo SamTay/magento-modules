@@ -21,6 +21,7 @@ use Magento\Framework\Phrase;
  * @method addAttributeFilter(Attribute $attribute, string $attributeValue)
  * @method addCategoryFilter(Category $category)
  * @method addDecimalFilter(Attribute $attribute, float|string $from, float|string $to)
+ * @method addPriceFilter(float|string $from, float|string $to)
  */
 class FacetPool
 {
@@ -43,7 +44,12 @@ class FacetPool
     protected $methodStack = [];
 
     /** @var array */
-    private $allowedMethods = ['addAttributeFilter', 'addCategoryFilter', 'addDecimalFilter'];
+    private $allowedMethods = [
+        'addAttributeFilter',
+        'addCategoryFilter',
+        'addDecimalFilter',
+        'addPriceFilter'
+    ];
 
 
     /**

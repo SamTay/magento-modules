@@ -88,7 +88,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
         // If price filter has been applied, forward filter to facet pool
         $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
         if ($appliedFilter) {
-            list($from, $to) = explode('-', $appliedFilter->getValue());
+            list($from, $to) = $appliedFilter->getValue();
             $this->facetPool->addPriceFilter($from, $to);
         }
         return $this;
