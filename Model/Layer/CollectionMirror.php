@@ -28,8 +28,14 @@ class CollectionMirror
     /** @var ResourceConnection */
     protected $resource;
 
-    /** @var ProductCollection */
-    protected $collection;
+    /** @var ProductCollection|null */
+    protected $collection = null;
+
+    /** @var array pairs of ['method' => 'name', 'args' => []] */
+    protected $methodStack = [];
+
+    /** @var ProductCollectionFactory */
+    protected $collectionFactory;
 
     /**
      * CollectionMirror constructor.
@@ -44,7 +50,7 @@ class CollectionMirror
     ) {
         $this->storeManager = $storeManager;
         $this->resource = $resource;
-        $this->collection = $collectionFactory->create();
+        $this->collectionFactory = $collectionFactory;
     }
 
     /**
@@ -55,6 +61,10 @@ class CollectionMirror
      */
     public function addAttributeFilter(Attribute $attribute, $attributeValue)
     {
+        if (is_null($this->collection)) {
+            $this->addToStack(__METHOD__, func_get_args());
+            return;
+        }
         // Interpret attributeValue
         if (is_string($attributeValue) && strpos($attributeValue, ',') !== false) {
             $attributeValue = explode(',', $attributeValue);
@@ -84,6 +94,10 @@ class CollectionMirror
      */
     public function addCategoryFilter(Category $category)
     {
+        if (is_null($this->collection)) {
+            $this->addToStack(__METHOD__, func_get_args());
+            return;
+        }
         $this->collection->setStoreId($category->getStoreId())
             ->addCategoryFilter($category);
     }
@@ -97,6 +111,10 @@ class CollectionMirror
      */
     public function addDecimalFilter(Attribute $attribute, $from, $to)
     {
+        if (is_null($this->collection)) {
+            $this->addToStack(__METHOD__, func_get_args());
+            return;
+        }
         $connection = $this->getConnection();
         $tableAlias = $this->getTableAlias($attribute);
         $conditions = [
@@ -128,6 +146,10 @@ class CollectionMirror
      */
     public function addPriceFilter($from, $to)
     {
+        if (is_null($this->collection)) {
+            $this->addToStack(__METHOD__, func_get_args());
+            return;
+        }
         if ($from === '' && $to === '') {
             return;
         }
@@ -149,6 +171,33 @@ class CollectionMirror
     }
 
     /**
+     * Add method & args to a hypothetical stack
+     * These methods will only be called if collection instantiation is necessary
+     *
+     * @param $method
+     * @param array $args
+     */
+    protected function addToStack($method, $args = [])
+    {
+        $this->methodStack[] = [
+            'method' => $method,
+            'args' => $args
+        ];
+    }
+
+    /**
+     * Initialize collection property, apply all methods from method stack
+     */
+    protected function initialize()
+    {
+        $this->collection = $this->collectionFactory->create();
+        while ($this->methodStack) {
+            $func = array_shift($this->methodStack);
+            call_user_func_array([$this, $func['method']], $func['args']);
+        }
+    }
+
+    /**
      * Get faceted data
      *
      * @param Attribute $attribute
@@ -157,6 +206,7 @@ class CollectionMirror
      */
     public function getFacetedData(Attribute $attribute, $attributeValue)
     {
+        $this->initialize();
         // Reset select, remove applied attribute filter
         $select = clone $this->collection->getSelect();
         $tableAlias = $this->getTableAlias($attribute);
