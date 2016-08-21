@@ -228,11 +228,25 @@ class Consumer implements ConsumerInterface
             } catch (ConsumptionUnfinishedException $e) {
                 $this->alert($e);
                 /**
-                 * Only reject messages for this exception type (reject will re-enqueue messages)
+                 * Reject will re-enqueue messages!
                  * Notice changes are still committed when this exception is thrown
                  */
                 $this->resource->getConnection()->commit();
                 $queue->reject($message);
+            } catch (\PDOException $e) {
+                /**
+                 * Reject will re-enqueue messages!
+                 * Temporary measure - daemons are having trouble maintaining connection to mysql server
+                 * Reject message so that fresh daemon can consume when this one dies
+                 */
+                if (strpos($e->getMessage(), 'server has gone away') !== false) {
+                    $queue->reject($message);
+                    $this->logManager->getLogger()->error(
+                        $e->getMessage() . "\nShutting down and rejecting messsage..."
+                    );
+                    $this->resource->getConnection()->rollBack();
+                    $this->shutdown();
+                }
             } catch (ConnectionLostException $e) {
                 $this->alert($e);
                 /**
