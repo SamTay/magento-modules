@@ -9,7 +9,7 @@ namespace BlueAcorn\LayeredNavigation\Plugin;
 
 use Magento\Catalog\Model\Category;
 use Magento\CatalogSearch\Model\Layer\Category\ItemCollectionProvider;
-use BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror;
+use BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy as CollectionMirror;
 
 class MirrorInitializer
 {

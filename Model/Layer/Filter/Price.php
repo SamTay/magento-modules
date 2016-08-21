@@ -18,7 +18,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
     /** @var PriceHelper */
     protected $helper;
 
-    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy */
     protected $collectionMirror;
 
     /**
@@ -33,7 +33,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
      * @param \Magento\Catalog\Model\Layer\Filter\Dynamic\AlgorithmFactory $algorithmFactory
      * @param \Magento\Catalog\Model\Layer\Filter\DataProvider\PriceFactory $dataProviderFactory
      * @param PriceHelper $helper
-     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror
      * @param array $data
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -50,7 +50,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
         \Magento\Catalog\Model\Layer\Filter\Dynamic\AlgorithmFactory $algorithmFactory,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\PriceFactory $dataProviderFactory,
         PriceHelper $helper,
-        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror,
         array $data = []
     ) {
         parent::__construct(

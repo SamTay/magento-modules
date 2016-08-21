@@ -13,7 +13,7 @@ namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
  */
 class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
 {
-    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy */
     protected $collectionMirror;
 
     /**
@@ -23,7 +23,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Framework\Escaper $escaper
      * @param \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory
-     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror
      * @param array $data
      */
     public function __construct(
@@ -33,7 +33,7 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Escaper $escaper,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\CategoryFactory $categoryDataProviderFactory,
-        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror,
         array $data = []
     ) {
         parent::__construct(

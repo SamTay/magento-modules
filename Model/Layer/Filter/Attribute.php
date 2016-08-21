@@ -17,7 +17,7 @@ class Attribute extends AbstractFilter
     /** @var \Magento\Framework\Filter\StripTags */
     protected $tagFilter;
 
-    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy */
     protected $collectionMirror;
 
     /**
@@ -26,7 +26,7 @@ class Attribute extends AbstractFilter
      * @param \Magento\Catalog\Model\Layer $layer
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Framework\Filter\StripTags $tagFilter
-     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror
      * @param array $data
      */
     public function __construct(
@@ -35,7 +35,7 @@ class Attribute extends AbstractFilter
         \Magento\Catalog\Model\Layer $layer,
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Filter\StripTags $tagFilter,
-        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror,
         array $data = []
     ) {
         parent::__construct(

@@ -15,7 +15,7 @@ namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
  */
 class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
 {
-    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror */
+    /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy */
     protected $collectionMirror;
 
     /**
@@ -25,7 +25,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Catalog\Model\ResourceModel\Layer\Filter\DecimalFactory $filterDecimalFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
-     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror
+     * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror
      * @param array $data
      */
     public function __construct(
@@ -35,7 +35,7 @@ class Decimal extends \Magento\CatalogSearch\Model\Layer\Filter\Decimal
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Catalog\Model\ResourceModel\Layer\Filter\DecimalFactory $filterDecimalFactory,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
-        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror $collectionMirror,
+        \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror,
         array $data = []
     ) {
         parent::__construct(
