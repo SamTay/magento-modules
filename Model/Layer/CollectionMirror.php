@@ -9,43 +9,15 @@ namespace BlueAcorn\LayeredNavigation\Model\Layer;
 
 use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\ResourceModel\Product\Collection as ProductCollection;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
-use Magento\Framework\App\ResourceConnection;
 use Magento\Catalog\Model\ResourceModel\Layer\Filter\Price as CatalogPriceResource;
 use Magento\Framework\Db\Select;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\ResourceModel\Eav\Attribute;
 
-class CollectionMirror
+class CollectionMirror extends ProductCollection
 {
     const TABLE_CATALOG_PRODUCT_INDEX_EAV = 'catalog_product_index_eav';
     const TABLE_CATALOG_PRODUCT_INDEX_EAV_DECIMAL = 'catalog_product_index_eav_decimal';
     const TABLE_CATALOG_PRODUCT_INDEX_PRICE = 'catalog_product_index_price';
-
-    /** @var StoreManagerInterface */
-    protected $storeManager;
-
-    /** @var ResourceConnection */
-    protected $resource;
-
-    /** @var ProductCollection */
-    protected $collection;
-
-    /**
-     * CollectionMirror constructor.
-     * @param ResourceConnection $resource
-     * @param StoreManagerInterface $storeManager
-     * @param ProductCollectionFactory $collectionFactory
-     */
-    public function __construct(
-        ResourceConnection $resource,
-        StoreManagerInterface $storeManager,
-        ProductCollectionFactory $collectionFactory
-    ) {
-        $this->storeManager = $storeManager;
-        $this->resource = $resource;
-        $this->collection = $collectionFactory->create();
-    }
 
     /**
      * Apply attribute filter to collection
@@ -64,13 +36,13 @@ class CollectionMirror
         $conditions = [
             "{$tableAlias}.entity_id = e.entity_id",
             $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
-            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->collection->getStoreId()),
+            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->getStoreId()),
         ];
         $conditions[] = is_array($attributeValue)
             ? $connection->quoteInto("{$tableAlias}.value IN (?)", $attributeValue)
             : $connection->quoteInto("{$tableAlias}.value = ?", $attributeValue);
 
-        $this->collection->getSelect()->join(
+        $this->getSelect()->join(
             [$tableAlias => self::TABLE_CATALOG_PRODUCT_INDEX_EAV],
             implode(' AND ', $conditions),
             []
@@ -84,7 +56,7 @@ class CollectionMirror
      */
     public function addCategoryFilter(Category $category)
     {
-        $this->collection->setStoreId($category->getStoreId())
+        $this->setStoreId($category->getStoreId())
             ->addCategoryFilter($category);
     }
 
@@ -102,16 +74,16 @@ class CollectionMirror
         $conditions = [
             "{$tableAlias}.entity_id = e.entity_id",
             $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
-            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->collection->getStoreId()),
+            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->getStoreId()),
         ];
 
-        $this->collection->getSelect()->join(
+        $this->getSelect()->join(
             [$tableAlias => $this->getMainTable()],
             implode(' AND ', $conditions),
             []
         );
 
-        $this->collection->getSelect()->where(
+        $this->getSelect()->where(
             "{$tableAlias}.value >= ?",
             $from
         )->where(
@@ -131,16 +103,16 @@ class CollectionMirror
         if ($from === '' && $to === '') {
             return;
         }
-        $this->collection->addPriceData();
-        $select = $this->collection->getSelect();
+        $this->addPriceData();
+        $select = $this->getSelect();
         if ($to !== '') {
             $to = (double)$to;
             if ($from == $to) {
                 $to += CatalogPriceResource::MIN_POSSIBLE_PRICE;
             }
         }
-        $priceExpr = $this->collection->getPriceExpression($select);
-        $currencyRate = $this->collection->getCurrencyRate($select);
+        $priceExpr = $this->getPriceExpression($select);
+        $currencyRate = $this->getCurrencyRate();
         if ($from !== '') {
             $select->where($priceExpr . ' >= ' . $this->_getComparingValue($from, $currencyRate));
         }
@@ -159,7 +131,7 @@ class CollectionMirror
     public function getFacetedData(Attribute $attribute, $attributeValue)
     {
         // Reset select, remove applied attribute filter
-        $select = clone $this->collection->getSelect();
+        $select = clone $this->getSelect();
         $tableAlias = $this->getTableAlias($attribute);
         $this->resetSelect($select, [$tableAlias]);
         $connection = $this->getConnection();
@@ -179,7 +151,7 @@ class CollectionMirror
         $conditions = [
             "{$tableAlias}.entity_id = e.entity_id",
             $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
-            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->storeManager->getStore()->getId()),
+            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->getStoreId()),
         ];
 
         $select->join(
@@ -207,16 +179,6 @@ class CollectionMirror
             return ($price - CatalogPriceResource::MIN_POSSIBLE_PRICE / 2) / $currencyRate;
         }
         return ($price + CatalogPriceResource::MIN_POSSIBLE_PRICE / 2) / $currencyRate;
-    }
-
-    /**
-     * Get connection
-     *
-     * @return \Magento\Framework\DB\Adapter\AdapterInterface
-     */
-    protected function getConnection()
-    {
-        return $this->resource->getConnection();
     }
 
     /**
