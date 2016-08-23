@@ -18,21 +18,28 @@
 <div id="price-filter-slider" data-url="<?php echo $block->getFilterBaseUrl() ?>"/>
 <script type="text/javascript">
     require([
-        'jquery', 'jquery/ui'
+        "jquery", "jquery/ui"
     ], function ($) {
+        var $heading = $("#price-filter-slider").parent("dd").prev("dt"),
+            originalLabel = $heading.text(),
+            symbol = "<?php echo $symbol ?>";
         $("#price-filter-slider").slider({
             range: true,
             min: <?php echo $min ?>,
             max: <?php echo $max ?>,
-            values: [<?php echo implode(',', $current) ?>],
+            values: [<?php echo implode(",", $current) ?>],
             change: function(event, ui) {
-                var query = 'price=' + ui.values[0] + '-' + ui.values[1],
+                var query = "price=" + ui.values[0] + "-" + ui.values[1],
                     base = $("#price-filter-slider").data("url"),
-                    join = base.indexOf('?') > 1 ? '&' : '?';
+                    join = base.indexOf("?") > 1 ? "&" : "?";
                 window.location.href = base + join + query;
             },
             slide: function(event, ui) {
-                // TODO show price as user slides
+                var rangeArr = ui.values.slice(0, 2);
+                var rangeLabel = rangeArr.map(function(num) {
+                    return symbol + parseFloat(Math.round(num * 100) / 100).toFixed(2);
+                }).join(" - ");
+                $heading.text(originalLabel + " " + rangeLabel) ;
             }
         });
     });
