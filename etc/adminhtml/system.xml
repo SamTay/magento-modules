@@ -9,6 +9,11 @@
     <system>
         <section id="catalog">
             <group id="layered_navigation">
+                <field id="multivalue_filter_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Multi Value Filtering</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This setting allows filtering by multiple values (in an OR condition) for select/multiselect attributes.</comment>
+                </field>
                 <field id="price_slider_enable" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Price Slider</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

@@ -9,22 +9,22 @@ namespace BlueAcorn\LayeredNavigation\Block;
 
 use Magento\Catalog\Model\Layer\Filter\FilterInterface;
 use Magento\Catalog\Model\Layer\FilterList;
-use BlueAcorn\LayeredNavigation\Helper\Price as PriceHelper;
+use BlueAcorn\LayeredNavigation\Helper\Config as ConfigHelper;
 
 class Navigation extends \Magento\LayeredNavigation\Block\Navigation
 {
     const DEFAULT_ALIAS = 'renderer.default';
     const SLIDER_ALIAS = 'renderer.slider';
 
-    /** @var PriceHelper */
-    protected $priceHelper;
+    /** @var ConfigHelper */
+    protected $configHelper;
 
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Catalog\Model\Layer\Resolver $layerResolver
      * @param \Magento\Catalog\Model\Layer\FilterList $filterList
      * @param \Magento\Catalog\Model\Layer\AvailabilityFlagInterface $visibilityFlag
-     * @param PriceHelper $priceHelper
+     * @param ConfigHelper $configHelper
      * @param array $data
      */
     public function __construct(
@@ -32,7 +32,7 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
         \Magento\Catalog\Model\Layer\Resolver $layerResolver,
         \Magento\Catalog\Model\Layer\FilterList $filterList,
         \Magento\Catalog\Model\Layer\AvailabilityFlagInterface $visibilityFlag,
-        PriceHelper $priceHelper,
+        ConfigHelper $configHelper,
         array $data = []
     ) {
         parent::__construct(
@@ -42,7 +42,7 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
             $visibilityFlag,
             $data
         );
-        $this->priceHelper = $priceHelper;
+        $this->configHelper = $configHelper;
     }
 
     /**
@@ -54,7 +54,7 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
         $alias = null;
         $filterType = $this->resolveType($filter);
         if ($filterType == FilterList::PRICE_FILTER
-            && $this->priceHelper->isSliderEnabled()
+            && $this->configHelper->isSliderEnabled()
         ) {
             $alias = self::SLIDER_ALIAS;
         } else {

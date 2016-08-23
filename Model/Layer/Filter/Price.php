@@ -7,7 +7,7 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
-use BlueAcorn\LayeredNavigation\Helper\Price as PriceHelper;
+use BlueAcorn\LayeredNavigation\Helper\Config as ConfigHelper;
 
 /**
  * Override from native to hook into collection mirror.
@@ -15,7 +15,7 @@ use BlueAcorn\LayeredNavigation\Helper\Price as PriceHelper;
  */
 class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
 {
-    /** @var PriceHelper */
+    /** @var ConfigHelper */
     protected $helper;
 
     /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy */
@@ -32,7 +32,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \Magento\Catalog\Model\Layer\Filter\Dynamic\AlgorithmFactory $algorithmFactory
      * @param \Magento\Catalog\Model\Layer\Filter\DataProvider\PriceFactory $dataProviderFactory
-     * @param PriceHelper $helper
+     * @param ConfigHelper $helper
      * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror
      * @param array $data
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -49,7 +49,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \Magento\Catalog\Model\Layer\Filter\Dynamic\AlgorithmFactory $algorithmFactory,
         \Magento\Catalog\Model\Layer\Filter\DataProvider\PriceFactory $dataProviderFactory,
-        PriceHelper $helper,
+        ConfigHelper $helper,
         \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror,
         array $data = []
     ) {

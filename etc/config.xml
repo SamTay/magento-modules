@@ -10,6 +10,7 @@
     <default>
         <catalog>
             <layered_navigation>
+                <multivalue_filter_enable>0</multivalue_filter_enable>
                 <price_slider_enable>0</price_slider_enable>
                 <price_slider_narrow>0</price_slider_narrow>
                 <price_slider_step>1.00</price_slider_step>
