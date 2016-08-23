@@ -104,15 +104,26 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
     }
 
     /**
+     * Get slider data (single filter item with min,max info)
+     * Sticking slider within normal filter, filter items data so that it can leverage sorting etc.
+     * TODO: slider range should not decrease when filtering! need to modify select to remove price filter... damnit!
+     *
      * @return array
      */
     protected function getSliderData()
     {
         /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
         $productCollection = $this->getLayer()->getProductCollection();
-        $min = $productCollection->getMinPrice();
-        $max = $productCollection->getMaxPrice();
+        $min = $productCollection->getMinPrice() ?: 0;
+        $max = $productCollection->getMaxPrice() ?: $min;
         $minimumRange = $this->helper->getSliderMinRange();
-        return []; // todo finish implementing
+        if (abs($max - $min) < $minimumRange || abs($max - $min) == 0) {
+            return [];
+        }
+        return [[
+            'label' => __('Price'),
+            'value' => "$min-$max",
+            'count' => $productCollection->getSize() // This is probably not necessary...
+        ]];
     }
 }

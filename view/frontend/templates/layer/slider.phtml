@@ -1,0 +1,39 @@
+<?php
+/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */
+?>
+<?php
+/**
+ * Template for filter item slider
+ *
+ * @var $block \BlueAcorn\LayeredNavigation\Block\Navigation\SliderRenderer
+ * @var $sliderData \Magento\Catalog\Model\Layer\Filter\Item
+ */
+?>
+
+<div id="price-filter-slider" data-url="<?php echo $block->getFilterBaseUrl() ?>"/>
+<script type="text/javascript">
+    require([
+        'jquery', 'jquery/ui'
+    ], function ($) {
+        $("#price-filter-slider").slider({
+            range: true,
+            min: <?php echo $min ?>,
+            max: <?php echo $max ?>,
+            values: [<?php echo $min ?>, <?php echo $max ?>],
+            change: function(event, ui) {
+                var query = 'price=' + ui.values[0] + '-' + ui.values[1],
+                    base = $("#price-filter-slider").data("url"),
+                    join = base.indexOf('?') > 1 ? '&' : '?';
+                window.location.href = base + join + query;
+            },
+            slide: function(event, ui) {
+                // TODO show price as user slides
+            }
+        });
+    });
+</script>

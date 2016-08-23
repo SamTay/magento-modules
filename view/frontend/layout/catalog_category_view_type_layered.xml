@@ -10,18 +10,15 @@
         <css src="BlueAcorn_LayeredNavigation::css/styles.css"/>
     </head>
     <body>
-        <referenceBlock name="catalog.navigation.state">
-            <!-- might need to extend state ? -->
-        </referenceBlock>
-        <referenceBlock name="catalog.leftnav">
-            <action method="setTemplate">
-                <argument name="template" xsi:type="string">BlueAcorn_LayeredNavigation::layer/view.phtml</argument>
-            </action>
-        </referenceBlock>
-        <referenceBlock name="catalog.navigation.renderer">
-            <action method="setTemplate">
-                <argument name="template" xsi:type="string">BlueAcorn_LayeredNavigation::layer/filter.phtml</argument>
-            </action>
-        </referenceBlock>
+        <!--<referenceBlock name="catalog.leftnav" remove="true" />-->
+        <referenceContainer name="sidebar.main">
+            <block class="BlueAcorn\LayeredNavigation\Block\Navigation\Category" name="catalog.leftnav" before="-" template="layer/view.phtml">
+                <block class="Magento\LayeredNavigation\Block\Navigation\State" name="catalog.navigation.state" as="state" />
+                <block class="Magento\LayeredNavigation\Block\Navigation\FilterRenderer" name="catalog.navigation.renderer.default" as="renderer.default"
+                       template="BlueAcorn_LayeredNavigation::layer/filter.phtml"/>
+                <block class="BlueAcorn\LayeredNavigation\Block\Navigation\SliderRenderer" name="catalog.navigation.renderer.slider" as="renderer.slider"
+                       template="layer/slider.phtml"/>
+            </block>
+        </referenceContainer>
     </body>
 </page>
