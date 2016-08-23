@@ -103,6 +103,10 @@ class Attribute extends AbstractFilter
         $facetedData = $this->_getFacetedData();
         $attribute = $this->getAttributeModel();
         $options = $attribute->getFrontend()->getSelectOptions();
+        $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
+        $valuePrefix = $appliedFilter
+            ? ($appliedFilter->getValue() . ',')
+            : '';
         foreach ($options as $option) {
             if (empty($option['value'])) {
                 continue;
@@ -116,7 +120,7 @@ class Attribute extends AbstractFilter
             }
             $this->itemDataBuilder->addItemData(
                 $this->tagFilter->filter($option['label']),
-                $option['value'],
+                $valuePrefix . $option['value'],
                 $facetedData[$option['value']]
             );
         }
