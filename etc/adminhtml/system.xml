@@ -15,6 +15,7 @@
                 </field>
                 <field id="price_slider_minimum_range" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Minimum Price Range For Slider Display</label>
+                    <validate>validate-number validate-number-range number-range-0-1000000000</validate>
                     <depends>
                         <field id="price_slider_enable">1</field>
                     </depends>
