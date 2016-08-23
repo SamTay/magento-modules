@@ -64,10 +64,9 @@ class SliderRenderer extends Template implements FilterRendererInterface
         }
         $items = $filter->getItems();
         $sliderItem = reset($items);
-        list($min, $max) = explode('-', $sliderItem->getValue());
-        $this->assign(['min' => $min, 'max' => $max]);
+        $this->assign($sliderItem->getData());
         $html = $this->_toHtml();
-        $this->assign(['min' => null, 'max' => null]);
+        $this->_viewVars = [];
         return $html;
     }
 }

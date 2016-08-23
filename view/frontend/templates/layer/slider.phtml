@@ -24,7 +24,7 @@
             range: true,
             min: <?php echo $min ?>,
             max: <?php echo $max ?>,
-            values: [<?php echo $min ?>, <?php echo $max ?>],
+            values: [<?php echo implode(',', $current) ?>],
             change: function(event, ui) {
                 var query = 'price=' + ui.values[0] + '-' + ui.values[1],
                     base = $("#price-filter-slider").data("url"),

@@ -22,7 +22,7 @@ class Proxy
     private $methodStack = [];
 
     /** @var array methods that should cause a 'load' effect */
-    private $methodsToLoad = ['getFacetedData'];
+    private $methodsToLoad = ['getFacetedData', 'getPricingData'];
 
     /**
      * CollectionMirror constructor.

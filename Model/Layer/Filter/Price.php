@@ -91,39 +91,61 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
     }
 
     /**
-     * Get data array for building attribute filter items
-     *
-     * @return array
-     */
-    protected function _getItemsData()
-    {
-        if (!$this->helper->isSliderEnabled()) {
-            return parent::_getItemsData();
-        }
-        return $this->getSliderData();
-    }
-
-    /**
      * Get slider data (single filter item with min,max info)
      * Sticking slider within normal filter, filter items data so that it can leverage sorting etc.
-     * TODO: slider range should not decrease when filtering! need to modify select to remove price filter... damnit!
      *
      * @return array
      */
-    protected function getSliderData()
+    protected function _getSliderData()
     {
         /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
         $productCollection = $this->getLayer()->getProductCollection();
-        $min = $productCollection->getMinPrice() ?: 0;
-        $max = $productCollection->getMaxPrice() ?: $min;
+        $applied = $this->getLayer()->getState()->getItemByFilter($this);
+        // If we should be narrowing the results, use min/max of current layer
+        if ($this->helper->getSliderNarrow() || !$applied) {
+            $min = $productCollection->getMinPrice() ?: 0;
+            $max = $productCollection->getMaxPrice() ?: $min;
+            $current = [$min, $max];
+            $count = $productCollection->getSize();
+        // Otherwise use min/max of current layer outside of price filter
+        } else {
+            $facetedData = $this->collectionMirror->getPricingData();
+            $min = (double)$facetedData['min'];
+            $max = (double)$facetedData['max'];
+            $current = $applied->getValue();
+            $count = (int)$facetedData['count'];
+        }
         $minimumRange = $this->helper->getSliderMinRange();
         if (abs($max - $min) < $minimumRange || abs($max - $min) == 0) {
             return [];
         }
         return [[
             'label' => __('Price'),
-            'value' => "$min-$max",
-            'count' => $productCollection->getSize() // This is probably not necessary...
+            'min' => $min,
+            'max' => $max,
+            'current' => $current,
+            'count' => $count // This is probably not necessary...
         ]];
+    }
+
+    /**
+     * Override to include extra slider data on filter item
+     *
+     * @return $this|\Magento\Catalog\Model\Layer\Filter\AbstractFilter
+     */
+    protected function _initItems()
+    {
+        if (!$this->helper->isSliderEnabled()) {
+            return parent::_initItems();
+        }
+
+        $data = $this->_getSliderData();
+        $items = [];
+        foreach ($data as $itemData) {
+            $items[] = $this->_filterItemFactory->create()
+                ->setData($itemData);
+        }
+        $this->_items = $items;
+        return $this;
     }
 }

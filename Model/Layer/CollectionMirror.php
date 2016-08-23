@@ -154,6 +154,26 @@ class CollectionMirror extends ProductCollection
         return $connection->fetchPairs($select);
     }
 
+    public function getPricingData()
+    {
+        $select = clone $this->getSelect();
+        $tableAlias = 'price_index'; // ?
+        $this->resetSelect($select);
+        $whereParts = $select->getPart(Select::WHERE);
+        $whereParts = array_filter($whereParts, function($clause) {
+            return strpos($clause, 'price_index') === false;
+        });
+        $select->setPart(Select::WHERE, $whereParts);
+
+        $select->columns([
+            'min' => new \Zend_Db_Expr('MIN(price_index.min_price)'),
+            'max' => new \Zend_Db_Expr('MAX(price_index.min_price)'),
+            'count' => new \Zend_Db_Expr('COUNT(DISTINCT(e.entity_id))')
+        ]);
+
+        return $this->getConnection()->fetchRow($select);
+    }
+
     /**
      * Get comparing value sql part
      *
