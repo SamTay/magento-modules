@@ -50,17 +50,6 @@ class CollectionMirror extends ProductCollection
     }
 
     /**
-     * Add category filter to collection
-     *
-     * @param Category $category
-     */
-    public function addCategoryFilter(Category $category)
-    {
-        $this->setStoreId($category->getStoreId())
-            ->addCategoryFilter($category);
-    }
-
-    /**
      * Add decimal filter to collection
      *
      * @param Attribute $attribute
