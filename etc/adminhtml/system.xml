@@ -9,43 +9,59 @@
     <system>
         <section id="catalog">
             <group id="layered_navigation">
-                <field id="price_slider_enable" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="price_slider_enable" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Price Slider</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="price_slider_minimum_range" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="price_slider_narrow" translate="label comment" type="select" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Incrementally Narrow Price Range</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[When enabled, the min and max of the slider will be restricted by the current applied price filter.
+                        That is, the size of the collection will <i>not</i> increase when applying price filter.]]></comment>
+                    <depends>
+                        <field id="price_slider_enable">1</field>
+                    </depends>
+                </field>
+                <field id="price_slider_step" translate="label" type="text" sortOrder="29" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Discrete Interval When Sliding</label>
+                    <validate>validate-number validate-number-range number-range-0-1000000000</validate>
+                    <depends>
+                        <field id="price_slider_enable">1</field>
+                    </depends>
+                </field>
+                <field id="price_slider_minimum_range" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Minimum Price Range For Slider Display</label>
                     <validate>validate-number validate-number-range number-range-0-1000000000</validate>
                     <depends>
                         <field id="price_slider_enable">1</field>
                     </depends>
                 </field>
-                <field id="display_product_count">
+                <field id="display_product_count" sortOrder="50">
                     <depends>
                         <field id="price_slider_enable">0</field>
                     </depends>
                 </field>
-                <field id="price_range_calculation" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="price_range_calculation" sortOrder="100">
                     <depends>
                         <field id="price_slider_enable">0</field>
                     </depends>
                 </field>
-                <field id="price_range_step" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="price_range_step" sortOrder="150">
                     <depends>
                         <field id="price_slider_enable">0</field>
                     </depends>
                 </field>
-                <field id="price_range_max_intervals" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="price_range_max_intervals" sortOrder="200">
                     <depends>
                         <field id="price_slider_enable">0</field>
                     </depends>
                 </field>
-                <field id="one_price_interval" translate="label comment" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="one_price_interval" sortOrder="150">
                     <depends>
                         <field id="price_slider_enable">0</field>
                     </depends>
                 </field>
-                <field id="interval_division_limit" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="interval_division_limit" sortOrder="200">
                     <depends>
                         <field id="price_slider_enable">0</field>
                     </depends>
