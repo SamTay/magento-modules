@@ -8,6 +8,7 @@
 namespace BlueAcorn\LayeredNavigation\Model\Layer\Filter;
 
 use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
+use BlueAcorn\LayeredNavigation\Helper\Config as ConfigHelper;
 
 /**
  * Layer attribute filter
@@ -20,6 +21,9 @@ class Attribute extends AbstractFilter
     /** @var \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy */
     protected $collectionMirror;
 
+    /** @var ConfigHelper */
+    protected $helper;
+
     /**
      * @param \Magento\Catalog\Model\Layer\Filter\ItemFactory $filterItemFactory
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -27,6 +31,7 @@ class Attribute extends AbstractFilter
      * @param \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder
      * @param \Magento\Framework\Filter\StripTags $tagFilter
      * @param \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror
+     * @param ConfigHelper $helper
      * @param array $data
      */
     public function __construct(
@@ -36,6 +41,7 @@ class Attribute extends AbstractFilter
         \Magento\Catalog\Model\Layer\Filter\Item\DataBuilder $itemDataBuilder,
         \Magento\Framework\Filter\StripTags $tagFilter,
         \BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror\Proxy $collectionMirror,
+        ConfigHelper $helper,
         array $data = []
     ) {
         parent::__construct(
@@ -47,6 +53,7 @@ class Attribute extends AbstractFilter
         );
         $this->tagFilter = $tagFilter;
         $this->collectionMirror = $collectionMirror;
+        $this->helper = $helper;
     }
 
     /**
@@ -65,12 +72,11 @@ class Attribute extends AbstractFilter
         /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
         $productCollection = $this->getLayer()->getProductCollection();
         $attribute = $this->getAttributeModel();
-        $this->collectionMirror->addAttributeFilter($attribute, $attributeValue);
-        // Allow multiple filter values
         $condition = strpos($attributeValue, ',') === false
             ? $attributeValue
             : ['in' => explode(',', $attributeValue)];
         $productCollection->addFieldToFilter($attribute->getAttributeCode(), $condition);
+        $this->collectionMirror->addAttributeFilter($attribute, $attributeValue);
         $label = $this->getOptionText($attributeValue);
         if (is_array($label)) {
             $label = implode(', ', $label);
@@ -78,7 +84,10 @@ class Attribute extends AbstractFilter
         $this->getLayer()
             ->getState()
             ->addFilter($this->_createItem($label, $attributeValue));
-
+        // If multivalue not enabled, don't get additional items
+        if (!$this->helper->isMultiValueEnabled()) {
+            $this->setItems([]);
+        }
         return $this;
     }
 
@@ -129,6 +138,7 @@ class Attribute extends AbstractFilter
     {
         $attribute = $this->getAttributeModel();
         $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
+        // Note that if filter has been applied and we are getting additional data, multivalue filtering must be enabled
         if ($appliedFilter) {
             return $this->collectionMirror->getFacetedData($attribute, $appliedFilter->getValue());
         }
