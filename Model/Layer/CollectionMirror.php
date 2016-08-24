@@ -154,11 +154,16 @@ class CollectionMirror extends ProductCollection
         return $connection->fetchPairs($select);
     }
 
+    /**
+     * Get pricing min/max/count of collection WITHOUT any current applied pricing filter
+     *
+     * @return array
+     */
     public function getPricingData()
     {
         $select = clone $this->getSelect();
-        $tableAlias = 'price_index'; // ?
         $this->resetSelect($select);
+        // Remove current price filter
         $whereParts = $select->getPart(Select::WHERE);
         $whereParts = array_filter($whereParts, function($clause) {
             return strpos($clause, 'price_index') === false;

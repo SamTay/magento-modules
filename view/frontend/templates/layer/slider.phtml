@@ -35,6 +35,7 @@
                 window.location.href = base + join + query;
             },
             slide: function(event, ui) {
+                // TODO frontend duder needs to clean this up..
                 var rangeArr = ui.values.slice(0, 2);
                 var rangeLabel = rangeArr.map(function(num) {
                     return symbol + parseFloat(Math.round(num * 100) / 100).toFixed(2);

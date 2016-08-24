@@ -10,6 +10,14 @@ namespace BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror;
 use BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirror;
 use BlueAcorn\LayeredNavigation\Model\Layer\CollectionMirrorFactory;
 
+/**
+ * Class Proxy
+ * @method addAttributeFilter(Attribute $attribute, string $attributeValue)
+ * @method addDecimalFilter(Attribute $attribute, $from, $to)
+ * @method addPriceFilter($from, $to)
+ * @method array getFacetedData(Attribute $attribute, string $attributeValue)
+ * @method array getPricingData()
+ */
 class Proxy
 {
     /** @var CollectionMirror */
