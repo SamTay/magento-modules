@@ -22,6 +22,9 @@ bin/magento setup:upgrade && bin/magento cache:flush
 
 ### Features
 
+##### Price Range Slider
+Allows a jQuery UI range slider instead of the native predefined interval filters.
+
 ##### Multi Value Filtering
 Allows filtering by multiple values per attribute.
 
@@ -39,12 +42,16 @@ that is, if the Color => Blue filter is selected, or if all items in the collect
 one value is selected (or if some items in the collection have more than the dependent value set).
 
 ### Approach
-##### Multi Value Filtering
 The approach here is to allow the main layer product collection to continue to leverage the fulltext enhancements. Each
 of the Layer/Filter models are overridden to keep native fulltext functionality, but hook in and apply the same filters
-to a mirrored catalog (non-fulltext) collection. This is done so that we can have OR conditions when filtering
-multiple values for each attribute, as the fulltext collection uses a join against a temporary table filled with
-entity IDs of the current layer (thus there is no way to modify the query logic post collection load).
+to a mirrored catalog (non-fulltext) collection. This is done so that we can
+
+1. have OR conditions when filtering multiple values for each attribute
+2. offer global price slider min/max, disregarding any current price filter
+
+It is necessary to mirror the collection with something other than the fulltext model whenever modifying previously
+applied filters. This is because the fulltext collection uses a join against a temporary table filled with entity IDs
+of the current layer (thus there is no way to modify the query logic post collection load).
 
 When faceted data is required for an attribute that already has a filter value applied, the mirror collection's `select`
 object is cloned, the given attribute filter is removed, and a query is performed to count results for additional possible
