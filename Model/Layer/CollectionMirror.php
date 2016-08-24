@@ -128,25 +128,22 @@ class CollectionMirror extends ProductCollection
         if (is_string($attributeValue) && strpos($attributeValue, ',') !== false) {
             $attributeValue = explode(',', $attributeValue);
         }
-        $multiValueCond = is_array($attributeValue)
-            ? $connection->quoteInto("value = {$tableAlias}.value OR value IN (?)", $attributeValue)
-            : $connection->quoteInto("value = {$tableAlias}.value OR value = ?", $attributeValue);
-        // TODO see issue #6 this is broken
-        $innerSelect = $this->getConnection()->select()
-            ->from(self::TABLE_CATALOG_PRODUCT_INDEX_EAV, new \Zend_Db_Expr('COUNT(DISTINCT(entity_id))'))
-            ->where('attribute_id = ?', $attribute->getAttributeId()) // todo test with this gone
-            ->where($multiValueCond)
-            ->__toString();
         $conditions = [
             "{$tableAlias}.entity_id = e.entity_id",
             $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
             $connection->quoteInto("{$tableAlias}.store_id = ?", $this->getStoreId()),
         ];
+        $tautology = "{$tableAlias}.value = {$tableAlias}.value";
+        $where = is_array($attributeValue)
+            ? $connection->quoteInto("{$tableAlias}.value IN (?)", $attributeValue)
+            : $connection->quoteInto("{$tableAlias}.value = ?", $attributeValue);
 
         $select->join(
             [$tableAlias => self::TABLE_CATALOG_PRODUCT_INDEX_EAV],
             join(' AND ', $conditions),
-            ['value', "($innerSelect) as count"]
+            ['value', 'count' => new \Zend_Db_Expr("COUNT({$tableAlias}.entity_id)")]
+        )->where(
+            join(' OR ', [$tautology, $where])
         )->group(
             "{$tableAlias}.value"
         );
