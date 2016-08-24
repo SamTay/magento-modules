@@ -104,18 +104,27 @@ class Attribute extends AbstractFilter
         $attribute = $this->getAttributeModel();
         $options = $attribute->getFrontend()->getSelectOptions();
         $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
+        $appliedValues = $appliedFilter
+            ? explode(',', $appliedFilter->getValue())
+            : [];
         $valuePrefix = $appliedFilter
             ? ($appliedFilter->getValue() . ',')
             : '';
         foreach ($options as $option) {
-            if (empty($option['value'])) {
+            // Don't bother with empty values or values resulting in zero products
+            if (empty($option['value']) || empty($facetedData[$option['value']])) {
                 continue;
             }
-            // TODO if value is already applied, check sys config whether or not this should show up as a span?
-            if (empty($facetedData[$option['value']])
-                || ($this->getAttributeIsFilterable($attribute) == static::ATTRIBUTE_OPTIONS_ONLY_WITH_RESULTS
-                    && !$this->isOptionAffectsResults($facetedData[$option['value']], $totalSize))
+            // Respect native settings for when to display attribute values
+            if (!in_array($option['value'], $appliedValues)
+                && $this->getAttributeIsFilterable($attribute) == static::ATTRIBUTE_OPTIONS_ONLY_WITH_RESULTS
+                && !$this->isOptionAffectsResults($facetedData[$option['value']], $totalSize)
             ) {
+                continue;
+            }
+            // Handle already applied filter values
+            if (in_array($option['value'], $appliedValues)) {
+                // TODO add sys config to include already applied values as spans
                 continue;
             }
             $this->itemDataBuilder->addItemData(
