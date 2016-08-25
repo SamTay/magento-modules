@@ -119,36 +119,25 @@ class CollectionMirror extends ProductCollection
      */
     public function getFacetedData(Attribute $attribute, $attributeValue)
     {
-        // Reset select, remove applied attribute filter
-        $select = clone $this->getSelect();
-        $tableAlias = $this->getTableAlias($attribute);
-        $this->resetSelect($select, [$tableAlias]);
-        $connection = $this->getConnection();
-        // Interpret attributeValue
-        if (is_string($attributeValue) && strpos($attributeValue, ',') !== false) {
-            $attributeValue = explode(',', $attributeValue);
+        $entityValues = $this->getEntityValues($attribute);
+        $attributeValue = explode(',', $attributeValue);
+        $data = [];
+        // Format [entity_id,value] pairs into [value => [entity_ids]] array
+        foreach($entityValues as $entityValue) {
+            $data[$entityValue['value']] = empty($data[$entityValue['value']])
+                ? [$entityValue['entity_id']]
+                : array_merge($data[$entityValue['value']], [$entityValue['entity_id']]);
         }
-        $conditions = [
-            "{$tableAlias}.entity_id = e.entity_id",
-            $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
-            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->getStoreId()),
-        ];
-        $tautology = "{$tableAlias}.value = {$tableAlias}.value";
-        $where = is_array($attributeValue)
-            ? $connection->quoteInto("{$tableAlias}.value IN (?)", $attributeValue)
-            : $connection->quoteInto("{$tableAlias}.value = ?", $attributeValue);
-
-        $select->join(
-            [$tableAlias => self::TABLE_CATALOG_PRODUCT_INDEX_EAV],
-            join(' AND ', $conditions),
-            ['value', 'count' => new \Zend_Db_Expr("COUNT({$tableAlias}.entity_id)")]
-        )->where(
-            join(' OR ', [$tautology, $where])
-        )->group(
-            "{$tableAlias}.value"
-        );
-
-        return $connection->fetchPairs($select);
+        // Get current entity IDs from applied filter value and $data array
+        $currentIds = array_unique(array_reduce($attributeValue, function($ids, $value) use($data) {
+            return empty($data[$value]) ? $ids : array_merge($ids, $data[$value]);
+        }, []));
+        // Format data into [$value => $count] pairs
+        // - where $count is the number of entity IDs with value=$value OR value IN [$attributeValue]
+        foreach($data as $value => &$entityIds) {
+            $entityIds = count(array_unique(array_merge($entityIds, $currentIds)));
+        }
+        return $data;
     }
 
     /**
@@ -220,5 +209,31 @@ class CollectionMirror extends ProductCollection
     protected function getTableAlias(Attribute $attribute)
     {
         return sprintf('%s_idx', $attribute->getAttributeCode());
+    }
+
+    /**
+     * Get entity ID & value associations for particular attribute
+     *
+     * @param Attribute $attribute
+     * @return array
+     */
+    protected function getEntityValues(Attribute $attribute)
+    {
+        // Reset select, remove applied attribute filter
+        $select = clone $this->getSelect();
+        $tableAlias = $this->getTableAlias($attribute);
+        $this->resetSelect($select, [$tableAlias]);
+        $connection = $this->getConnection();
+        $conditions = [
+            "{$tableAlias}.entity_id = e.entity_id",
+            $connection->quoteInto("{$tableAlias}.attribute_id = ?", $attribute->getAttributeId()),
+            $connection->quoteInto("{$tableAlias}.store_id = ?", $this->getStoreId()),
+        ];
+        $select->join(
+            [$tableAlias => self::TABLE_CATALOG_PRODUCT_INDEX_EAV],
+            join(' AND ', $conditions),
+            ['value', 'entity_id']
+        );
+        return $connection->fetchAll($select);
     }
 }
