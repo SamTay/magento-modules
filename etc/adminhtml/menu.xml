@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="BlueAcorn_LayeredNavigation::menu" title="Layered Navigation" module="BlueAcorn_LayeredNavigation"
+             sortOrder="50" parent="Magento_Catalog::catalog" dependsOnModule="BlueAcorn_LayeredNavigation"
+             resource="BlueAcorn_LayeredNavigation::menu"/>
+        <add id="BlueAcorn_LayeredNavigation::filter_dependency" title="Filter Dependencies" module="BlueAcorn_LayeredNavigation"
+             sortOrder="10" parent="BlueAcorn_LayeredNavigation::menu" action="ba_layered_nav/dependency"
+             resource="BlueAcorn_LayeredNavigation::filter_dependencies" />
+    </menu>
+</config>
