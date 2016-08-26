@@ -36,17 +36,11 @@ class InstallSchema implements InstallSchemaInterface
                 ['unsigned' => true, 'nullable' => false, 'default' => '0'],
                 'Attribute ID'
             )->addColumn(
-                'depends_attribute_id',
-                DdlTable::TYPE_SMALLINT,
+                'option_id',
+                DdlTable::TYPE_INTEGER,
                 null,
                 ['unsigned' => true, 'nullable' => false, 'default' => '0'],
-                'Depends Attribute ID'
-            )->addColumn(
-                'depends_value',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                255,
-                ['nullable' => false, 'default' => null],
-                'Depends Value'
+                'Option ID'
             )->addColumn(
                 'store_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
@@ -57,8 +51,8 @@ class InstallSchema implements InstallSchemaInterface
                 $setup->getIdxName('ba_layerednav_filter_dependency', ['attribute_id']),
                 ['attribute_id']
             )->addIndex(
-                $setup->getIdxName('ba_layerednav_filter_dependency', ['depends_attribute_id']),
-                ['depends_attribute_id']
+                $setup->getIdxName('ba_layerednav_filter_dependency', ['option_id']),
+                ['option_id']
             )->addIndex(
                 $setup->getIdxName('ba_layerednav_filter_dependency', ['store_id']),
                 ['store_id']
@@ -69,10 +63,10 @@ class InstallSchema implements InstallSchemaInterface
                 'attribute_id',
                 \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
             )->addForeignKey(
-                $setup->getFkName('ba_layerednav_filter_dependency', 'depends_attribute_id', 'eav_attribute', 'attribute_id'),
-                'depends_attribute_id',
-                $setup->getTable('eav_attribute'),
-                'attribute_id',
+                $setup->getFkName('ba_layerednav_filter_dependency', 'option_id', 'eav_attribute_option', 'option_id'),
+                'option_id',
+                $setup->getTable('eav_attribute_option'),
+                'option_id',
                 \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
             )->addForeignKey(
                 $setup->getFkName('ba_layerednav_filter_dependency', 'store_id', 'store', 'store_id'),
