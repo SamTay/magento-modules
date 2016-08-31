@@ -103,7 +103,7 @@
             </argument>
             <filterSelect name="store_id">
                 <argument name="optionsProvider" xsi:type="configurableObject">
-                    <argument name="class" xsi:type="string">BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\Dependency\Options</argument>
+                    <argument name="class" xsi:type="string">BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\Dependency\Store\Options</argument>
                 </argument>
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
@@ -267,7 +267,7 @@
                 </item>
             </argument>
         </column>
-        <actionsColumn name="actions" class="BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\DependencyActions">
+        <actionsColumn name="actions" class="BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\Dependency\Actions">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="indexField" xsi:type="string">dependency_id</item>

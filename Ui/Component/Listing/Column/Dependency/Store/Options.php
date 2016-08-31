@@ -5,7 +5,7 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\Dependency;
+namespace BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\Dependency\Store;
 
 use Magento\Store\Ui\Component\Listing\Column\Store\Options as StoreOptions;
 

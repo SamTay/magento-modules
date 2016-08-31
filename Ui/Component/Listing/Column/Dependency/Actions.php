@@ -5,14 +5,14 @@
  * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
  * @copyright   Copyright © 2016 Blue Acorn, Inc.
  */
-namespace BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column;
+namespace BlueAcorn\LayeredNavigation\Ui\Component\Listing\Column\Dependency;
 
 use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 
-class DependencyActions extends Column
+class Actions extends Column
 {
     /**
      * Url path
