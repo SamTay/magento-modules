@@ -11,7 +11,7 @@
              sortOrder="50" parent="Magento_Catalog::catalog" dependsOnModule="BlueAcorn_LayeredNavigation"
              resource="BlueAcorn_LayeredNavigation::menu"/>
         <add id="BlueAcorn_LayeredNavigation::filter_dependency" title="Filter Dependencies" module="BlueAcorn_LayeredNavigation"
-             sortOrder="10" parent="BlueAcorn_LayeredNavigation::menu" action="ba_layered_nav/dependency"
+             sortOrder="10" parent="BlueAcorn_LayeredNavigation::menu" action="ba_layerednav/dependency"
              resource="BlueAcorn_LayeredNavigation::filter_dependencies" />
     </menu>
 </config>
