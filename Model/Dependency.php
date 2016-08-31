@@ -11,6 +11,12 @@ use Magento\Framework\Model\AbstractModel;
 
 class Dependency extends AbstractModel
 {
+    /** @var string */
+    protected $_eventPrefix = 'ba_layerednav_dependency';
+
+    /** @var string */
+    protected $_eventObject = 'dependency';
+
     /**
      * Initialize with resource name
      */
