@@ -17,6 +17,7 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
+     * TODO: created/updated columns ??
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
@@ -43,10 +44,28 @@ class InstallSchema implements InstallSchemaInterface
                 'Option ID'
             )->addColumn(
                 'store_id',
-                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                DdlTable::TYPE_SMALLINT,
                 null,
                 ['unsigned' => true, 'nullable' => false, 'default' => '0'],
                 'Store ID'
+            )->addColumn(
+                'status',
+                DdlTable::TYPE_SMALLINT,
+                null,
+                ['nullable' => false, 'default' => '1'],
+                'Is Dependency Active'
+            )->addColumn(
+                'creation_time',
+                DdlTable::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => false, 'default' => DdlTable::TIMESTAMP_INIT],
+                'Dependency Creation Time'
+            )->addColumn(
+                'update_time',
+                DdlTable::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => false, 'default' => DdlTable::TIMESTAMP_INIT_UPDATE],
+                'Dependency Modification Time'
             )->addIndex(
                 $setup->getIdxName('ba_layerednav_filter_dependency', ['attribute_id']),
                 ['attribute_id']
