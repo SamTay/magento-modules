@@ -43,4 +43,34 @@
             <argument name="layerStateFactory" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Layer\StateFactory</argument>
         </arguments>
     </type>
+    <!-- Ui component data providers -->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="ba_layerednav_dependency_listing_data_source" xsi:type="string">BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">ba_layerednav_filter_dependency</argument>
+            <argument name="eventPrefix" xsi:type="string">ba_layerednav_dependency_grid_collection</argument>
+            <argument name="eventObject" xsi:type="string">dependency_grid_collection</argument>
+            <argument name="resourceModel" xsi:type="string">BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency</argument>
+        </arguments>
+    </type>
+    <virtualType name="DependencyGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
+        <arguments>
+            <argument name="appliers" xsi:type="array">
+                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
+                <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="DependencyGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object" shared="false">BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\Collection</argument>
+            <argument name="filterPool" xsi:type="object" shared="false">DependencyGridFilterPool</argument>
+        </arguments>
+    </virtualType>
 </config>

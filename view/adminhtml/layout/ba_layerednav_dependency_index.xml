@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <uiComponent name="ba_layerednav_dependency_listing"/>
+        </referenceContainer>
+        <!--<referenceContainer name="admin.scope.col.wrap" htmlClass="admin__old" />-->
+    </body>
+</page>
