@@ -210,8 +210,11 @@
         </column>
         <column name="attribute_id">
             <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Dependency\Source\FilterAttribute</item>
                 <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">text</item>
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="dataType" xsi:type="string">select</item>
                     <item name="label" xsi:type="string" translate="true">Filter</item>
                 </item>
             </argument>
@@ -222,7 +225,7 @@
                     <item name="filter" xsi:type="string">select</item>
                     <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
                     <item name="dataType" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Status</item>
+                    <item name="label" xsi:type="string" translate="true">Depends On</item>
                 </item>
             </argument>
         </column>
