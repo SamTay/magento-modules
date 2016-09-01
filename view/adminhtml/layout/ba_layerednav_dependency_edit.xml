@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="BlueAcorn\LayeredNavigation\Block\Adminhtml\Dependency\Edit" name="ba_layerednav_dependency_edit"/>
+        </referenceContainer>
+        <referenceContainer name="left">
+            <block class="BlueAcorn\LayeredNavigation\Block\Adminhtml\Dependency\Edit\Tabs" name="ba_layerednav_dependency_edit_tabs">
+                <block class="BlueAcorn\LayeredNavigation\Block\Adminhtml\Dependency\Edit\Tab\Settings" name="ba_layerednav_dependency_edit_tab_settings"/>
+                <block class="BlueAcorn\LayeredNavigation\Block\Adminhtml\Dependency\Edit\Tab\Main" name="ba_layerednav_dependency_edit_tab_main"/>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">settings_section</argument>
+                    <argument name="block" xsi:type="string">ba_layerednav_dependency_edit_tab_settings</argument>
+                </action>
+                <action method="addTab">
+                    <argument name="name" xsi:type="string">main_section</argument>
+                    <argument name="block" xsi:type="string">ba_layerednav_dependency_edit_tab_main</argument>
+                </action>
+            </block>
+        </referenceContainer>
+        <referenceContainer name="js">
+            <block class="Magento\Backend\Block\Template" template="BlueAcorn_LayeredNavigation::edit/js.phtml" name="ba_layerednav_dependency_js"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,32 @@
+<?php
+/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */
+?>
+<script>
+    require([
+        'jquery',
+        'mage/template',
+        'prototype'
+    ], function(jQuery, mageTemplate){
+
+        setFilterAttribute = function(urlTemplate, attributeElement) {
+            var url;
+            if (!jQuery('#edit_form').valid()) {
+                return false;
+            }
+            attributeElement = $F(attributeElement);
+
+            url = mageTemplate(urlTemplate, {
+                data: {
+                    'attribute_id': attributeElement
+                }
+            });
+
+            setLocation(url);
+        };
+    });
+</script>

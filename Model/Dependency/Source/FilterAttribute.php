@@ -37,7 +37,9 @@ class FilterAttribute extends AbstractSource
         // Why don't any native collections properly assign arguments to _toOptionArray? Sigh..
         if (is_null($this->options)) {
             $this->options = [];
-            foreach($this->filterAttributeList->getList() as $attribute) {
+            $collection = $this->filterAttributeList->getList()
+                ->unshiftOrder('main_table.frontend_label', 'ASC');
+            foreach($collection as $attribute) {
                 /** @var $attribute \Magento\Catalog\Model\ResourceModel\Eav\Attribute */
                 $this->options[] = [
                     'value' => $attribute->getAttributeId(),

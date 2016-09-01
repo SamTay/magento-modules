@@ -29,7 +29,6 @@
                 </div>
             <?php endif; ?>
             <?php $wrapOptions = false; ?>
-            <?php /** @var \Magento\Catalog\Model\Layer\Filter\AbstractFilter $filter */ ?>
             <?php foreach ($block->getFilters() as $filter): ?>
                 <?php if (!$wrapOptions): ?>
                     <strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?php /* @escapeNotVerified */ echo __('Shopping Options') ?></strong>

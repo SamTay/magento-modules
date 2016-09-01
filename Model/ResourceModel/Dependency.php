@@ -52,7 +52,7 @@ class Dependency extends AbstractDb
         $attributeId = $dependency->getFilterAttributeId();
         if ($attributeId) {
             $attribute = $this->filterableAttributeList->getList()
-                ->addFieldToFilter('attribute_id', $attributeId)
+                ->addFieldToFilter('main_table.attribute_id', $attributeId)
                 ->getFirstItem();
             if ($attribute->getId()) {
                 $dependency->setFilterAttribute($attribute);
