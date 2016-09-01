@@ -33,6 +33,13 @@ class DependentOption extends AbstractSource
         $this->collectionFactory = $collectionFactory;
     }
 
+    /**
+     * Get option array of available eav_attribute_option's
+     * Optionally exclude options from one attribute id
+     *
+     * @param null $excludeId
+     * @return array
+     */
     public function toOptionArray($excludeId = null)
     {
         if (is_null($this->options)) {

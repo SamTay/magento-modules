@@ -8,64 +8,23 @@
 namespace BlueAcorn\LayeredNavigation\Model\Dependency\Source;
 
 use Magento\Catalog\Model\Layer\FilterableAttributeListInterface;
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
-use Magento\Store\Model\StoreManagerInterface;
 
-class FilterAttribute extends AbstractSource implements FilterableAttributeListInterface
+class FilterAttribute extends AbstractSource
 {
-    /** @var CollectionFactory */
-    protected $collectionFactory;
-
-    /** @var StoreManagerInterface */
-    protected $storeManager;
+    /** @var FilterableAttributeListInterface */
+    private $filterAttributeList;
 
     /** @var array|null */
     protected $options;
 
     /**
-     * FilterableAttributeList constructor
-     *
-     * @param CollectionFactory $collectionFactory
-     * @param StoreManagerInterface $storeManager
+     * FilterAttribute constructor.
+     * @param FilterableAttributeListInterface $filterAttributeList
      */
     public function __construct(
-        CollectionFactory $collectionFactory,
-        StoreManagerInterface $storeManager
+        FilterableAttributeListInterface $filterAttributeList
     ) {
-        $this->collectionFactory = $collectionFactory;
-        $this->storeManager = $storeManager;
-    }
-
-    /**
-     * Retrieve list of filterable attributes
-     *
-     * @return array|\Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
-     */
-    public function getList()
-    {
-        /** @var $collection \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection */
-        $collection = $this->collectionFactory->create();
-        $collection->setItemObjectClass('Magento\Catalog\Model\ResourceModel\Eav\Attribute')
-            ->addStoreLabel($this->storeManager->getStore()->getId())
-            ->setOrder('position', 'ASC');
-        $this->_prepareAttributeCollection($collection);
-
-        return $collection;
-    }
-
-    /**
-     * Add filters to attribute collection
-     *
-     * @param \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection $collection
-     * @return \Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection
-     */
-    protected function _prepareAttributeCollection($collection)
-    {
-        $collection->addFieldToFilter(
-            ['additional_table.is_filterable', 'additional_table.is_filterable_in_search'],
-            [['gt' => 0], ['gt' => 0]]
-        );
-        return $collection;
+        $this->filterAttributeList = $filterAttributeList;
     }
 
     /**
@@ -78,7 +37,7 @@ class FilterAttribute extends AbstractSource implements FilterableAttributeListI
         // Why don't any native collections properly assign arguments to _toOptionArray? Sigh..
         if (is_null($this->options)) {
             $this->options = [];
-            foreach($this->getList() as $attribute) {
+            foreach($this->filterAttributeList->getList() as $attribute) {
                 /** @var $attribute \Magento\Catalog\Model\ResourceModel\Eav\Attribute */
                 $this->options[] = [
                     'value' => $attribute->getAttributeId(),

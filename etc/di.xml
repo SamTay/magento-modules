@@ -43,6 +43,17 @@
             <argument name="layerStateFactory" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Layer\StateFactory</argument>
         </arguments>
     </type>
+    <!-- Internal module arguments/preferences -->
+    <type name="BlueAcorn\LayeredNavigation\Model\Dependency\Source\FilterAttribute">
+        <arguments>
+            <argument name="filterAttributeList" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Dependency\FilterAttributesList</argument>
+        </arguments>
+    </type>
+    <type name="BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency">
+        <arguments>
+            <argument name="filterableAttributeList" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Dependency\FilterAttributesList</argument>
+        </arguments>
+    </type>
     <!-- Ui component data providers -->
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
