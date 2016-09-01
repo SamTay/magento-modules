@@ -7,11 +7,9 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Dependency\Source;
 
-use Magento\Catalog\Model\ResourceModel\Product\Attribute\Collection as AttributeCollection;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\CollectionFactory;
-use Magento\Framework\Data\OptionSourceInterface;
 
-class DependentOption implements OptionSourceInterface
+class DependentOption extends AbstractSource
 {
     /** @var FilterAttribute */
     private $filterAttributeSource;
@@ -38,15 +36,14 @@ class DependentOption implements OptionSourceInterface
     public function toOptionArray($excludeId = null)
     {
         if (is_null($this->options)) {
-            $attributeCollection = $this->filterAttributeSource->getList();
-            $attributeIds = $attributeCollection->getAllIds();
+            $attributes = $this->filterAttributeSource->toOptionArray();
+            $attributeIds = array_map(function($attr) {return $attr['value'];}, $attributes);
             $optionCollection = $this->collectionFactory->create()
                 ->addFieldToFilter('attribute_id', ['in' => [$attributeIds]])
                 ->setStoreFilter();
             foreach($optionCollection as $option) {
                 $optionLabel = $option->getValue();
-                $attributeLabel = $attributeCollection->getItemById($option->getAttributeId())
-                    ->getDefaultFrontendLabel();
+                $attributeLabel = $this->filterAttributeSource->getLabelByValue($option->getAttributeId());
                 $this->options[] = [
                     'value' => $option->getOptionId(),
                     'label' => "$attributeLabel -- $optionLabel",

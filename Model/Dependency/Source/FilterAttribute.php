@@ -9,24 +9,17 @@ namespace BlueAcorn\LayeredNavigation\Model\Dependency\Source;
 
 use Magento\Catalog\Model\Layer\FilterableAttributeListInterface;
 use Magento\Catalog\Model\ResourceModel\Product\Attribute\CollectionFactory;
-use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
-class FilterAttribute implements OptionSourceInterface, FilterableAttributeListInterface
+class FilterAttribute extends AbstractSource implements FilterableAttributeListInterface
 {
-    /**
-     * @var CollectionFactory
-     */
+    /** @var CollectionFactory */
     protected $collectionFactory;
 
-    /**
-     * @var StoreManagerInterface
-     */
+    /** @var StoreManagerInterface */
     protected $storeManager;
 
-    /**
-     * @var array|null
-     */
+    /** @var array|null */
     protected $options;
 
     /**

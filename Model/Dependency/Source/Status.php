@@ -7,9 +7,7 @@
  */
 namespace BlueAcorn\LayeredNavigation\Model\Dependency\Source;
 
-use Magento\Framework\Data\OptionSourceInterface;
-
-class Status implements OptionSourceInterface
+class Status extends AbstractSource
 {
     const DISABLED = 0;
     const ENABLED = 1;
