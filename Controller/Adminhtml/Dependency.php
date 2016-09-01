@@ -57,14 +57,24 @@ abstract class Dependency extends \Magento\Backend\App\Action
     protected function initDependency($idFieldName = 'dependency_id')
     {
         $dependencyId = (int)$this->getRequest()->getParam($idFieldName);
-        $model = $this->dependencyFactory->create();
+        $dependency = $this->dependencyFactory->create();
         if ($dependencyId) {
-            $model->load($dependencyId);
+            $dependency->load($dependencyId);
+            if (!$dependency->getId()) {
+                $this->messageManager->addError(__('Please specify a valid dependency ID.'));
+                return false;
+            }
+        } else {
+            // If dependency ID not provided in query, check if initial attribute_id exists
+            $attributeId = $this->getRequest()->getParam('attribute_id');
+            if ($attributeId) {
+                $dependency->setFilterAttributeId($attributeId);
+            }
         }
         if (!$this->registry->registry('current_dependency')) {
-            $this->registry->register('current_dependency', $model);
+            $this->registry->register('current_dependency', $dependency);
         }
-        return $model;
+        return $dependency;
     }
 
     /**
