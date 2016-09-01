@@ -9,6 +9,7 @@ namespace BlueAcorn\LayeredNavigation\Model\ResourceModel;
 
 use Magento\Catalog\Model\Layer\FilterableAttributeListInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Context;
 use BlueAcorn\LayeredNavigation\Model\Dependency as DependencyModel;
 
 class Dependency extends AbstractDb
@@ -25,7 +26,7 @@ class Dependency extends AbstractDb
     public function __construct(
         FilterableAttributeListInterface $filterableAttributeList,
         Context $context,
-        $connectionName
+        $connectionName = null
     ) {
         parent::__construct($context, $connectionName);
         $this->filterableAttributeList = $filterableAttributeList;
