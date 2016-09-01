@@ -35,17 +35,17 @@ abstract class Dependency extends \Magento\Backend\App\Action
     }
 
     /**
-     * Init page
+     * Init action
      *
-     * @param \Magento\Backend\Model\View\Result\Page $resultPage
-     * @return \Magento\Backend\Model\View\Result\Page
+     * @return $this
      */
-    protected function initPage($resultPage)
+    protected function initAction()
     {
-        $resultPage->setActiveMenu('BlueAcorn_LayeredNavigation::filter_dependency')
-            ->addBreadcrumb(__('Layered Navigation'), __('Layered Navigation'))
-            ->addBreadcrumb(__('Filter Dependencies'), __('Filter Dependencies'));
-        return $resultPage;
+        $this->_view->loadLayout();
+        $this->_addBreadcrumb(__('Layered Navigation'), __('Layered Navigation'));
+        $this->_addBreadcrumb(__('Filter Dependencies'), __('Filter Dependencies'));
+        $this->_setActiveMenu('BlueAcorn_LayeredNavigation::filter_dependency');
+        return $this;
     }
 
     /**
