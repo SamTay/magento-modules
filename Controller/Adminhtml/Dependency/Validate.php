@@ -13,7 +13,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Registry;
 use BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\CollectionFactory as DependencyCollectionFactory;
-use Magento\Framework\DataObject\Factory as DataObjectFactory;
 
 /**
  * Uniqueness checks at resource level result in proper exception messages in adminhtml,
@@ -24,27 +23,21 @@ class Validate extends Dependency
     /** @var DependencyCollectionFactory */
     private $collectionFactory;
 
-    /** @var DataObjectFactory */
-    private $dataObjectFactory;
-
     /**
      * Validate constructor.
      * @param Context $context
      * @param DependencyFactory $dependencyFactory
      * @param Registry $registry
      * @param DependencyCollectionFactory $collectionFactory
-     * @param DataObjectFactory $dataObjectFactory
      */
     public function __construct(
         Context $context,
         DependencyFactory $dependencyFactory,
         Registry $registry,
-        DependencyCollectionFactory $collectionFactory,
-        DataObjectFactory $dataObjectFactory
+        DependencyCollectionFactory $collectionFactory
     ) {
         parent::__construct($context, $dependencyFactory, $registry);
         $this->collectionFactory = $collectionFactory;
-        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -53,12 +46,16 @@ class Validate extends Dependency
     public function execute()
     {
         // init response
-        $response = $this->dataObjectFactory->create(['error' => false]);
+        $error = false;
+        $message = '';
 
         // get request parameters
         $dependencyId = $this->getRequest()->getParam('dependency_id');
         $attributeId = $this->getRequest()->getParam('attribute_id');
         $optionId = $this->getRequest()->getParam('option_id');
+        $attributeId = ($dependencyId && !$attributeId)
+            ? $this->getAttributeId($dependencyId)
+            : $attributeId;
 
         // check for duplicates
         $candidate = $this->collectionFactory->create()
@@ -66,10 +63,27 @@ class Validate extends Dependency
             ->addFieldToFilter('option_id', $optionId)
             ->getFirstItem();
         if ($candidate->getId() && $candidate->getId() != $dependencyId) {
-            $response->setMessage(__('This dependency already exists with ID %1', $candidate->getId()))
-                ->setError(true);
+            $message = __('This dependency already exists with ID %1', $candidate->getId());
+            $error = true;
         }
-        return $this->resultFactory->create(ResultFactory::TYPE_JSON)
-            ->setJsonData($response->toJson());
+        return $this->resultFactory->create(ResultFactory::TYPE_JSON)->setData([
+            'message' => $message,
+            'error' => $error
+        ]);
+    }
+
+    /**
+     * Get attribute id from dependency id
+     *
+     * @param $dependencyId
+     * @return null|int
+     */
+    private function getAttributeId($dependencyId)
+    {
+        return $this->collectionFactory->create()
+            ->addFieldToSelect('attribute_id')
+            ->addFieldToFilter('dependency_id', $dependencyId)
+            ->getFirstItem()
+            ->getAttributeId();
     }
 }
