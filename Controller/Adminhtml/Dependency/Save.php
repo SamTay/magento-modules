@@ -38,7 +38,6 @@ class Save extends Dependency
             return $this->_redirect('*/*/');
         } catch (\Exception $exception) {
             $this->messageManager->addError($exception->getMessage());
-            $this->_logger->critical($exception);
             return $this->_redirect('*/*/edit', ['_current' => true, 'dependency_id' => $model->getId()]);
         }
         return $this->_redirect('*/*/');
