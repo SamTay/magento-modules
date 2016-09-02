@@ -41,6 +41,7 @@ class Collection extends DependencyCollection implements SearchResultInterface
         \Psr\Log\LoggerInterface $logger,
         \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy,
         \Magento\Framework\Event\ManagerInterface $eventManager,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         $mainTable,
         $eventPrefix,
         $eventObject,
@@ -54,6 +55,7 @@ class Collection extends DependencyCollection implements SearchResultInterface
             $logger,
             $fetchStrategy,
             $eventManager,
+            $storeManager,
             $connection,
             $resource
         );
