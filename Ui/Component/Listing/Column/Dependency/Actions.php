@@ -19,7 +19,6 @@ class Actions extends Column
      */
     const URL_PATH_EDIT = 'ba_layerednav/dependency/edit';
     const URL_PATH_DELETE = 'ba_layerednav/dependency/delete';
-    const URL_PATH_DETAILS = 'ba_layerednav/dependency/details';
 
     /** @var UrlInterface */
     protected $urlBuilder;
@@ -67,15 +66,6 @@ class Actions extends Column
                         ]
                     ),
                     'label' => __('Edit')
-                ],
-                'details' => [
-                    'href' => $this->urlBuilder->getUrl(
-                        static::URL_PATH_DETAILS,
-                        [
-                            'dependency_id' => $item['dependency_id']
-                        ]
-                    ),
-                    'label' => __('Details')
                 ],
                 'delete' => [
                     'href' => $this->urlBuilder->getUrl(
