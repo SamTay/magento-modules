@@ -154,4 +154,14 @@ class Collection extends AbstractCollection
 
         return $countSelect;
     }
+
+    /**
+     * Apply bandaid to bad magento code
+     *
+     * @return string
+     */
+    public function getIdFieldName()
+    {
+        return parent::getIdFieldName() ?: $this->getResource()->getIdFieldName();
+    }
 }
