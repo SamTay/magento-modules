@@ -17,13 +17,16 @@ class InstallSchema implements InstallSchemaInterface
     /**
      * @param SchemaSetupInterface $setup
      * @param ModuleContextInterface $context
-     * TODO: created/updated columns ??
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
+
+        /**
+         * Create dependency entity table
+         */
         $table = $setup->getConnection()
-            ->newTable('ba_layerednav_filter_dependency')
+            ->newTable($setup->getTable('ba_layerednav_filter_dependency'))
             ->addColumn(
                 'dependency_id',
                 DdlTable::TYPE_INTEGER,
@@ -42,12 +45,6 @@ class InstallSchema implements InstallSchemaInterface
                 null,
                 ['unsigned' => true, 'nullable' => false, 'default' => '0'],
                 'Option ID'
-            )->addColumn(
-                'store_id',
-                DdlTable::TYPE_SMALLINT,
-                null,
-                ['unsigned' => true, 'nullable' => false, 'default' => '0'],
-                'Store ID'
             )->addColumn(
                 'status',
                 DdlTable::TYPE_SMALLINT,
@@ -72,9 +69,6 @@ class InstallSchema implements InstallSchemaInterface
             )->addIndex(
                 $setup->getIdxName('ba_layerednav_filter_dependency', ['option_id']),
                 ['option_id']
-            )->addIndex(
-                $setup->getIdxName('ba_layerednav_filter_dependency', ['store_id']),
-                ['store_id']
             )->addForeignKey(
                 $setup->getFkName('ba_layerednav_filter_dependency', 'attribute_id', 'eav_attribute', 'attribute_id'),
                 'attribute_id',
@@ -87,16 +81,48 @@ class InstallSchema implements InstallSchemaInterface
                 $setup->getTable('eav_attribute_option'),
                 'option_id',
                 \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            )->setComment(
+                'Layered Navigation Filter Dependency Table'
+            );
+        $setup->getConnection()->createTable($table);
+
+        /**
+         * Create link table for dependency entity store associations
+         */
+        $table = $setup->getConnection()
+            ->newTable($setup->getTable('ba_layerednav_filter_dependency_store'))
+            ->addColumn(
+                'dependency_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['nullable' => false, 'primary' => true],
+                'Dependency ID'
+            )->addColumn(
+                'store_id',
+                DdlTable::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => false, 'primary' => true],
+                'Store ID'
+            )->addIndex(
+                $setup->getIdxName('ba_layerednav_filter_dependency_store', ['store_id']),
+                ['store_id']
             )->addForeignKey(
-                $setup->getFkName('ba_layerednav_filter_dependency', 'store_id', 'store', 'store_id'),
+                $setup->getFkName('ba_layerednav_filter_dependency_store', 'dependency_id', 'ba_layerednav_filter_dependency', 'dependency_id'),
+                'dependency_id',
+                $setup->getTable('ba_layerednav_filter_dependency'),
+                'dependency_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            )->addForeignKey(
+                $setup->getFkName('ba_layerednav_filter_dependency_store', 'store_id', 'store', 'store_id'),
                 'store_id',
                 $setup->getTable('store'),
                 'store_id',
                 \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
             )->setComment(
-                'Layered Navigation Filter Dependency Table'
+                'Filter Dependency To Store Linkage Table'
             );
         $setup->getConnection()->createTable($table);
+
         $setup->endSetup();
     }
 }
