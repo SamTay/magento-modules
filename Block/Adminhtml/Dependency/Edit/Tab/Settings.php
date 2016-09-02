@@ -68,7 +68,6 @@ class Settings extends AbstractTab
      */
     public function getContinueUrl()
     {
-        // TODO Test URL !!!!!
         return $this->getUrl(
             '*/*/*',
             ['_current' => true, 'attribute_id' => '<%- data.attribute_id %>']

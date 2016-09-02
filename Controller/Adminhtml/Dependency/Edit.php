@@ -20,7 +20,7 @@ class Edit extends Dependency
     {
         $dependency = $this->initDependency();
         if (!$dependency) {
-            $this->_redirect('*/*/'); // TODO check this goes back to grid
+            $this->_redirect('*/*/');
             return;
         }
 
@@ -29,7 +29,6 @@ class Edit extends Dependency
             ? __('Dependency for %1', $dependency->getFilterAttribute()->getDefaultFrontendLabel())
             : __('New Dependency');
         $this->_view->getPage()->getConfig()->getTitle()->prepend($title);
-        //$this->_view->getPage()->getConfig()->getTitle()->prepend(__('Dependencies')); TODO check this
         $this->_view->renderLayout();
     }
 }

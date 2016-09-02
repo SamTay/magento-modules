@@ -37,7 +37,6 @@ class Main extends AbstractTab
     protected function _prepareFieldset(Fieldset $fieldset)
     {
         $dependency = $this->getDependency();
-        $this->_addElementTypes($fieldset); // TODO can this be removed?
 
         $fieldset->addField(
             'attribute_id',
