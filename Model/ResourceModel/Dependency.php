@@ -179,14 +179,14 @@ class Dependency extends AbstractDb
         if ($object->getStoreId()) {
             $stores = [(int)$object->getStoreId(), Store::DEFAULT_STORE_ID];
             $select->join(
-                ['ds' => $this->getTable(self::FILTER_DEPENDENCY_STORE_TABLE)],
-                $this->getMainTable() . '.dependency_id = ds.dependency_id',
+                ['store_table' => $this->getTable(self::FILTER_DEPENDENCY_STORE_TABLE)],
+                $this->getMainTable() . '.dependency_id = store_table.dependency_id',
                 ['store_id']
             )->where(
                 'status = ?',
                 1
             )->where(
-                'ds.store_id in (?)',
+                's.store_id in (?)',
                 $stores
             )->order(
                 'store_id DESC'
