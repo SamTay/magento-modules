@@ -14,47 +14,33 @@ class Save extends Dependency
     /**
      * Save action
      *
-     * @return \Magento\Framework\Controller\ResultInterface
+     * @return \Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultRedirectFactory->create();
-        // check post data
+        $model = $this->initDependency();
         $data = $this->getRequest()->getPostValue();
-        if (!$data) {
-            // go to grid
-            return $resultRedirect->setPath('*/*/');
+        if (!$model || !$data) {
+            // go back to grid with error message
+            return $this->_redirect('*/*/');
         }
-        $id = $this->getRequest()->getParam('dependency_id');
-        $model = $this->dependencyFactory->create()->load($id);
-        if (!$model->getId() && $id) {
-            $this->messageManager->addError(__('This filter dependency no longer exists.'));
-            return $resultRedirect->setPath('*/*/');
-        }
-
         // apply post data
-        $model->setData($data);
-
-        // try to save
+        $model->addData($data); // todo test empty store ids
         try {
             $model->save();
             $this->messageManager->addSuccess(__('Filter dependency saved successfully.'));
-            // clear previously saved data from session
             $this->_session->setFormData(false);
             // check if 'Save and Continue'
             if ($this->getRequest()->getParam('back')) {
-                return $resultRedirect->setPath('*/*/edit', ['dependency_id' => $model->getId()]);
+                return $this->_redirect('*/*/edit', ['dependency_id' => $model->getId()]);
             }
-            // go to grid
-            return $resultRedirect->setPath('*/*/');
-        } catch (\Exception $e) {
-            // display error message
-            $this->messageManager->addError($e->getMessage());
-            // save data in session
-            $this->_session->setFormData($data);
-            // redirect to edit form
-            return $resultRedirect->setPath('*/*/edit', ['block_id' => $this->getRequest()->getParam('block_id')]);
+            // otherwise go to grid
+            return $this->_redirect('*/*/');
+        } catch (\Exception $exception) {
+            $this->messageManager->addError($exception->getMessage());
+            $this->_logger->critical($exception);
+            return $this->_redirect('*/*/edit', ['_current' => true, 'dependency_id' => $model->getId()]);
         }
+        return $this->_redirect('*/*/');
     }
 }

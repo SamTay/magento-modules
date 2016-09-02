@@ -15,6 +15,10 @@ use Magento\Framework\Registry;
 use BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\CollectionFactory as DependencyCollectionFactory;
 use Magento\Framework\DataObject\Factory as DataObjectFactory;
 
+/**
+ * TODO there are already unique checks on saving from resource model, we can remove this controller
+ * and remove the overridden "getValidateUrl()"
+ */
 class Validate extends Dependency
 {
     /** @var DependencyCollectionFactory */
