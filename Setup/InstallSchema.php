@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\LayeredNavigation\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
@@ -64,23 +65,24 @@ class InstallSchema implements InstallSchemaInterface
                 ['nullable' => false, 'default' => DdlTable::TIMESTAMP_INIT_UPDATE],
                 'Dependency Modification Time'
             )->addIndex(
+                $setup->getIdxName('ba_layerednav_filter_dependency', ['attribute_id', 'option_id'], AdapterInterface::INDEX_TYPE_UNIQUE),
+                ['attribute_id', 'option_id'],
+                ['type' => AdapterInterface::INDEX_TYPE_UNIQUE]
+            )->addIndex(
                 $setup->getIdxName('ba_layerednav_filter_dependency', ['attribute_id']),
                 ['attribute_id']
-            )->addIndex(
-                $setup->getIdxName('ba_layerednav_filter_dependency', ['option_id']),
-                ['option_id']
             )->addForeignKey(
                 $setup->getFkName('ba_layerednav_filter_dependency', 'attribute_id', 'eav_attribute', 'attribute_id'),
                 'attribute_id',
                 $setup->getTable('eav_attribute'),
                 'attribute_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+                DdlTable::ACTION_CASCADE
             )->addForeignKey(
                 $setup->getFkName('ba_layerednav_filter_dependency', 'option_id', 'eav_attribute_option', 'option_id'),
                 'option_id',
                 $setup->getTable('eav_attribute_option'),
                 'option_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+                DdlTable::ACTION_CASCADE
             )->setComment(
                 'Layered Navigation Filter Dependency Table'
             );
@@ -95,7 +97,7 @@ class InstallSchema implements InstallSchemaInterface
                 'dependency_id',
                 DdlTable::TYPE_INTEGER,
                 null,
-                ['nullable' => false, 'primary' => true],
+                ['unsigned' => true, 'nullable' => false, 'primary' => true],
                 'Dependency ID'
             )->addColumn(
                 'store_id',
@@ -111,13 +113,13 @@ class InstallSchema implements InstallSchemaInterface
                 'dependency_id',
                 $setup->getTable('ba_layerednav_filter_dependency'),
                 'dependency_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+                DdlTable::ACTION_CASCADE
             )->addForeignKey(
                 $setup->getFkName('ba_layerednav_filter_dependency_store', 'store_id', 'store', 'store_id'),
                 'store_id',
                 $setup->getTable('store'),
                 'store_id',
-                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+                DdlTable::ACTION_CASCADE
             )->setComment(
                 'Filter Dependency To Store Linkage Table'
             );
