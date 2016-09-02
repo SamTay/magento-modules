@@ -41,6 +41,19 @@ class Dependency extends AbstractDb
     }
 
     /**
+     * Initialize unique fields
+     *
+     * @return $this
+     */
+    protected function _initUniqueFields()
+    {
+        $this->_uniqueFields = [
+            ['field' => ['attribute_id', 'option_id'], 'title' => __('Dependency already exists')],
+        ];
+        return $this;
+    }
+
+    /**
      * Load attribute model onto dependency model
      *
      * @param DependencyModel $dependency
