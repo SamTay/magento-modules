@@ -63,6 +63,22 @@ class Main extends AbstractTab
             ]
         );
 
+        // Default to enabled status
+        if (!$dependency->getId()) {
+            $dependency->setStatus(1);
+        }
+        $fieldset->addField(
+            'status',
+            'select',
+            [
+                'name' => 'status',
+                'label' => __('Status'),
+                'title' => __('Status'),
+                'required' => true,
+                'values' => $this->statusSource->toOptionArray()
+            ]
+        );
+
         /**
          * Check is single store mode
          */

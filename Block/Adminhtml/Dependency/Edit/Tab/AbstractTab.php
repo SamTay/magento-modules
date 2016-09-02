@@ -10,6 +10,7 @@ namespace BlueAcorn\LayeredNavigation\Block\Adminhtml\Dependency\Edit\Tab;
 use BlueAcorn\LayeredNavigation\Model\Dependency;
 use BlueAcorn\LayeredNavigation\Model\Dependency\Source\DependentOption;
 use BlueAcorn\LayeredNavigation\Model\Dependency\Source\FilterAttribute;
+use BlueAcorn\LayeredNavigation\Model\Dependency\Source\Status;
 use Magento\Framework\Data\Form\Element\Fieldset;
 use Magento\Store\Model\System\Store as SystemStore;
 
@@ -31,6 +32,9 @@ abstract class AbstractTab extends \Magento\Backend\Block\Widget\Form\Generic
     /** @var SystemStore */
     protected $systemStore;
 
+    /** @var Status */
+    protected $statusSource;
+
     /**
      * Main constructor.
      * @param \Magento\Backend\Block\Template\Context $context
@@ -39,6 +43,7 @@ abstract class AbstractTab extends \Magento\Backend\Block\Widget\Form\Generic
      * @param array $data
      * @param DependentOption $dependentOptionSource
      * @param FilterAttribute $filterAttributeSource
+     * @param Status $statusSource
      * @param SystemStore $systemStore
      */
     public function __construct(
@@ -48,12 +53,14 @@ abstract class AbstractTab extends \Magento\Backend\Block\Widget\Form\Generic
         array $data,
         DependentOption $dependentOptionSource,
         FilterAttribute $filterAttributeSource,
+        Status $statusSource,
         SystemStore $systemStore
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
         $this->dependentOptionSource = $dependentOptionSource;
         $this->filterAttributeSource = $filterAttributeSource;
         $this->systemStore = $systemStore;
+        $this->statusSource = $statusSource;
     }
 
     /**
