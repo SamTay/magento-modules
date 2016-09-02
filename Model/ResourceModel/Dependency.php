@@ -119,6 +119,35 @@ class Dependency extends AbstractDb
     }
 
     /**
+     * Ensure filter doesn't depend on itself
+     * TODO: Leverage abstract validation methods...
+     *
+     * @param AbstractModel $object
+     * @return $this
+     * @throws \Exception
+     */
+    protected function _beforeSave(AbstractModel $object)
+    {
+        $attributeId = $object->getAttributeId();
+        $optionId = $object->getOptionId();
+        if (!$attributeId || !$optionId) {
+            // Let abstract methods handle errors for required fields
+            return parent::_beforeSave($object);
+        }
+        $select = $this->getConnection()->select()->from($this->getTable('eav_attribute_option'))
+            ->where('option_id = ?', $optionId)
+            ->where('attribute_id = ?', $attributeId);
+        if ($this->getConnection()->fetchRow($select)) {
+            throw new \Exception(__(
+                'Filter cannot depend on itself: option %1 belongs to attribute %2',
+                $optionId,
+                $attributeId
+            ));
+        }
+        return parent::_beforeSave($object);
+    }
+
+    /**
      * Update store table after save
      *
      * @param AbstractModel $object
