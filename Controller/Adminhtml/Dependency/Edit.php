@@ -26,7 +26,7 @@ class Edit extends Dependency
 
         $this->initAction();
         $title = $dependency->getFilterAttributeId()
-            ? __('Dependency for %1', [$dependency->getFilterAttribute()->getDefaultFrontendLabel()])
+            ? __('Dependency for %1', $dependency->getFilterAttribute()->getDefaultFrontendLabel())
             : __('New Dependency');
         $this->_view->getPage()->getConfig()->getTitle()->prepend($title);
         //$this->_view->getPage()->getConfig()->getTitle()->prepend(__('Dependencies')); TODO check this

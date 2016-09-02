@@ -159,7 +159,7 @@ abstract class AbstractTab extends \Magento\Backend\Block\Widget\Form\Generic
         // Add child specific fields
         $this->_prepareFieldset($fieldset);
         // Events for further customization
-        $event = __('ba_layerednav_dependency_edit_tab_%1_prepare_form', [$this->tabCode]);
+        $event = __('ba_layerednav_dependency_edit_tab_%1_prepare_form', $this->tabCode);
         $this->_eventManager->dispatch($event, ['form' => $form]);
         // Set form
         $this->setForm($form);
