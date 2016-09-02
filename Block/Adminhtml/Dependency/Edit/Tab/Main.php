@@ -17,6 +17,7 @@ class Main extends AbstractTab
     public function _construct()
     {
         $this->title = 'Dependency Properties';
+        $this->tabCode = 'main';
         parent::_construct();
     }
 

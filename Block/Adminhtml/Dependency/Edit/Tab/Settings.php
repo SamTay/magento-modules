@@ -17,6 +17,7 @@ class Settings extends AbstractTab
     protected function _construct()
     {
         $this->title = 'Settings';
+        $this->tabCode = 'settings';
         parent::_construct();
     }
 

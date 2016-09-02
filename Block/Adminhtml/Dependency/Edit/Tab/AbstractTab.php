@@ -25,6 +25,9 @@ abstract class AbstractTab extends \Magento\Backend\Block\Widget\Form\Generic
     /** @var string */
     protected $title;
 
+    /** @var string */
+    protected $tabCode = '';
+
     /** @var SystemStore */
     protected $systemStore;
 
@@ -147,12 +150,18 @@ abstract class AbstractTab extends \Magento\Backend\Block\Widget\Form\Generic
             ['data' => ['id' => 'edit_form', 'action' => $this->getData('action'), 'method' => 'post']]
         );
 
+        // Prepare base fieldset
         $fieldset = $form->addFieldset('base_fieldset', ['legend' => __($this->title)]);
         if ($dependency->getId()) {
             $fieldset->addField('dependency_id', 'hidden', ['name' => 'dependency_id']);
         }
 
+        // Add child specific fields
         $this->_prepareFieldset($fieldset);
+        // Events for further customization
+        $event = __('ba_layerednav_dependency_edit_tab_%1_prepare_form', [$this->tabCode]);
+        $this->_eventManager->dispatch($event, ['form' => $form]);
+        // Set form
         $this->setForm($form);
         return parent::_prepareForm();
     }
