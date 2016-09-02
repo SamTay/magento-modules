@@ -20,8 +20,8 @@ class Status extends AbstractSource
     public function toOptionArray()
     {
         return [
-            ['value' => self::DISABLED, 'label' => __('Disabled')],
-            ['value' => self::ENABLED, 'label' => __('Enabled')]
+            ['value' => self::ENABLED, 'label' => __('Enabled')],
+            ['value' => self::DISABLED, 'label' => __('Disabled')]
         ];
     }
 }
