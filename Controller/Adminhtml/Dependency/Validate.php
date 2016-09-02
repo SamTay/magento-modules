@@ -16,8 +16,8 @@ use BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\CollectionFactory
 use Magento\Framework\DataObject\Factory as DataObjectFactory;
 
 /**
- * TODO there are already unique checks on saving from resource model, we can remove this controller
- * and remove the overridden "getValidateUrl()"
+ * Uniqueness checks at resource level result in proper exception messages in adminhtml,
+ * but this allows for us to include extra data (existing entity ID)
  */
 class Validate extends Dependency
 {

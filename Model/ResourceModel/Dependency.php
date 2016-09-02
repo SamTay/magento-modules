@@ -97,8 +97,10 @@ class Dependency extends AbstractDb
      */
     protected function _initUniqueFields()
     {
-        $this->_uniqueFields = [
-            ['field' => ['attribute_id', 'option_id'], 'title' => __('Dependency already exists')],
+        parent::_initUniqueFields();
+        $this->_uniqueFields[] = [
+            'field' => ['attribute_id', 'option_id'],
+            'title' => __('Dependency')
         ];
         return $this;
     }
