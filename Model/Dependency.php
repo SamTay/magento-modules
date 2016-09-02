@@ -79,4 +79,14 @@ class Dependency extends AbstractModel implements DependencyInterface
     {
         return $this->setData(self::OPTION_ID, $id);
     }
+
+    /**
+     * Receive page store ids
+     *
+     * @return int[]
+     */
+    public function getStores()
+    {
+        return $this->hasData('stores') ? $this->getData('stores') : $this->getData('store_id');
+    }
 }
