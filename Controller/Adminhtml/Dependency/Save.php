@@ -25,7 +25,7 @@ class Save extends Dependency
             return $this->_redirect('*/*/');
         }
         // apply post data
-        $model->addData($data); // todo test empty store ids
+        $model->addData($data);
         try {
             $model->save();
             $this->messageManager->addSuccess(__('Filter dependency saved successfully.'));
