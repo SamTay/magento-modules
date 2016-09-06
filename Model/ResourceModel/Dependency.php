@@ -138,11 +138,7 @@ class Dependency extends AbstractDb
             ->where('option_id = ?', $optionId)
             ->where('attribute_id = ?', $attributeId);
         if ($this->getConnection()->fetchRow($select)) {
-            throw new \Exception(__(
-                'Filter cannot depend on itself: option %1 belongs to attribute %2',
-                $optionId,
-                $attributeId
-            ));
+            throw new \Exception(__('Filter cannot depend on itself'));
         }
         return parent::_beforeSave($object);
     }
