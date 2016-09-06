@@ -10,6 +10,7 @@
     <default>
         <catalog>
             <layered_navigation>
+                <dependency_join>AND</dependency_join>
                 <multivalue_filter_enable>0</multivalue_filter_enable>
                 <price_slider_enable>0</price_slider_enable>
                 <price_slider_narrow>0</price_slider_narrow>

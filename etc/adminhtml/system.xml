@@ -9,6 +9,12 @@
     <system>
         <section id="catalog">
             <group id="layered_navigation">
+                <field id="dependency_join" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Logical Joining for Filter Dependencies</label>
+                    <source_model>BlueAcorn\LayeredNavigation\Model\Config\Source\Join</source_model>
+                    <comment>If multiple dependencies exist for a single filter attribute, "And" requires that all dependencies
+                    must be fulfilled, while "Or" requires that at least one is fulfilled.</comment>
+                </field>
                 <field id="multivalue_filter_enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Multi Value Filtering</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
