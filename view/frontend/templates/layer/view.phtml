@@ -29,7 +29,7 @@
                 </div>
             <?php endif; ?>
             <?php $wrapOptions = false; ?>
-            <?php foreach ($block->getFilters() as $filter): ?>
+            <?php foreach ($block->getApplicableFilters() as $filter): ?>
                 <?php if (!$wrapOptions): ?>
                     <strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?php /* @escapeNotVerified */ echo __('Shopping Options') ?></strong>
                     <dl class="filter-options" id="narrow-by-list">

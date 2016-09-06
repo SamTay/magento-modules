@@ -20,6 +20,18 @@ class Config extends AbstractHelper
     const MULTIVALUE_XML_PREFIX = 'catalog/layered_navigation/multivalue_filter_';
     const MULTIVALUE_ENABLE = 'enable';
 
+    const DEPENDENCY_JOIN_XML = 'catalog/layered_navigation/dependency_join';
+
+    /**
+     * Get logical joining for multiple dependencies
+     *
+     * @return mixed
+     */
+    public function getDependencyJoin()
+    {
+        return $this->scopeConfig->getValue(self::DEPENDENCY_JOIN_XML);
+    }
+
     /**
      * Get is multi value filtering enabled
      *

@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\LayeredNavigation\Block;
 
+use BlueAcorn\LayeredNavigation\Api\DependencyManagerInterface;
 use Magento\Catalog\Model\Layer\Filter\FilterInterface;
 use Magento\Catalog\Model\Layer\FilterList;
 use BlueAcorn\LayeredNavigation\Helper\Config as ConfigHelper;
@@ -19,12 +20,16 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
     /** @var ConfigHelper */
     protected $configHelper;
 
+    /** @var DependencyManagerInterface */
+    protected $dependencyManager;
+
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Catalog\Model\Layer\Resolver $layerResolver
      * @param \Magento\Catalog\Model\Layer\FilterList $filterList
      * @param \Magento\Catalog\Model\Layer\AvailabilityFlagInterface $visibilityFlag
      * @param ConfigHelper $configHelper
+     * @param DependencyManagerInterface $dependencyManager
      * @param array $data
      */
     public function __construct(
@@ -33,6 +38,7 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
         \Magento\Catalog\Model\Layer\FilterList $filterList,
         \Magento\Catalog\Model\Layer\AvailabilityFlagInterface $visibilityFlag,
         ConfigHelper $configHelper,
+        DependencyManagerInterface $dependencyManager,
         array $data = []
     ) {
         parent::__construct(
@@ -43,6 +49,21 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
             $data
         );
         $this->configHelper = $configHelper;
+        $this->dependencyManager = $dependencyManager;
+    }
+
+    /**
+     * Get filters but remove the ones with unmet dependencies
+     *
+     * @return array
+     */
+    public function getApplicableFilters()
+    {
+        $unmetDependencies = $this->dependencyManager->getUnmetDependencies($this->getLayer()->getState());
+        return array_filter($this->getFilters(), function($filter) use($unmetDependencies) {
+            $attribute = $filter->getData('attribute_model');
+            return !$attribute || !in_array($attribute->getId(), $unmetDependencies);
+        });
     }
 
     /**

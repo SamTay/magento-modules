@@ -54,6 +54,8 @@
             <argument name="filterableAttributeList" xsi:type="object">BlueAcorn\LayeredNavigation\Model\Dependency\FilterAttributesList</argument>
         </arguments>
     </type>
+    <preference for="BlueAcorn\LayeredNavigation\Api\Data\DependencyInterface" type="BlueAcorn\LayeredNavigation\Model\Dependency" />
+    <preference for="BlueAcorn\LayeredNavigation\Api\DependencyManagerInterface" type="BlueAcorn\LayeredNavigation\Model\DependencyManager" />
     <!-- Ui component data providers -->
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
