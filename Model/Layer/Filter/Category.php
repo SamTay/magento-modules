@@ -73,11 +73,11 @@ class Category extends \Magento\CatalogSearch\Model\Layer\Filter\Category
      */
     private function getCategory()
     {
-        $categoryGetter = (function() {
+        $categoryGetter = function() {
             /** @var $this \Magento\CatalogSearch\Model\Layer\Filter\Category */
             return $this->dataProvider->getCategory();
-        })->bindTo($this, '\Magento\CatalogSearch\Model\Layer\Filter\Category');
-
+        };
+        $categoryGetter = $categoryGetter->bindTo($this, '\Magento\CatalogSearch\Model\Layer\Filter\Category');
         return $categoryGetter();
     }
 }
