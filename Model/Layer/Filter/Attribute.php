@@ -99,14 +99,13 @@ class Attribute extends AbstractFilter
      */
     protected function _getItemsData()
     {
+        $itemsData = [];
         $totalSize = $this->getLayer()->getProductCollection()->getSize();
         $facetedData = $this->_getFacetedData();
         $attribute = $this->getAttributeModel();
         $options = $attribute->getFrontend()->getSelectOptions();
+        $appliedValues = $this->getAppliedValues();
         $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
-        $appliedValues = $appliedFilter
-            ? explode(',', $appliedFilter->getValue())
-            : [];
         $valuePrefix = $appliedFilter
             ? ($appliedFilter->getValue() . ',')
             : '';
@@ -123,18 +122,18 @@ class Attribute extends AbstractFilter
                 continue;
             }
             // Handle already applied filter values
-            if (in_array($option['value'], $appliedValues)) {
-                // TODO add sys config to include already applied values as spans
+            if (in_array($option['value'], $appliedValues) && !$this->helper->getShowAppliedFilters()) {
                 continue;
             }
-            $this->itemDataBuilder->addItemData(
-                $this->tagFilter->filter($option['label']),
-                $valuePrefix . $option['value'],
-                $facetedData[$option['value']]
-            );
+            $itemsData[] = [
+                'label' => $this->tagFilter->filter($option['label']),
+                'value' => $valuePrefix . $option['value'],
+                'count' => $facetedData[$option['value']],
+                'already_applied' => in_array($option['value'], $appliedValues)
+            ];
         }
 
-        return $this->itemDataBuilder->build();
+        return $itemsData;
     }
 
     /**
@@ -162,6 +161,22 @@ class Attribute extends AbstractFilter
     }
 
     /**
+     * Override to include extra item data
+     *
+     * @return AbstractFilter
+     */
+    protected function _initItems()
+    {
+        $data = $this->_getItemsData();
+        $items = [];
+        foreach ($data as $itemData) {
+            $items[] = $this->_filterItemFactory->create(['data' => $itemData])->setFilter($this);
+        }
+        $this->_items = $items;
+        return $this;
+    }
+
+    /**
      * Check if option will affect results (change total collection size)
      *
      * @param $optionCount
@@ -171,5 +186,18 @@ class Attribute extends AbstractFilter
     protected function isOptionAffectsResults($optionCount, $totalSize)
     {
         return $optionCount != $totalSize;
+    }
+
+    /**
+     * Get current state values for this filter
+     *
+     * @return array
+     */
+    protected function getAppliedValues()
+    {
+        $appliedFilter = $this->getLayer()->getState()->getItemByFilter($this);
+        return $appliedFilter
+            ? explode(',', $appliedFilter->getValue())
+            : [];
     }
 }

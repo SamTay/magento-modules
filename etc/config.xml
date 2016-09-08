@@ -12,6 +12,7 @@
             <layered_navigation>
                 <dependency_join>AND</dependency_join>
                 <multivalue_filter_enable>0</multivalue_filter_enable>
+                <multivalue_filter_show_applied>0</multivalue_filter_show_applied>
                 <price_slider_enable>0</price_slider_enable>
                 <price_slider_narrow>0</price_slider_narrow>
                 <price_slider_step>1.00</price_slider_step>

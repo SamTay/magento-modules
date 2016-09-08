@@ -17,22 +17,21 @@
 <ol class="items">
     <?php foreach ($filterItems as $filterItem): ?>
         <li class="item">
-            <?php if ($filterItem->getCount() > 0): ?>
+            <?php if ($filterItem->getCount() > 0 && !$filterItem->getAlreadyApplied()): ?>
                 <a href="<?php echo $block->escapeUrl($filterItem->getUrl()) ?>">
-                    <?php /* @escapeNotVerified */ echo $filterItem->getLabel() ?>
-                    <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
-                        <span class="count"><?php /* @escapeNotVerified */ echo $filterItem->getCount()?><span class="filter-count-label">
-                        <?php echo ($filterItem->getCount() == 1) ? __('item') : __('items'); ?>
-                    </span></span>
-                    <?php endif; ?>
-                </a>
-            <?php else:?>
+            <?php elseif ($filterItem->getAlreadyApplied()): ?>
+                <span class="already-applied">
+            <?php endif; ?>
                 <?php /* @escapeNotVerified */ echo $filterItem->getLabel() ?>
                 <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
                     <span class="count"><?php /* @escapeNotVerified */ echo $filterItem->getCount()?><span class="filter-count-label">
-                        <?php echo ($filterItem->getCount() == 1) ? __('item') : __('items'); ?>
+                    <?php echo ($filterItem->getCount() == 1) ? __('item') : __('items'); ?>
                     </span></span>
                 <?php endif; ?>
+            <?php if ($filterItem->getCount() > 0 && !$filterItem->getAlreadyApplied()): ?>
+                </a>
+            <?php elseif ($filterItem->getAlreadyApplied()): ?>
+                </span>
             <?php endif; ?>
         </li>
     <?php endforeach ?>

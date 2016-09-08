@@ -19,6 +19,7 @@ class Config extends AbstractHelper
 
     const MULTIVALUE_XML_PREFIX = 'catalog/layered_navigation/multivalue_filter_';
     const MULTIVALUE_ENABLE = 'enable';
+    const MULTIVALUE_SHOW_APPLIED = 'show_applied';
 
     const DEPENDENCY_JOIN_XML = 'catalog/layered_navigation/dependency_join';
 
@@ -40,6 +41,16 @@ class Config extends AbstractHelper
     public function isMultiValueEnabled()
     {
         return $this->getMultiValueConfig(self::MULTIVALUE_ENABLE);
+    }
+
+    /**
+     * Should applied filters be visible as spans
+     *
+     * @return mixed
+     */
+    public function getShowAppliedFilters()
+    {
+        return $this->getMultiValueConfig(self::MULTIVALUE_SHOW_APPLIED);
     }
 
     /**

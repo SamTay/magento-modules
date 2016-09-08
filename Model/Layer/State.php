@@ -32,6 +32,8 @@ class State extends \Magento\Catalog\Model\Layer\State
      * Get filter item by filter
      * Warning:: Assuming that there is only one filter item per filter
      *  - if this is incorrect, refactor this!
+     * Update:: I believe this is the case because natively we can only apply ONE option per filter
+     * and my changes just lump multivalues together as one item with comma separated list value
      *
      * @param AbstractFilter $filter
      * @return \Magento\Catalog\Model\Layer\Filter\Item
