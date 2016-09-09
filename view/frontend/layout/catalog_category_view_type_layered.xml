@@ -16,6 +16,8 @@
                 <block class="Magento\LayeredNavigation\Block\Navigation\State" name="catalog.navigation.state" as="state" />
                 <block class="Magento\LayeredNavigation\Block\Navigation\FilterRenderer" name="catalog.navigation.renderer.default" as="renderer.default"
                        template="BlueAcorn_LayeredNavigation::layer/filter.phtml"/>
+                <block class="BlueAcorn\LayeredNavigation\Block\Navigation\CheckboxRenderer" name="catalog.navigation.renderer.checkbox" as="renderer.checkbox"
+                       template="layer/checkbox.phtml"/>
                 <block class="BlueAcorn\LayeredNavigation\Block\Navigation\SliderRenderer" name="catalog.navigation.renderer.slider" as="renderer.slider"
                        template="layer/slider.phtml"/>
             </block>

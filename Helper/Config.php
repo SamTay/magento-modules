@@ -19,6 +19,7 @@ class Config extends AbstractHelper
 
     const MULTIVALUE_XML_PREFIX = 'catalog/layered_navigation/multivalue_filter_';
     const MULTIVALUE_ENABLE = 'enable';
+    const MULTIVALUE_CHECKBOX_THEME = 'checkbox_theme';
     const MULTIVALUE_SHOW_APPLIED = 'show_applied';
 
     const DEPENDENCY_JOIN_XML = 'catalog/layered_navigation/dependency_join';
@@ -44,13 +45,23 @@ class Config extends AbstractHelper
     }
 
     /**
-     * Should applied filters be visible as spans
+     * Get is checkbox theme enabled
+     *
+     * @return mixed
+     */
+    public function getCheckboxTheme()
+    {
+        return $this->getMultiValueConfig(self::MULTIVALUE_CHECKBOX_THEME);
+    }
+
+    /**
+     * Should applied filters be visible
      *
      * @return mixed
      */
     public function getShowAppliedFilters()
     {
-        return $this->getMultiValueConfig(self::MULTIVALUE_SHOW_APPLIED);
+        return $this->getCheckboxTheme() || $this->getMultiValueConfig(self::MULTIVALUE_SHOW_APPLIED);
     }
 
     /**

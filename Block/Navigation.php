@@ -15,6 +15,7 @@ use BlueAcorn\LayeredNavigation\Helper\Config as ConfigHelper;
 class Navigation extends \Magento\LayeredNavigation\Block\Navigation
 {
     const DEFAULT_ALIAS = 'renderer.default';
+    const CHECKBOX_ALIAS = 'renderer.checkbox';
     const SLIDER_ALIAS = 'renderer.slider';
 
     /** @var ConfigHelper */
@@ -72,14 +73,17 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
      */
     public function renderFilter(FilterInterface $filter)
     {
-        $alias = null;
+        $alias = self::DEFAULT_ALIAS;
         $filterType = $this->resolveType($filter);
         if ($filterType == FilterList::PRICE_FILTER
             && $this->configHelper->isSliderEnabled()
         ) {
             $alias = self::SLIDER_ALIAS;
-        } else {
-            $alias = self::DEFAULT_ALIAS;
+        }
+        if ($filterType != FilterList::PRICE_FILTER
+            && $this->configHelper->getCheckboxTheme()
+        ) {
+            $alias = self::CHECKBOX_ALIAS;
         }
 
         return $this->getChildBlock($alias)->render($filter);

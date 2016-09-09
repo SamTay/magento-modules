@@ -1,0 +1,36 @@
+<?php
+/**
+ * @package     BlueAcorn\LayeredNavigation
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */
+?>
+<?php
+/**
+ * Template for filter item checkbox
+ *
+ * @var $block \BlueAcorn\LayeredNavigation\Block\Navigation\CheckboxRenderer
+ * @var $filterItems \Magento\Catalog\Model\Layer\Filter\Item[]
+ */
+?>
+
+<ol class="items">
+    <?php foreach ($filterItems as $filterItem): ?>
+        <li class="item">
+            <input type="checkbox" value="<?php echo $filterItem->getValue() ?>" class="filter-checkbox"
+                   name="filter_checkbox_<?php echo $filterItem->getValue() ?>"
+                   id="filter_checkbox_<?php echo $filterItem->getValue() ?>"
+                   <?php if ($filterItem->getAlreadyApplied()): ?>checked="checked"<?php endif; ?>
+                   onchange="location='<?php echo $block->getFilterUrl($filterItem) ?>'">
+            <label for="filter_checkbox_<?php echo $filterItem->getValue() ?>" class="filter-checkbox-label">
+                <?php echo $filterItem->getLabel() ?>
+                <?php if ($this->helper('\Magento\Catalog\Helper\Data')->shouldDisplayProductCountOnLayer()): ?>
+                    <span class="count"><?php /* @escapeNotVerified */ echo $filterItem->getCount()?><span class="filter-count-label">
+                    <?php echo ($filterItem->getCount() == 1) ? __('item') : __('items'); ?>
+                    </span></span>
+                <?php endif; ?>
+            </label>
+        </li>
+    <?php endforeach ?>
+</ol>

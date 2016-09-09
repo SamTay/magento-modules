@@ -20,12 +20,21 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>This setting allows filtering by multiple values (in an OR condition) for select/multiselect attributes.</comment>
                 </field>
-                <field id="multivalue_filter_show_applied" translate="label comment" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Show Applied Filters In Layered Nav Block</label>
+                <field id="multivalue_filter_checkbox_theme" translate="label comment" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Checkboxes Theme</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>This setting will include already applied filters within layered navigation block as spans instead of anchors.</comment>
+                    <comment>This setting will replace the native anchors with checkboxes.</comment>
                     <depends>
                         <field id="multivalue_filter_enable">1</field>
+                    </depends>
+                </field>
+                <field id="multivalue_filter_show_applied" translate="label comment" type="select" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Applied Filter Spans In Layered Nav</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>This setting will show already applied filters as spans among additional filter anchors.</comment>
+                    <depends>
+                        <field id="multivalue_filter_enable">1</field>
+                        <field id="multivalue_filter_checkbox_theme">0</field>
                     </depends>
                 </field>
                 <field id="price_slider_enable" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">

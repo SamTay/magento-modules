@@ -128,6 +128,7 @@ class Attribute extends AbstractFilter
             $itemsData[] = [
                 'label' => $this->tagFilter->filter($option['label']),
                 'value' => $valuePrefix . $option['value'],
+                'lone_value' => $option['value'],
                 'count' => $facetedData[$option['value']],
                 'already_applied' => in_array($option['value'], $appliedValues)
             ];
