@@ -15,6 +15,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Mail\Template\TransportBuilder;
 use Magento\Framework\Phrase;
 use Magento\Framework\Reflection\DataObjectProcessor;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class Processor
 {
@@ -46,25 +47,33 @@ class Processor
     protected $dataObjectProcessor;
 
     /**
+     * @var TimezoneInterface
+     */
+    protected $timezone;
+
+    /**
      * Processor constructor.
      * @param TransportBuilder $transportBuilder
      * @param ConsumerConfig $consumerConfig
      * @param LogManager $logManager
      * @param AppState $appState
      * @param DataObjectProcessor $dataObjectProcessor
+     * @param TimezoneInterface $timezone
      */
     public function __construct(
         TransportBuilder $transportBuilder,
         ConsumerConfig $consumerConfig,
         LogManager $logManager,
         AppState $appState,
-        DataObjectProcessor $dataObjectProcessor
+        DataObjectProcessor $dataObjectProcessor,
+        TimezoneInterface $timezone
     ) {
         $this->transportBuilder = $transportBuilder;
         $this->logManager = $logManager;
         $this->consumerConfig = $consumerConfig;
         $this->appState = $appState;
         $this->dataObjectProcessor = $dataObjectProcessor;
+        $this->timezone = $timezone;
     }
 
     public function processAlert(AlertInterface $alert)
@@ -72,6 +81,7 @@ class Processor
         try {
             $recipients = $this->getEmailRecipients($alert);
             $vars = $this->dataObjectProcessor->buildOutputDataArray($alert, 'BlueAcorn\AmqpBase\Api\Data\AlertInterface');
+            $this->addVars($vars);
             $this->sendEmail($recipients, $vars);
         } catch (\Exception $e) {
             // Squelch all errors in alert queue processing, we don't want to create infinite message loop
@@ -122,5 +132,17 @@ class Processor
             ));
         }
         return $recipients;
+    }
+
+    /**
+     * Add template variables (by reference!)
+     *
+     * @param $vars
+     */
+    protected function addVars(&$vars)
+    {
+        $vars['date_and_time'] = (empty($vars['timestamp']))
+            ? ''
+            : $this->timezone->formatDateTime($vars['timestamp']);
     }
 }
