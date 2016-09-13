@@ -87,6 +87,7 @@ class Daemonizer
      * Start all consumers according to configured daemon counts
      * Optionally disallow truncating daemons
      * Optionally dry run without modifying daemon counts
+     * Optionally only run for a single consumer
      *
      * Returns status array: [
      * SPAWN_NECESSARY =>
@@ -99,10 +100,10 @@ class Daemonizer
      *
      * @param bool $noTruncate
      * @param bool $dryRun
+     * @param string|null $consumer
      * @return array
-     * @throws LocalizedException
      */
-    public function startAllConsumers($noTruncate = false, $dryRun = false)
+    public function startAllConsumers($noTruncate = false, $dryRun = false, $consumer = null)
     {
         $statuses = [
             self::STATUS_NO_ACTION_NECESSARY => [],
@@ -110,6 +111,9 @@ class Daemonizer
             self::STATUS_TRUNCATE_NECESSARY => []
         ];
         foreach($this->queueConfig->getConsumersList() as $consumerName) {
+            if ($consumer && $consumer != $consumerName) {
+                continue;
+            }
             $configuredDaemonCount = $this->consumerConfig->getDaemonCount($consumerName);
             $currentDaemonCount = $this->getCurrentDaemonCount($consumerName);
 

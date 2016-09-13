@@ -47,9 +47,14 @@ class RefreshDaemon
         // Remove all daemons
         foreach($this->queueConfig->getConsumersList() as $consumerName) {
             $this->daemonizer->removeDaemons($consumerName, Daemonizer::MAX_DAEMON_COUNT);
-        }
 
-        // Restart daemons according to configuration
-        $this->daemonizer->startAllConsumers();
+            // Wait until all shutdown messages have been consumed
+            while ($this->daemonizer->getCurrentDaemonCount($consumerName)) {
+                sleep(10);
+            }
+
+            // Restart daemons according to configuration
+            $this->daemonizer->startAllConsumers(false, false, $consumerName);
+        }
     }
 }
