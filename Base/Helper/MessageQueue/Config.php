@@ -114,15 +114,24 @@ class Config
     {
         $queues = [];
         $queueConfig = $this->getQueueConfigData();
+        // Check binds (queues that exist purely for producers and not consumers)
+        $exchanges = $this->getExchangesList($connection);
+        if (isset($queueConfig[QueueConfigConverter::BINDS])) {
+            foreach($queueConfig[QueueConfigConverter::BINDS] as $bind) {
+                if (in_array($bind[QueueConfigConverter::BIND_EXCHANGE], $exchanges)) {
+                    $queues[] = $bind[QueueConfigConverter::BIND_QUEUE];
+                }
+            }
+        }
+        // Check consumers
         if (isset($queueConfig[QueueConfigConverter::CONSUMERS])) {
-            foreach ($queueConfig[QueueConfigConverter::CONSUMERS] as $consumer) {
-                if ($consumer[QueueConfigConverter::CONSUMER_CONNECTION] === $connection) {
+            foreach($queueConfig[QueueConfigConverter::CONSUMERS] as $consumer) {
+                if ($consumer[QueueConfigConverter::CONSUMER_CONNECTION] == $connection) {
                     $queues[] = $consumer[QueueConfigConverter::CONSUMER_QUEUE];
                 }
             }
-            $queues = array_unique($queues);
         }
-        return $queues;
+        return array_unique($queues);
     }
 
     /**
