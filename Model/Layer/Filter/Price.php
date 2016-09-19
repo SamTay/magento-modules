@@ -125,6 +125,7 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
             'min' => $min,
             'max' => $max,
             'current' => $current,
+            'alreadyApplied' => (bool)$applied,
             'count' => $count // This is probably not necessary...
         ]];
     }
