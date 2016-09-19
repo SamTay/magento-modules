@@ -7,6 +7,7 @@
  */
 namespace BlueAcorn\LayeredNavigation\Block\Navigation;
 
+use BlueAcorn\LayeredNavigation\Helper\Config;
 use Magento\Catalog\Model\Layer\Filter\FilterInterface;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Framework\View\Element\Template;
@@ -15,21 +16,27 @@ use Magento\LayeredNavigation\Block\Navigation\FilterRendererInterface;
 class SliderRenderer extends Template implements FilterRendererInterface
 {
     /** @var PriceCurrencyInterface */
-    private $currency;
+    protected $currency;
+
+    /** @var Config */
+    protected $config;
 
     /**
      * SliderRenderer constructor.
      * @param Template\Context $context
      * @param PriceCurrencyInterface $currency
+     * @param Config $config
      * @param array $data
      */
     public function __construct(
         Template\Context $context,
         PriceCurrencyInterface $currency,
+        Config $config,
         array $data
     ) {
         parent::__construct($context, $data);
         $this->currency = $currency;
+        $this->config = $config;
     }
 
     /**
@@ -64,6 +71,7 @@ class SliderRenderer extends Template implements FilterRendererInterface
         $sliderItem = reset($items);
         $this->assign($sliderItem->getData());
         $this->assign('symbol', $this->currency->getCurrencySymbol());
+        $this->assign('step', $this->config->getSliderStep());
         $html = $this->_toHtml();
         $this->_viewVars = [];
         return $html;

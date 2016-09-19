@@ -11,7 +11,11 @@
  * Template for filter item slider
  *
  * @var $block \BlueAcorn\LayeredNavigation\Block\Navigation\SliderRenderer
- * @var $sliderData \Magento\Catalog\Model\Layer\Filter\Item
+ * @var $symbol string price symbol
+ * @var $min double minimum range limiter
+ * @var $max double maximum ranger limiter
+ * @var $current array contains min/max of starting values
+ * @var $step double configured slider step
  */
 ?>
 
@@ -25,6 +29,7 @@
             symbol = "<?php echo $symbol ?>";
         $("#price-filter-slider").slider({
             range: true,
+            step: <?php echo $step ?>,
             min: <?php echo $min ?>,
             max: <?php echo $max ?>,
             values: [<?php echo implode(",", $current) ?>],
