@@ -115,11 +115,11 @@ class Price extends \Magento\CatalogSearch\Model\Layer\Filter\Price
             $current = $applied->getValue();
             $count = (int)$facetedData['count'];
         }
-        $max = (double)ceil($max + parent::PRICE_DELTA); // I hate myself
         $minimumRange = $this->helper->getSliderMinRange();
         if (abs($max - $min) < $minimumRange || abs($max - $min) == 0) {
             return [];
         }
+        $max = (double)ceil($max + parent::PRICE_DELTA); // I hate myself
         return [[
             'label' => __('Price'),
             'min' => $min,
