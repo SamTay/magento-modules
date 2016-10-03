@@ -107,29 +107,73 @@ class DependencyManager implements DependencyManagerInterface
     }
 
     /**
+     * Check that at least one dependent option is met by applied options or implicitly
+     *
      * @param $dependentOptions
      * @param $appliedOptions
      * @return bool
      */
     protected function checkNonEmptyIntersection($dependentOptions, $appliedOptions)
     {
-        // First check state
+        // First check if any options are applied in state
         $applied = (bool)array_intersect($dependentOptions, $appliedOptions);
-        if ($applied) {
-            return true; // Dont query if we dont have to
-        }
+
+        // Check implicit values in collection (short circuit if any are found)
         return array_reduce($dependentOptions, function($met, $opt) {
-            return $met |= $this->isImplicitlyApplied($opt);
-        }, false);
+            return $met || $this->isImplicitlyApplied($opt);
+        }, $applied);
     }
 
     /**
+     * Check that all dependent options are met by applied options or implicitly
+     *
      * @param $dependentOptions
      * @param $appliedOptions
      * @return bool
      */
-    protected function checkFullIntersection($arrayA, $arrayB)
+    protected function checkFullIntersection($dependentOptions, $appliedOptions)
     {
-        return !array_diff($arrayA, $arrayB);
+        // Get dependency options not applied in state
+        $unmetOptions = array_diff($dependentOptions, $appliedOptions);
+
+        // Check that all unmet dependencies are met implicitly (short circuit if any are not met)
+        return array_reduce($unmetOptions, function($met, $opt) {
+            return $met && $this->isImplicitlyApplied($opt);
+        }, true);
+    }
+
+    /**
+     * Check if all products in current layer collection have value $opt
+     *
+     * @param int $opt
+     * @return bool
+     */
+    protected function isImplicitlyApplied($opt)
+    {
+        // Construct comma separated values from eav_index table
+        $conn = $this->layer->getProductCollection()->getConnection();
+        $innerTable = $conn->select()
+            ->from('catalog_product_index_eav', 'entity_id')
+            ->group('entity_id');
+        $this->dbHelper->addGroupConcatColumn($innerTable, 'values', ['value']);
+
+        // Get current layer select but reset columns
+        // Basically doing work of calling getAllIds but in one query instead of two
+        $select = clone $this->layer->getProductCollection()->getSelect();
+        $select->reset(Select::COLUMNS)
+            ->reset(Select::ORDER)
+            ->reset(Select::LIMIT_COUNT)
+            ->reset(Select::LIMIT_OFFSET)
+            ->join(
+                ['eav_index' => $innerTable],
+                'e.entity_id = eav_index.entity_id',
+                []
+            )->columns(
+                'COUNT(DISTINCT e.entity_id)'
+            )->where(
+                'NOT ' . $conn->prepareSqlCondition('eav_index.values', ['finset' => $opt])
+            );
+        // Check if any of the products in collection do NOT have value $opt
+        return $conn->fetchOne($select) == 0;
     }
 }
