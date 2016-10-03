@@ -65,7 +65,9 @@ class DependencyManager implements DependencyManagerInterface
 
         return array_filter(array_map(function($dependency) use($stateOptions, $diffMethod) {
             $dependentOptions = explode(',', $dependency->getOptionIds());
-            return call_user_func($diffMethod, $dependentOptions, $stateOptions) ? null : $dependency->getAttributeId();
+            return call_user_func($diffMethod, $dependentOptions, $stateOptions)
+                ? null // filter out attributes with unmet dependencies
+                : $dependency->getAttributeId();
         }, $collection->getItems()));
     }
 
