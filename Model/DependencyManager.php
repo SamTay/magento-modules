@@ -10,7 +10,7 @@ namespace BlueAcorn\LayeredNavigation\Model;
 use BlueAcorn\LayeredNavigation\Api\DependencyManagerInterface;
 use BlueAcorn\LayeredNavigation\Helper\Config;
 use BlueAcorn\LayeredNavigation\Model\ResourceModel\Dependency\CollectionFactory;
-use Magento\Catalog\Model\Layer\State;
+use Magento\Catalog\Model\Layer;
 use Magento\Framework\Db\Helper as DbHelper;
 use Magento\Framework\Db\Select;
 
@@ -24,6 +24,9 @@ class DependencyManager implements DependencyManagerInterface
 
     /** * @var Config */
     protected $config;
+
+    /** @var null|Layer */
+    protected $layer;
 
     /**
      * DependencyManager constructor.
@@ -44,12 +47,13 @@ class DependencyManager implements DependencyManagerInterface
     /**
      * Get array of attribtue IDs with unmet dependencies
      *
-     * @param State $state
-     * @return int[]
+     * @param Layer $layer
+     * @return \int[]
      */
-    public function getUnmetDependencies(State $state)
+    public function getUnmetDependencies(Layer $layer)
     {
-        $stateOptions = $this->getAllStateOptions($state);
+        $this->layer = $layer;
+        $stateOptions = $this->getAllStateOptions();
         $join = $this->config->getDependencyJoin();
         $diffMethod = $this->getDiffMethod($join);
         $collection = $this->collectionFactory->create()
@@ -68,13 +72,12 @@ class DependencyManager implements DependencyManagerInterface
     /**
      * Get array of all applied option_id's
      *
-     * @param State $state
      * @return array
      */
-    protected function getAllStateOptions(State $state)
+    protected function getAllStateOptions()
     {
         $options = [];
-        foreach($state->getFilters() as $filterItem) {
+        foreach($this->layer->getState()->getFilters() as $filterItem) {
             /** @var \Magento\Catalog\Model\ResourceModel\Eav\Attribute|null $attribute */
             $attribute = $filterItem->getFilter()->getData('attribute_model'); // Avoid exceptions on category filters
             if (!$attribute || !$attribute->usesSource()) {
@@ -102,18 +105,25 @@ class DependencyManager implements DependencyManagerInterface
     }
 
     /**
-     * @param $arrayA
-     * @param $arrayB
+     * @param $dependentOptions
+     * @param $appliedOptions
      * @return bool
      */
-    protected function checkNonEmptyIntersection($arrayA, $arrayB)
+    protected function checkNonEmptyIntersection($dependentOptions, $appliedOptions)
     {
-        return (bool)array_intersect($arrayA, $arrayB);
+        // First check state
+        $applied = (bool)array_intersect($dependentOptions, $appliedOptions);
+        if ($applied) {
+            return true; // Dont query if we dont have to
+        }
+        return array_reduce($dependentOptions, function($met, $opt) {
+            return $met |= $this->isImplicitlyApplied($opt);
+        }, false);
     }
 
     /**
-     * @param $arrayA
-     * @param $arrayB
+     * @param $dependentOptions
+     * @param $appliedOptions
      * @return bool
      */
     protected function checkFullIntersection($arrayA, $arrayB)

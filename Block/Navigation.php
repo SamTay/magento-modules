@@ -60,7 +60,7 @@ class Navigation extends \Magento\LayeredNavigation\Block\Navigation
      */
     public function getApplicableFilters()
     {
-        $unmetDependencies = $this->dependencyManager->getUnmetDependencies($this->getLayer()->getState());
+        $unmetDependencies = $this->dependencyManager->getUnmetDependencies($this->_catalogLayer);
         return array_filter($this->getFilters(), function($filter) use($unmetDependencies) {
             $attribute = $filter->getData('attribute_model');
             return !$attribute || !in_array($attribute->getId(), $unmetDependencies);

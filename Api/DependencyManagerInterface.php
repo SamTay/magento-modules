@@ -7,16 +7,15 @@
  */
 namespace BlueAcorn\LayeredNavigation\Api;
 
-use BlueAcorn\LayeredNavigation\Api\Data\DependencyInterface;
-use Magento\Catalog\Model\Layer\State;
+use Magento\Catalog\Model\Layer;
 
 interface DependencyManagerInterface
 {
     /**
-     * Get array of attribtue IDs with unmet dependencies
+     * Get array of attribtue IDs with unmet dependencies for the current Layer
      *
-     * @param State $state
+     * @param Layer $layer
      * @return int[]
      */
-    public function getUnmetDependencies(State $state);
+    public function getUnmetDependencies(Layer $layer);
 }
