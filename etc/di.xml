@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--/*
+ * @package     BlueAcorn/ModuleManager
+ * @version     1.0.0
+ * @author      Sam Tay @ Blue Acorn, Inc. <code@blueacorn.com>
+ * @copyright   Copyright © 2016 Blue Acorn, Inc.
+ */-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="setupUpgradeOverride" xsi:type="object">BlueAcorn\ModuleManager\Console\SetupUpgradeCommand</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\App\DeploymentConfig\Writer">
+        <plugin name="saveModulesLexicographically" type="BlueAcorn\ModuleManager\Plugin\SaveToModules" />
+    </type>
+    <type name="Magento\Framework\App\DeploymentConfig\Reader">
+        <plugin name="readFromModulesFile" type="BlueAcorn\ModuleManager\Plugin\ReadFromModules" />
+    </type>
+    <type name="Magento\Framework\App\FrontController">
+        <plugin name="checkModulesConfigFiles" type="BlueAcorn\ModuleManager\Plugin\CheckModules" />
+    </type>
+</config>
